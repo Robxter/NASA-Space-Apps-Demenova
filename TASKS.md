@@ -31,7 +31,8 @@ review queue, the flood candidates and the logo options.
 - [x] T-004 lead-architect: scripts/check_provenance.py + tests/test_provenance.py (94 tests pass, commit 3a37c2b)
 - [~] T-005 lead-architect: ADR-001..004, DECISIONS.md, PENDING.md, HANDOFF.md (ADRs missing)
 - [ ] T-005b lead-architect: app/ scaffold (Vite React TS) and `npm --prefix app run build` green
-- [~] T-007 main session: apply FIX.md (steps 1-3 done in d2d6dac; 4-6 wait on Roster)
+- [~] T-007 main session: apply FIX.md (steps 1-3, 8 done; Ponytail and claude-mem installed; open: Roster's
+  Gemini key in claude-mem setup, run the unsigned FreeLLMAPI installer or not, OmniRoute removal, restart check)
 - [ ] T-006 Roster: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
 
 ## Block 1: foundations

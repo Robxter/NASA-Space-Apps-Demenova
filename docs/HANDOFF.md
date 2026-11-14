@@ -2,6 +2,16 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-14 18:40 - Main session (Claude Code) to Roster
+State: FIX.md applied except the steps only Roster can finish; phase 0 resumes from 3a37c2b after the restart.
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: Ponytail (lite) installed; claude-mem installed off-plan (gemini, chill, no telemetry); Node
+22.23.5 + Bun 1.4.4 added; FreeLLMAPI installer downloaded and digest-verified (unsigned, not run). D-010..D-012 logged.
+Waiting on Roster: claude-mem setup page http://127.0.0.1:37774/?setup=1 with a Gemini key (never "Anthropic plan");
+run or skip the FreeLLMAPI installer; remove OmniRoute (`npm uninstall -g omniroute`) or keep; restart with scripts/start.ps1.
+Next for the receiver, in order: 1. Confirm "lite" shows at startup. 2. Resume phase 0 (lead-architect). 3. Phase 1 wave A.
+Do not touch: committed phase 0 files except to complete them.
+
 ## 2026-11-14 18:15 - Main session (Claude Code) to Tyson (plan change)
 Resumen para Tyson: el límite de uso de Claude retrasó la fase 0 unas tres horas. Esta noche no habrá enlace de vista
 previa de la app; pasa al domingo por la mañana. Para tu turno de noche tendrás, hacia las 23:30 (hora de España):

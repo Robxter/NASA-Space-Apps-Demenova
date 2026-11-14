@@ -164,6 +164,9 @@ documentation, reports and review sweeps. Do not edit agent files to switch mode
 - Watch the Ponytail band (cost per task). If one task passes the equivalent of 15% of the 5-hour window, stop and
   ask the main session to split it.
 - Near the limit: commit, write HANDOFF.md, `/save-session`, then restart with `scripts/start-energy.ps1`.
+- claude-mem is a convenience, not a source of truth. HANDOFF.md, DECISIONS.md and reports remain authoritative.
+  Memory is never a data source (Rule zero): any value recalled from memory must be re-verified from its file or source.
+- Wrap anything sensitive in <private>…</private> so claude-mem never stores it.
 
 ## 12. Ponytail precedence
 
