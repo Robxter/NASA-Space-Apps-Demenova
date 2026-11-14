@@ -32,6 +32,10 @@ Para revisar esta noche, en orden:
    científica B1). No las uses para decidir; se recalculan con un solo producto y te llegan corregidas.
    Pregunta, sin depender de cifras: según lo que tú sabes, ¿qué fecha se inundó de verdad la zona Pasaje/Buenavista:
    22–23 feb 2026, 27–28 feb 2025 o 9 jun 2026 (las dos últimas aparecen en prensa)? ¿Recuerdas otras inundaciones con fecha?
+   **Cifras corregidas (00:00, un solo producto: IMERG Early diario, días UTC; 1.233 eventos desde 2015):**
+   - 22–24 feb 2026: 74,2 mm (se solapa con el evento 23–25 feb 2026: 84,6 mm, puesto 19).
+   - 27 feb–1 mar 2025: 91,8 mm (evento 11).   - 7–9 jun 2026: 81,8 mm (evento 23).
+   Lista completa de los 15 mayores: `pipeline/data/processed/rain/top15_72h_events.csv`. ¿Cuáles inundaron fincas?
 3. Logo: tres opciones en `design/logo/options-sheet.png` (recomendada la 1, "Core").
 Nada de esto cambia el plazo: entrega el domingo 15 a las 20:00 (hora de España).
 
