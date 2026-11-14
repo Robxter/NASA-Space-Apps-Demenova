@@ -22,6 +22,22 @@ from pipeline.ingest import power
 from pipeline.ingest.aoi import AOI_ID, FARM_BOX
 
 PROCESSED = REPO_ROOT / "pipeline" / "data" / "processed"
+DAY_DEF = {
+    "power": "local solar time (LST) day, POWER time_standard LST",
+    "sentinel2": "acquisition date (UTC) of the scene",
+    "srtm": "static",
+    "smap": "UTC day of the granule (AM and PM overpasses kept apart)",
+    "imerg": "UTC day 00:00-23:59 UTC (19:00-18:59 America/Guayaquil)",
+    "gldas": "UTC day (mean of the 00, 03, ..., 21 UTC instants)",
+}
+
+
+def native(key: str) -> str:
+    """Native spatial resolution as recorded (verified) in config/datasets.yaml."""
+    from pipeline.common.provenance import load_datasets
+
+    value = load_datasets()[key].get("spatial_res")
+    return value or "not stated by the provider on the page read (one source cell covers the AOI)"
 
 
 def parse_window(text: str) -> tuple[dt.date, dt.date]:
@@ -63,27 +79,35 @@ def build(start: dt.date, end: dt.date) -> dict:
                         "placed on the 30 m farm grid by nearest: one POWER cell covers the AOI, so each band is that cell's value",
                         "one band per day, band description = date; missing day = NaN band"],
             accessed=utc_now(), notes="Coarse value kept coarse; no sub-cell detail."), band_names=dates)
-        layers.append({"layer": f"power_{column}", "file": name, "dataset": "power", "resampling": "nearest (single source cell)", "status": "available"})
+        layers.append({"layer": f"power_{column}", "file": name, "dataset": "power", "resampling": "nearest (single source cell)", "status": "available",
+                       "day_definition": DAY_DEF["power"], "native_resolution": native("power")})
 
     # Sentinel-2 NDVI scenes inside the window (any cloud cover; cloudy pixels stay missing).
     scenes = ndvi_mod.scenes_in_window(FARM_BOX, grid, start.isoformat(), end.isoformat(), AOI_ID, out)
     for s in scenes:
         layers.append({"layer": "ndvi", "file": s["file"], "date": s["date"], "dataset": "sentinel2",
-                       "resampling": "mean of clear 10 m pixels (>= 5 of 9)", "clear_fraction": s["clear_fraction"], "status": "available"})
+                       "resampling": "mean of clear 10 m pixels (>= 5 of 9)", "clear_fraction": s["clear_fraction"], "status": "available",
+                       "day_definition": DAY_DEF["sentinel2"], "native_resolution": "10 m (red, nir), 20 m (SCL), per STAC asset metadata"})
 
     for name in ("dem_farm_30m.tif", "upslope_area_farm_30m.tif"):
         layers.append({"layer": name.removesuffix("_30m.tif").removesuffix("_farm"), "file": f"../../terrain/{name}", "dataset": "srtm",
-                       "resampling": "bilinear (DEM); D8 accumulation for upslope area", "status": "available"})
+                       "resampling": "bilinear (DEM); D8 accumulation on the OSM-burned routing surface for upslope area", "status": "available",
+                       "day_definition": DAY_DEF["srtm"], "native_resolution": native("srtm")})
     pending = []
     try:
         from pipeline.ingest import smap
 
         sm = smap.replay_layers(FARM_BOX, grid, dates, AOI_ID, out)
-        for name in ("soil_moisture_am", "soil_moisture_pm", "retrieval_qual_flag_am", "retrieval_qual_flag_pm"):
+        for name in ("soil_moisture_am_recommended", "soil_moisture_pm_recommended", "soil_moisture_am", "soil_moisture_pm",
+                     "retrieval_qual_flag_am", "retrieval_qual_flag_pm"):
             entry = {"layer": f"smap_{name}", "file": f"smap_{name}_30m.tif", "dataset": "smap",
                      "resampling": "nearest (9 km EASE-Grid 2.0 cell containing the 30 m cell)", "status": "available",
-                     "missing_granule_dates": sm["granule_missing"]}
-            if name in sm["dates_with_value"]:
+                     "day_definition": DAY_DEF["smap"], "native_resolution": native("smap"), "missing_granule_dates": sm["granule_missing"]}
+            if name.endswith("_recommended"):
+                entry["quality"] = "recommended only (retrieval_qual_flag 0 or 8)"
+                entry["dates_with_value"] = sm["recommended_dates"][name]
+            elif name.startswith("soil"):
+                entry["quality"] = f"NOT RECOMMENDED for use: all quality levels; flags seen in the window {sm['flags_seen']}"
                 entry["dates_with_value"] = sm["dates_with_value"][name]
             layers.append(entry)
     except PermissionError as error:
@@ -92,8 +116,9 @@ def build(start: dt.date, end: dt.date) -> dict:
         from pipeline.ingest import imerg
 
         im = imerg.farm_layer(grid, dates, AOI_ID, out)
-        layers.append({"layer": "imerg_precipitation_mm", "file": im["file"], "dataset": "imerg_late_daily" if im["runs"] == ["late"] else "imerg",
-                       "runs": im["runs"], "resampling": "nearest (0.1 degree cell containing the 30 m cell)", "status": "available",
+        layers.append({"layer": "imerg_precipitation_mm", "file": im["file"], "dataset": "imerg_early_daily", "product": im["product"],
+                       "granule_versions": im["versions"], "resampling": "nearest (0.1 degree cell containing the 30 m cell)", "status": "available",
+                       "day_definition": DAY_DEF["imerg"], "native_resolution": native("imerg_early_daily"),
                        "missing_dates": im["missing"], "upstream_series": "../../rain/imerg_catchment_daily.csv"})
     except PermissionError as error:
         pending.append(("imerg", f"IMERG not reachable: {error}"))
@@ -102,9 +127,14 @@ def build(start: dt.date, end: dt.date) -> dict:
 
         gl = gldas.replay_layers(FARM_BOX, grid, dates, AOI_ID, out)
         for name in gl["files"]:
-            layers.append({"layer": name.removesuffix("_30m.tif"), "file": name, "dataset": "gldas",
-                           "resampling": "daily mean of 8 three-hourly instants; nearest (0.25 degree cell containing the 30 m cell)",
-                           "status": "available", "missing_dates": gl["incomplete_days"]})
+            entry = {"layer": name.removesuffix("_30m.tif"), "file": name, "dataset": "gldas",
+                     "resampling": "daily mean of 8 three-hourly instants; nearest (0.25 degree cell containing the 30 m cell)",
+                     "status": "available", "day_definition": DAY_DEF["gldas"], "native_resolution": native("gldas"),
+                     "missing_dates": gl["incomplete_days"]}
+            if "rootmoist" in name:
+                entry["depth"] = ("root zone of vegetation-dependent depth (GLDAS-2 README p.24 as quoted in the science review: Noah "
+                                  "determines root depth by vegetation type); kg m-2 of water, no volume-fraction conversion")
+            layers.append(entry)
     except PermissionError as error:
         pending.append(("gldas", f"GLDAS not reachable: {error}"))
     for key, reason in pending:

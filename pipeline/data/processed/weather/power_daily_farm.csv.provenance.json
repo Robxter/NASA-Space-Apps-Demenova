@@ -5,7 +5,7 @@
   "version": "v2.10.3",
   "provider": "NASA POWER (Langley Research Center)",
   "url": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
-  "accessed": "2026-11-14T18:29:37Z",
+  "accessed": "2026-11-14T22:00:48Z",
   "spatial_resolution": null,
   "temporal_resolution": "daily (time_standard LST); an hourly API also exists",
   "aoi": "aoi_pasaje_buenavista",
@@ -18,7 +18,7 @@
    "AOI centre and 4 corners returned identical series: one POWER cell covers the AOI",
    "fill value -999.0 -> missing (empty cell); units in column suffix, as published"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "19eb697+uncommitted",
   "agent": "data-engineer",
   "notes": "time_standard LST. Columns: t2m_c: T2M [C] Temperature at 2 Meters; t2m_max_c: T2M_MAX [C] Temperature at 2 Meters Maximum; t2m_min_c: T2M_MIN [C] Temperature at 2 Meters Minimum; rh2m_pct: RH2M [%] Relative Humidity at 2 Meters; prectotcorr_mm: PRECTOTCORR [mm/day] Precipitation Corrected; ws2m_ms: WS2M [m/s] Wind Speed at 2 Meters; allsky_sfc_sw_dwn_mj_m2: ALLSKY_SFC_SW_DWN [MJ/m^2/day] All Sky Surface Shortwave Downward Irradiance. RH stays in % as published (convert to 0..1 in the engine)."
  },

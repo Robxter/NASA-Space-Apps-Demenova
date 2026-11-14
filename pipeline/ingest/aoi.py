@@ -136,6 +136,49 @@ def delineate(dem_path: Path, pour_lonlat: tuple[float, float] | None, snap_radi
     return np.asarray(catch).astype(bool), acc_np, (sx, sy), transform
 
 
+OSM_WAY = 468343174
+OVERPASS = "https://overpass-api.de/api/interpreter"
+BURN_DEPTH_M = 10.0
+
+
+def osm_river() -> list[tuple[float, float]]:
+    """(lon, lat) vertices of OSM way 468343174 'Rio Buenavista' (upstream -> downstream), cached in raw/osm."""
+    import httpx
+
+    from pipeline.common.provenance import write_sidecar
+
+    path = REPO_ROOT / "pipeline" / "data" / "raw" / "osm" / f"way_{OSM_WAY}.json"
+    if not path.is_file():
+        q = f"[out:json][timeout:60];way({OSM_WAY});out geom tags;"
+        r = httpx.post(OVERPASS, data={"data": q}, timeout=90, headers={"User-Agent": "demenova-pipeline"})
+        r.raise_for_status()
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(r.text, encoding="utf-8")
+        write_sidecar(path, record(f"prov-osm-way-{OSM_WAY}", aoi=None, time_range=None,
+                                   processing=[f"Overpass API query way({OSM_WAY}); out geom tags"],
+                                   notes="OpenStreetMap contributors (ODbL), raw Overpass response; used only to place the farm AOI and "
+                                         "to burn the mapped river course into the DEM for routing."), origin="sourced")
+    element = json.loads(path.read_text(encoding="utf-8"))["elements"][0]
+    return [(p["lon"], p["lat"]) for p in element["geometry"]]
+
+
+def burn_line(dem: np.ndarray, grid: Grid, line_lonlat, depth_m: float = BURN_DEPTH_M) -> tuple[np.ndarray, np.ndarray]:
+    """Lower the DEM by depth_m on every cell the line touches. Returns (burned DEM, line mask)."""
+    xs, ys = to_utm(np.array([p[0] for p in line_lonlat]), np.array([p[1] for p in line_lonlat]))
+    geom = {"type": "LineString", "coordinates": [[float(x), float(y)] for x, y in zip(xs, ys)]}
+    mask = features.rasterize([(geom, 1)], out_shape=grid.shape, transform=grid.transform, fill=0, all_touched=True, dtype="uint8").astype(bool)
+    burned = dem.copy()
+    burned[mask] -= depth_m
+    return burned, mask
+
+
+def exit_point(line_lonlat, box) -> tuple[float, float]:
+    """Last vertex of the line (upstream -> downstream) inside the box before it leaves the box for good."""
+    inside = [box[0] <= x <= box[2] and box[1] <= y <= box[3] for x, y in line_lonlat]
+    last = max(i for i, v in enumerate(inside) if v)
+    return line_lonlat[last]
+
+
 def catchment_polygon(mask: np.ndarray, transform, tolerance_m: float = 90.0) -> tuple[dict, float]:
     """Largest connected outline of the mask, simplified (RDP, tolerance in m), to EPSG:4326. Returns (geometry, area_km2)."""
     shapes = [geom for geom, value in features.shapes(mask.astype("uint8"), mask=mask, transform=transform, connectivity=8) if value == 1]
@@ -172,7 +215,16 @@ def run() -> dict:
     r0 = int(round((grid.y_max - farm_grid.y_max) / grid.res))
     c0 = int(round((farm_grid.x_min - grid.x_min) / grid.res))
     sl = (slice(r0, r0 + farm_grid.height), slice(c0, c0 + farm_grid.width))
-    mask, acc, snapped, transform = delineate(dem_path, None, outlet_window=sl)
+    river = osm_river()
+    burned, river_mask = burn_line(dem, grid, river)
+    burned_path = DERIVED / "srtm_dem_burned_osm_buenavista_30m.tif"
+    write_geotiff(burned_path, burned, grid,
+                  dataset_record("prov-srtm-dem-burned-osm-30m", "srtm", url=srtm.OT_PAGE, aoi="catchment_search_box", time_range=None,
+                                 processing=srtm_processing + [f"OSM way {OSM_WAY} (Rio Buenavista) rasterised (all touched) and the DEM lowered by {BURN_DEPTH_M:.0f} m on it (stream burning, design choice)"],
+                                 accessed=accessed, notes="Routing surface only (git-ignored); elevations on it are not real. " + OSM_REF),
+                  band_names=["elevation_burned_m"])
+    pour = exit_point(river, FARM_BOX)
+    mask, acc, snapped, transform = delineate(burned_path, pour)
     edge = mask[0, :].any() or mask[-1, :].any() or mask[:, 0].any() or mask[:, -1].any()
     if edge:
         raise RuntimeError("catchment touches the DEM search box edge: enlarge CATCHMENT_SEARCH_BOX")
@@ -182,23 +234,25 @@ def run() -> dict:
         *srtm_processing,
         "pysheds 0.5: fill_pits, fill_depressions, resolve_flats (numpy 2.4 shim: np.in1d -> np.isin)",
         "D8 flow direction (O'Callaghan & Mark 1984; Jenson & Domingue 1988), flow accumulation",
-        "outlet = cell with the highest flow accumulation on the boundary of the farm AOI grid",
+        f"routing on the DEM with OSM way {OSM_WAY} (Rio Buenavista) burned {BURN_DEPTH_M:.0f} m deep, so lowland flow follows the mapped river",
+        f"outlet = OSM vertex where the river leaves the farm box ({pour[0]:.5f}, {pour[1]:.5f}), snapped to the highest accumulation within {SNAP_RADIUS_M:.0f} m",
         "catchment raster polygonized (8-connectivity), largest outline kept, Ramer-Douglas-Peucker 90 m, coordinates to EPSG:4326 at 5 decimals",
     ]
     prov_catch = dataset_record("prov-catchment-buenavista-srtm", "srtm", url=srtm.OT_PAGE, aoi=CATCHMENT_ID, time_range=None,
                                 processing=method, accessed=accessed,
-                                notes=("Upstream catchment of the farm AOI outlet, computed from SRTM. The DEM channel follows the OSM Rio Buenavista "
-                                       "from where it enters the box (-79.807, -3.400) past Buenavista town and leaves the box to the north-west, "
-                                       "where D8 on flat lowland departs from the OSM course. " + OSM_REF))
+                                notes=("Upstream catchment of the point where the OSM Rio Buenavista leaves the farm AOI, computed from SRTM with the "
+                                       "OSM river burned in (science review M2, 2026-11-14). " + OSM_REF))
     AOI_DIR.mkdir(parents=True, exist_ok=True)
     write_json(AOI_DIR / "catchment.geojson", {
         "type": "FeatureCollection",
         "features": [{
             "type": "Feature", "geometry": geometry,
             "properties": {
-                "catchment_id": CATCHMENT_ID, "river": "Rio Buenavista (OSM name at the pour point)",
-                "area_km2": round(area_km2, 1), "pour_point_lonlat": [round(float(snapped_lon), 5), round(float(snapped_lat), 5)],
-                "origin": {"*": "sourced", "pour_point_lonlat": "design"},
+                "catchment_id": CATCHMENT_ID, "river": "Rio Buenavista (OSM way 468343174, burned into the DEM for routing)",
+                "area_km2": round(area_km2, 1),
+                "outlet_lonlat": [round(float(snapped_lon), 5), round(float(snapped_lat), 5)],
+                "outlet_rule": "OSM river exit from the farm box, snapped to the highest accumulation within 300 m",
+                "origin": {"*": "sourced", "outlet_lonlat": "design"},
             },
         }],
     }, prov_catch)
@@ -219,7 +273,7 @@ def run() -> dict:
     upslope = (acc[sl] * grid.res * grid.res).astype("float64")
     write_geotiff(TERRAIN_DIR / "upslope_area_farm_30m.tif", upslope, farm_grid,
                   dataset_record("prov-srtm-upslope-area-farm-30m", "srtm", url=srtm.OT_PAGE, aoi=AOI_ID, time_range=None,
-                                 processing=method[:4] + ["upslope area = accumulated cells x 900 m2, computed on the whole search box, clipped to the farm grid"],
+                                 processing=method[:5] + ["upslope area = accumulated cells x 900 m2 on the burned routing surface, computed on the whole search box, clipped to the farm grid"],
                                  accessed=accessed, notes="D8 upslope contributing area (m2) per cell, input for TWI (data-scientist, T-020)."),
                   band_names=["upslope_area_m2"])
     in_farm = mask[sl]
@@ -228,5 +282,5 @@ def run() -> dict:
         "search_grid": grid.as_dict(), "farm_cells_in_catchment": int(in_farm.sum()), "farm_cells": int(in_farm.size),
         "catchment_bounds_lonlat": [min(c[0] for c in geometry["coordinates"][0]), min(c[1] for c in geometry["coordinates"][0]),
                                     max(c[0] for c in geometry["coordinates"][0]), max(c[1] for c in geometry["coordinates"][0])],
-        "polygon_vertices": len(geometry["coordinates"][0]),
+        "polygon_vertices": len(geometry["coordinates"][0]), "pour_osm": list(pour),
     }

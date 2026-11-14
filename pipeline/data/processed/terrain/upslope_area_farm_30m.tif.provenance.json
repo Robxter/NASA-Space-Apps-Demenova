@@ -5,7 +5,7 @@
   "version": "003",
   "provider": "NASA LP DAAC (archive); OpenTopography (open redistribution, used for download)",
   "url": "https://portal.opentopography.org/raster?opentopoID=OTSRTM.082015.4326.1",
-  "accessed": "2026-11-14T18:22:21Z",
+  "accessed": "2026-11-14T21:55:53Z",
   "spatial_resolution": "1 arc second (~30 meter)",
   "temporal_resolution": "static (SRTM mission, February 2000)",
   "aoi": "aoi_pasaje_buenavista",
@@ -15,9 +15,10 @@
    "reprojected to EPSG:32717 30 m lattice (multiples of 30 m), method: bilinear",
    "pysheds 0.5: fill_pits, fill_depressions, resolve_flats (numpy 2.4 shim: np.in1d -> np.isin)",
    "D8 flow direction (O'Callaghan & Mark 1984; Jenson & Domingue 1988), flow accumulation",
-   "upslope area = accumulated cells x 900 m2, computed on the whole search box, clipped to the farm grid"
+   "routing on the DEM with OSM way 468343174 (Rio Buenavista) burned 10 m deep, so lowland flow follows the mapped river",
+   "upslope area = accumulated cells x 900 m2 on the burned routing surface, computed on the whole search box, clipped to the farm grid"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "19eb697+uncommitted",
   "agent": "data-engineer",
   "notes": "D8 upslope contributing area (m2) per cell, input for TWI (data-scientist, T-020)."
  },

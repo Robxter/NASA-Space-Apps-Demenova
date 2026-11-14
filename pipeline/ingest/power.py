@@ -20,7 +20,7 @@ HOURLY_URL = "https://power.larc.nasa.gov/api/temporal/hourly/point"
 DAILY_PARAMS = ["T2M", "T2M_MAX", "T2M_MIN", "RH2M", "PRECTOTCORR", "WS2M", "ALLSKY_SFC_SW_DWN"]
 HOURLY_PARAMS = ["T2M", "RH2M", "PRECTOTCORR", "WS2M", "ALLSKY_SFC_SW_DWN"]
 OUT_DIR = REPO_ROOT / "pipeline" / "data" / "processed" / "weather"
-UNIT_SUFFIX = {"C": "c", "%": "pct", "mm/day": "mm", "mm/hour": "mm", "m/s": "ms", "MJ/m^2/day": "mj_m2", "MJ/hr": "mj_m2", "Wh/m^2": "wh_m2", "W/m^2": "w_m2"}
+UNIT_SUFFIX = {"C": "c", "%": "pct", "mm/day": "mm", "mm/hour": "mm", "m/s": "ms", "MJ/m^2/day": "mj_m2", "MJ/hr": "mj_hr", "Wh/m^2": "wh_m2", "W/m^2": "w_m2"}
 
 
 def fetch(url: str, lon: float, lat: float, start: str, end: str, params: list[str], extra: dict | None = None) -> dict:

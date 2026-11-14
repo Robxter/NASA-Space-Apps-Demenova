@@ -1,53 +1,27 @@
 {
- "provenance": [
-  {
-   "id": "prov-imerg-catchment-daily-final",
-   "dataset": "GPM_3IMERGDF",
-   "version": "07",
-   "provider": "NASA GES DISC",
-   "url": "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDF&version=07",
-   "accessed": "2026-11-14T19:05:17Z",
-   "spatial_resolution": "0.1 degree",
-   "temporal_resolution": "daily (accumulated from half-hourly IMERG)",
-   "aoi": "catchment_buenavista_pasaje",
-   "time_range": [
-    "2015-01-01",
-    "2026-11-13"
-   ],
-   "processing": [
-    "OPeNDAP subsets of `precipitation` (mm/day, UTC days), IMERG grid indices lon 1000-1004, lat 863-867",
-    "product switch: GPM_3IMERGDF V07 (Final) through 2025-09-30, GPM_3IMERGDL V07 (Late) from 2025-10-01",
-    "catchment mean = area-weighted mean of 0.1 degree cells (weights = fraction inside processed/aoi/catchment.geojson, rasterised at 0.001 degree; 7 cells, total weight 2.058 cell-equivalents)",
-    "a day with any missing weighted cell or no granule stays missing (empty cell)"
-   ],
-   "code_commit": "8ae88e9+uncommitted",
-   "agent": "data-engineer",
-   "notes": "Rows with imerg_run = final."
-  },
-  {
-   "id": "prov-imerg-catchment-daily-late",
-   "dataset": "GPM_3IMERGDL",
-   "version": "07",
-   "provider": "NASA GES DISC",
-   "url": "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDL&version=07",
-   "accessed": "2026-11-14T19:05:17Z",
-   "spatial_resolution": "0.1 degree",
-   "temporal_resolution": "daily (accumulated from half-hourly IMERG)",
-   "aoi": "catchment_buenavista_pasaje",
-   "time_range": [
-    "2015-01-01",
-    "2026-11-13"
-   ],
-   "processing": [
-    "OPeNDAP subsets of `precipitation` (mm/day, UTC days), IMERG grid indices lon 1000-1004, lat 863-867",
-    "product switch: GPM_3IMERGDF V07 (Final) through 2025-09-30, GPM_3IMERGDL V07 (Late) from 2025-10-01",
-    "catchment mean = area-weighted mean of 0.1 degree cells (weights = fraction inside processed/aoi/catchment.geojson, rasterised at 0.001 degree; 7 cells, total weight 2.058 cell-equivalents)",
-    "a day with any missing weighted cell or no granule stays missing (empty cell)"
-   ],
-   "code_commit": "8ae88e9+uncommitted",
-   "agent": "data-engineer",
-   "notes": "Rows with imerg_run = late."
-  }
- ],
+ "provenance": {
+  "id": "prov-imerg-early-catchment-daily-2015-01-01-2026-11-13",
+  "dataset": "GPM_3IMERGDE",
+  "version": "07",
+  "provider": "NASA GES DISC",
+  "url": "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDE&version=07",
+  "accessed": "2026-11-14T22:08:24Z",
+  "spatial_resolution": "0.1 degree",
+  "temporal_resolution": "daily (accumulated from half-hourly IMERG Early; UTC day)",
+  "aoi": "catchment_buenavista_pasaje",
+  "time_range": [
+   "2015-01-01",
+   "2026-11-13"
+  ],
+  "processing": [
+   "OPeNDAP subsets of `precipitation` (mm/day, UTC days) from GPM_3IMERGDE V07 only, IMERG grid indices lon 1000-1004, lat 863-867",
+   "granule versions: V07B 2015-01-01..2026-03-03; V07C 2026-03-04..2026-11-13",
+   "catchment mean = area-weighted mean of 0.1 degree cells (weights = fraction inside processed/aoi/catchment.geojson, rasterised at 0.001 degree; 7 cells, total weight 2.066 cell-equivalents)",
+   "a day with any missing weighted cell or no granule stays missing (empty cell)"
+  ],
+  "code_commit": "19eb697+uncommitted",
+  "agent": "data-engineer",
+  "notes": "Catchment-mean daily rain, one product end to end (science review B1)."
+ },
  "origin": "sourced"
 }

@@ -27,6 +27,21 @@ datasets:
     origin: sourced
     notes: "IMERG Early Run, half-hourly, V07 (CMR concept C2723758340-GES_DISC, DOI 10.5067/GPM/IMERG/3B-HH-E/07, status ACTIVE). Latency also on https://gpm.nasa.gov/data/imerg ('4 hours'). Variable names to be read from the first downloaded file. Download needs Earthdata login."
 
+  - key: imerg_early_daily
+    provider: "NASA GES DISC"
+    short_name: GPM_3IMERGDE
+    version: "07"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDE&version=07"
+    accessed: 2026-11-14
+    spatial_res: "0.1 degree"
+    temporal_res: "daily (accumulated from half-hourly IMERG Early; UTC day)"
+    latency: "Early Run, 4-h latency (IMERG family abstract in CMR)"
+    variables: ["precipitation (mm/day, dims time/lon/lat, fill -9999.9)"]
+    use_in_demenova: "Alert trigger: upstream and local rain"
+    verified_by: data-engineer
+    origin: sourced
+    notes: "DOI 10.5067/GPM/IMERGDE/DAY/07, ACTIVE. Single product for the 2015-01-01..latest rain history and event ranking (science review B1, 2026-11-14): CMR lists 4,335 daily granules 2015-01-01..2026-11-13, none missing; granule suffix V07B through 2026-03-03, V07C from 2026-03-04 (GPROF v08 inputs per Earthdata notice quoted in the review)."
+
   - key: imerg_late_daily
     provider: "NASA GES DISC"
     short_name: GPM_3IMERGDL
@@ -40,7 +55,7 @@ datasets:
     use_in_demenova: "Alert trigger: upstream and local rain"
     verified_by: data-engineer
     origin: sourced
-    notes: "CMR concept C2723754859-GES_DISC, DOI 10.5067/GPM/IMERGDL/DAY/07, ACTIVE. Used for 2025-10-01 onward in the history (T-013), because the Final Run V07 ends on 2025-09-30. Download needs Earthdata login."
+    notes: "CMR concept C2723754859-GES_DISC, DOI 10.5067/GPM/IMERGDL/DAY/07, ACTIVE. Not used in the ranked history after science review B1 (replaced by Early daily, one product end to end). Download needs Earthdata login."
 
   - key: imerg_final_daily
     provider: "NASA GES DISC"
@@ -50,12 +65,12 @@ datasets:
     accessed: 2026-11-14
     spatial_res: "0.1 degree"
     temporal_res: "daily (accumulated from half-hourly IMERG)"
-    latency: "Final Run, 3.5-month latency"
+    latency: "none applicable: collection COMPLETE (Final Run had 3.5-month latency while active)"
     variables: ["precipitation (mm/day, dims time/lon/lat, fill -9999.9)"]
-    use_in_demenova: "Alert trigger: upstream and local rain"
+    use_in_demenova: "Offline reference only (not used in rankings or alerts)"
     verified_by: data-engineer
     origin: sourced
-    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Variables read from a granule DMR via NASA cloud OPeNDAP 2026-11-14. Data access needs Earthdata login plus the GES DISC application approval (done 2026-11-14, P-008)."
+    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. Not used in the ranked history after science review B1 (Final and Late are not comparable); offline reference only. Variables read from a granule DMR via NASA cloud OPeNDAP 2026-11-14. Data access needs Earthdata login plus the GES DISC application approval (done 2026-11-14, P-008)."
 
   - key: smap
     provider: "NASA NSIDC DAAC"

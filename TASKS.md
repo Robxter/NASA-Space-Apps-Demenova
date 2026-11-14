@@ -38,15 +38,15 @@ review queue, the flood candidates and the logo options.
 ## Block 1: foundations
 - [x] T-010 data-engineer: verify datasets and fill config/datasets.yaml with URLs and access dates (16 sourced via
   CMR/official pages, gaez pending; IMERG Final V07 ends 2025-09-30 -> Late daily after)
-- [x] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation (pysheds 0.5; catchment 252.7 km²,
-  processed/aoi/{farm_aoi,catchment}.geojson, processed/terrain/{dem,upslope_area}_farm_30m.tif)
+- [x] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation (pysheds 0.5; catchment 253.8 km² after
+  review M2: OSM river burned in, outlet at the OSM exit; processed/aoi/{farm_aoi,catchment}.geojson, processed/terrain/)
 - [x] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI) ->
   processed/aoi/demo_lots.geojson (geometry only; agronomist merges into domain/farm.json)
-- [x] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (4,335 days, 0 missing;
-  processed/rain/{imerg_catchment_daily,top15_72h_events}.csv; P-007 numbers added; P-008 resolved)
+- [x] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (review B1: single
+  product IMERG Early daily GPM_3IMERGDE V07, 4,335 UTC days, 0 missing, 1,233 events; processed/rain/*.csv; P-007 updated)
 - [x] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
-  (POWER 7, S2 NDVI 3 scenes, terrain, SMAP AM/PM + flags, IMERG Late daily, GLDAS 4 depths; flood date P-007 open;
-  follow-up: IMERG Early half-hourly for the window)
+  (POWER 7, S2 NDVI 3 scenes, terrain, SMAP all-quality (NOT recommended) + recommended-only (0 days, P-010),
+  IMERG Early daily, GLDAS 4 depths; day_definition + native_resolution per layer; follow-up: IMERG Early half-hourly)
 - [~] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying). Written, not applied:
   6 migrations + supabase/tests/rls_test.sql + README paste-in steps; waits on P-009 (Roster) and database-reviewer;
   database-review fixes applied (P-002 b telegram_code, column grants, RLS at creation, 79-check test);

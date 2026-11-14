@@ -5,7 +5,7 @@
   "version": "v2.10.3",
   "provider": "NASA POWER (Langley Research Center)",
   "url": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
-  "accessed": "2026-11-14T18:29:37Z",
+  "accessed": "2026-11-14T22:00:49Z",
   "spatial_resolution": null,
   "temporal_resolution": "daily (time_standard LST); an hourly API also exists",
   "aoi": "aoi_pasaje_buenavista",
@@ -17,9 +17,9 @@
    "POWER hourly API v2.10.4, time-standard UTC, point (-79.8400, -3.3750)",
    "fill value -999.0 -> missing (empty cell); units in column suffix, as published"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "19eb697+uncommitted",
   "agent": "data-engineer",
-  "notes": "time_standard UTC. Columns: t2m_c: T2M [C]; rh2m_pct: RH2M [%]; prectotcorr_mm: PRECTOTCORR [mm/hour]; ws2m_ms: WS2M [m/s]; allsky_sfc_sw_dwn_mj_m2: ALLSKY_SFC_SW_DWN [MJ/hr]."
+  "notes": "time_standard UTC. Columns: t2m_c: T2M [C]; rh2m_pct: RH2M [%]; prectotcorr_mm: PRECTOTCORR [mm/hour]; ws2m_ms: WS2M [m/s]; allsky_sfc_sw_dwn_mj_hr: ALLSKY_SFC_SW_DWN [MJ/hr]."
  },
  "origin": "sourced"
 }

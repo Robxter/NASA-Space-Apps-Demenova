@@ -142,8 +142,35 @@ def test_top_events_are_declustered_and_skip_missing():
     assert "2026-01-07" not in starts and "2026-01-08" not in starts  # windows touching the missing day are not ranked
 
 
-def test_run_selection_final_then_late():
-    assert imerg.run_for(dt.date(2025, 9, 30)) == "final" and imerg.run_for(dt.date(2025, 10, 1)) == "late"
+def test_single_product_and_version_spans():
+    assert imerg.PRODUCT[1] == "GPM_3IMERGDE"  # one product end to end (science review B1)
+    assert imerg.granule_suffix("GPM_3IMERGDE.07:3B-DAY-E.MS.MRG.3IMERG.20260304-S000000-E235959.V07C.nc4") == "V07C"
+    spans = imerg.suffix_spans(["2026-03-02", "2026-03-03", "2026-03-04"], ["V07B", "V07B", "V07C"])
+    assert spans == "V07B 2026-03-02..2026-03-03; V07C 2026-03-04..2026-03-04"
+
+
+def test_burn_line_lowers_only_the_river_cells():
+    from pipeline.ingest.aoi import burn_line, exit_point
+
+    g = grid_from_projected(600000, 9600000, 600300, 9600300)  # 10 x 10 cells
+    dem = np.full(g.shape, 50.0)
+    from pipeline.common.grid import to_lonlat
+
+    lon, lat = to_lonlat(np.array([600015.0, 600285.0]), np.array([9600165.0, 9600165.0]))
+    burned, mask = burn_line(dem, g, list(zip(lon, lat)), depth_m=10)
+    assert mask[4:6].any() and not mask[0].any()
+    assert (burned[mask] == 40).all() and (burned[~mask] == 50).all()
+    line = [(0.0, 0.0), (1.0, 1.0), (2.0, 2.0), (5.0, 5.0)]
+    assert exit_point(line, (0.5, 0.5, 2.5, 2.5)) == (2.0, 2.0)
+
+
+def test_smap_recommended_flags():
+    from pipeline.ingest import smap
+
+    sm = np.array([0.3, 0.4, 0.2, 0.25])
+    flag = np.array([0.0, 8.0, 9.0, 13.0])
+    kept = np.where(np.isin(flag, smap.RECOMMENDED_FLAGS), sm, np.nan)
+    assert kept[0] == 0.3 and kept[1] == 0.4 and np.isnan(kept[2:]).all()
 
 
 def test_smap_dap_csv_parse_and_clean():

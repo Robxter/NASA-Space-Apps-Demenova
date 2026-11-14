@@ -5,7 +5,7 @@
   "version": "003",
   "provider": "NASA LP DAAC (archive); OpenTopography (open redistribution, used for download)",
   "url": "https://portal.opentopography.org/raster?opentopoID=OTSRTM.082015.4326.1",
-  "accessed": "2026-11-14T18:22:21Z",
+  "accessed": "2026-11-14T21:55:53Z",
   "spatial_resolution": "1 arc second (~30 meter)",
   "temporal_resolution": "static (SRTM mission, February 2000)",
   "aoi": "aoi_pasaje_buenavista",
@@ -15,7 +15,7 @@
    "reprojected to EPSG:32717 30 m lattice (multiples of 30 m), method: bilinear",
    "clipped to the farm AOI grid"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "19eb697+uncommitted",
   "agent": "data-engineer",
   "notes": "Elevation (m) on the farm grid."
  },

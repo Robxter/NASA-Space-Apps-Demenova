@@ -1,8 +1,9 @@
 """T-013: IMERG daily rain over the catchment, 2015-01-01 -> latest day, and the heaviest 72 h upstream events.
 
-Products (config/datasets.yaml): Final daily GPM_3IMERGDF V07 up to its last day (2025-09-30, CMR), Late daily
-GPM_3IMERGDL V07 afterwards; each day records which run it came from. Days are the products' own UTC days
-(file S000000-E235959; ADR-002: a daily product used as published keeps its own day definition).
+One product end to end (science review B1, 2026-11-14): IMERG Early daily GPM_3IMERGDE V07, the run behind live
+alerts. CMR lists every day from 2015-01-01 (no gap). The granule suffix changes from V07B to V07C on 2026-03-04;
+each day records its suffix. Final and Late are not mixed into the ranking. Days are UTC days (file
+S000000-E235959; ADR-002: a daily product used as published keeps its own day definition).
 Access: NASA cloud OPeNDAP CSV subsets of `precipitation` (mm/day, dims time/lon/lat, fill -9999.9) over the
 0.1 degree cells around the catchment; one cached raw subset per day.
 Catchment mean = area-weighted mean of the 0.1 degree cells, weights = fraction of each cell inside the catchment
@@ -14,6 +15,7 @@ from __future__ import annotations
 import datetime as dt
 import json
 import math
+import re
 from pathlib import Path
 
 import numpy as np
@@ -26,8 +28,7 @@ from pipeline.common.provenance import REPO_ROOT, dataset_record, load_datasets,
 from pipeline.ingest import opendap
 from pipeline.ingest.cache import RAW_ROOT
 
-FINAL_LAST_DAY = dt.date(2025, 9, 30)  # GPM_3IMERGDF V07 temporal extent end, CMR 2026-11-14
-RUNS = {"final": ("imerg_final_daily", "GPM_3IMERGDF", "07"), "late": ("imerg_late_daily", "GPM_3IMERGDL", "07")}
+PRODUCT = ("imerg_early_daily", "GPM_3IMERGDE", "07")
 OUT_DIR = REPO_ROOT / "pipeline" / "data" / "processed" / "rain"
 CATCHMENT = REPO_ROOT / "pipeline" / "data" / "processed" / "aoi" / "catchment.geojson"
 CATCHMENT_ID = "catchment_buenavista_pasaje"
@@ -35,10 +36,7 @@ VARIABLE = "precipitation"
 FILL = -9999.9
 STEP = 0.1
 FINE = 0.001
-
-
-def run_for(day: dt.date) -> str:
-    return "final" if day <= FINAL_LAST_DAY else "late"
+P007_RANGES = (("2026-02-20", "2026-02-24"), ("2025-02-25", "2025-03-01"), ("2026-06-07", "2026-06-10"))
 
 
 def cell_weights(geometry: dict, lons: np.ndarray, lats: np.ndarray, step: float = STEP, fine: float = FINE) -> np.ndarray:
@@ -135,34 +133,47 @@ def parse_subset(text: str, win) -> np.ndarray:
     return data
 
 
+def granule_suffix(ur: str) -> str:
+    m = re.search(r"\.(V\d\d[A-Z])\.", ur)
+    return m.group(1) if m else "unknown"
+
+
+def suffix_spans(dates: list[str], suffixes: list[str]) -> str:
+    """'V07B 2015-01-01..2026-03-03; V07C 2026-03-04..2026-11-13' style summary of consecutive runs."""
+    spans, cur, first, prev = [], None, None, None
+    for d, s in zip(dates, suffixes):
+        if s != cur:
+            if cur is not None:
+                spans.append(f"{cur} {first}..{prev}")
+            cur, first = s, d
+        prev = d
+    if cur is not None:
+        spans.append(f"{cur} {first}..{prev}")
+    return "; ".join(spans)
+
+
 def fetch_days(start: dt.date, end: dt.date, win) -> dict[dt.date, tuple[str, Path | None]]:
+    """{day: (granule suffix, cached subset path or None)} for every granule of the product in [start, end]."""
     from pipeline.ingest.smap import _session
 
     ea, _ = _session()
     i0, i1, j0, j1 = win
     ce = f"/lon[{i0}:{i1}];/lat[{j0}:{j1}];/{VARIABLE}[0:0][{i0}:{i1}][{j0}:{j1}]"
+    key, short_name, version = PRODUCT
     datasets = load_datasets()
-    granules: dict[dt.date, tuple[str, dict]] = {}
-    for run, (key, short_name, version) in RUNS.items():
-        a = start if run == "final" else max(start, FINAL_LAST_DAY + dt.timedelta(days=1))
-        b = min(end, FINAL_LAST_DAY) if run == "final" else end
-        if a > b:
-            continue
-        for g in opendap.list_granules(short_name, version, a, b):
-            day = dt.date.fromisoformat(g["begin"][:10])
-            if a <= day <= b and g["opendap"]:
-                granules[day] = (run, g)
     jobs, keys = [], []
-    for day, (run, g) in sorted(granules.items()):
-        key, short_name, version = RUNS[run]
+    for g in opendap.list_granules(short_name, version, start, end):
+        day = dt.date.fromisoformat(g["begin"][:10])
+        if not (start <= day <= end) or not g["opendap"]:
+            continue
         path = RAW_ROOT / short_name.lower() / version / f"{day.isoformat()}_lon{i0}-{i1}_lat{j0}-{j1}.dap.csv.txt"
         prov = dataset_record(f"prov-{short_name.lower()}-{day.isoformat()}", key, aoi="imerg_window_" + CATCHMENT_ID,
                               time_range=(day.isoformat(), day.isoformat()), datasets=datasets,
                               processing=[f"OPeNDAP DAP4 CSV subset of {g['ur']}: {ce}"], notes="Raw values as published (mm/day).")
         jobs.append((g["opendap"], ce, path, prov))
-        keys.append((day, run))
+        keys.append((day, granule_suffix(g["ur"])))
     paths = opendap.fetch_subsets(jobs, ea.get_requests_https_session)
-    return {day: (run, p) for (day, run), p in zip(keys, paths)}
+    return {day: (suffix, p) for (day, suffix), p in zip(keys, paths)}
 
 
 def run(start: dt.date, end: dt.date) -> dict:
@@ -173,57 +184,57 @@ def run(start: dt.date, end: dt.date) -> dict:
     got = fetch_days(start, end, win)
     exp_lon, exp_lat = expected_centres(win)
     weights = cell_weights(geometry, exp_lon, exp_lat)
-    dates, daily, runs = [], [], []
+    dates, daily, suffixes = [], [], []
     day = start
     while day <= end:
-        run_name, path = got.get(day, (run_for(day), None))
+        suffix, path = got.get(day, ("none", None))
         value = float("nan")
         if path is not None:
             value = weighted_mean(parse_subset(path.read_text(encoding="utf-8"), win), weights)
         dates.append(day)
         daily.append(value)
-        runs.append(run_name)
+        suffixes.append(suffix)
         day += dt.timedelta(days=1)
     # trailing days not yet published are not part of the record
     while dates and np.isnan(daily[-1]) and got.get(dates[-1], (None, None))[1] is None:
-        dates.pop(), daily.pop(), runs.pop()
-    return write_outputs(dates, daily, runs, win, weights)
+        dates.pop(), daily.pop(), suffixes.pop()
+    return write_outputs(dates, daily, suffixes, win, weights)
 
 
-def write_outputs(dates, daily, runs, win, weights) -> dict:
+def write_outputs(dates, daily, suffixes, win, weights) -> dict:
     datasets = load_datasets()
+    key, short_name, version = PRODUCT
     tr = (dates[0].isoformat(), dates[-1].isoformat())
-    switch = f"product switch: GPM_3IMERGDF V07 (Final) through {FINAL_LAST_DAY}, GPM_3IMERGDL V07 (Late) from {FINAL_LAST_DAY + dt.timedelta(days=1)}"
-    method = [f"OPeNDAP subsets of `{VARIABLE}` (mm/day, UTC days), IMERG grid indices lon {win[0]}-{win[1]}, lat {win[2]}-{win[3]}",
-              switch,
+    spans = suffix_spans([d.isoformat() for d in dates], suffixes)
+    method = [f"OPeNDAP subsets of `{VARIABLE}` (mm/day, UTC days) from {short_name} V{version} only, IMERG grid indices lon {win[0]}-{win[1]}, lat {win[2]}-{win[3]}",
+              f"granule versions: {spans}",
               "catchment mean = area-weighted mean of 0.1 degree cells (weights = fraction inside processed/aoi/catchment.geojson, rasterised at 0.001 degree; "
               f"{int((weights > 0).sum())} cells, total weight {weights.sum():.3f} cell-equivalents)",
               "a day with any missing weighted cell or no granule stays missing (empty cell)"]
-    prov = [dataset_record(f"prov-imerg-catchment-daily-{name}", key, aoi=CATCHMENT_ID, time_range=tr, processing=method,
-                           datasets=datasets, notes=f"Rows with imerg_run = {name}.") for name, (key, _, _) in RUNS.items() if name in set(runs)]
-    write_csv(OUT_DIR / "imerg_catchment_daily.csv", ["date", "rain_catchment_mm", "imerg_run"],
-              [[d.isoformat(), None if np.isnan(v) else round(v, 2), r] for d, v, r in zip(dates, daily, runs)], prov, origin="sourced")
+    prov_daily = dataset_record(f"prov-imerg-early-catchment-daily-{tr[0]}-{tr[1]}", key, aoi=CATCHMENT_ID, time_range=tr, processing=method,
+                                datasets=datasets, notes="Catchment-mean daily rain, one product end to end (science review B1).")
+    write_csv(OUT_DIR / "imerg_catchment_daily.csv", ["date", "rain_catchment_mm", "granule_version"],
+              [[d.isoformat(), None if np.isnan(v) else round(v, 2), s] for d, v, s in zip(dates, daily, suffixes)], prov_daily, origin="sourced")
     all_events = top_events(dates, daily, n=0)
-    run_of = dict(zip(dates, runs))
+    suffix_of = dict(zip(dates, suffixes))
     rows = []
     for k, e in enumerate(all_events[:15], start=1):
         s, t = dt.date.fromisoformat(e["start"]), dt.date.fromisoformat(e["end"])
-        used = sorted({run_of[s + dt.timedelta(days=d)] for d in range((t - s).days + 1)})
-        product = "+".join(RUNS[u][1] + " V07" for u in used)
-        rows.append([k, e["start"], e["end"], e["rain_72h_mm"], product])
-    write_csv(OUT_DIR / "top15_72h_events.csv", ["rank", "start", "end", "rain_72h_catchment_mm", "product"], rows,
-              [*prov, {**prov[0], "id": "prov-imerg-top15-72h", "processing": method + [
-                  "72 h total = sum of 3 consecutive daily catchment means; windows with a missing day are not ranked",
-                  "declustered: windows sorted by total, a window is kept only if it shares no day with a kept window; top 15"],
-                  "notes": "Top-15 heaviest 72 h upstream rain events over the record."}], origin="sourced")
-    p007 = [window_stats(dates, daily, dt.date.fromisoformat(a), dt.date.fromisoformat(b), all_events)
-            for a, b in (("2026-02-20", "2026-02-24"), ("2025-02-25", "2025-03-01"), ("2026-06-07", "2026-06-10"))]
+        used = sorted({suffix_of[s + dt.timedelta(days=d)] for d in range((t - s).days + 1)})
+        rows.append([k, e["start"], e["end"], e["rain_72h_mm"], f"{short_name} {'+'.join(used)}"])
+    prov_top = dataset_record(
+        f"prov-imerg-early-top15-72h-{tr[0]}-{tr[1]}", key, aoi=CATCHMENT_ID, time_range=tr, datasets=datasets,
+        processing=method + ["72 h total = sum of 3 consecutive UTC-day catchment means (unrounded); windows with a missing day are not ranked",
+                             f"declustered: windows sorted by total, a window is kept only if it shares no day with a kept window; {len(all_events)} events; top 15"],
+        notes="Top-15 heaviest 72 h upstream rain events, single product.")
+    write_csv(OUT_DIR / "top15_72h_events.csv", ["rank", "start", "end", "rain_72h_catchment_mm", "product"], rows, prov_top, origin="sourced")
+    p007 = [window_stats(dates, daily, dt.date.fromisoformat(a), dt.date.fromisoformat(b), all_events) for a, b in P007_RANGES]
     return {"days": len(dates), "missing_days": int(np.sum(np.isnan(daily))), "first": tr[0], "last": tr[1],
-            "events": rows, "p007": p007, "n_events": len(all_events)}
+            "events": rows, "p007": p007, "n_events": len(all_events), "versions": spans}
 
 
 def farm_layer(grid: Grid, dates: list[str], aoi: str, out_dir: Path) -> dict:
-    """Daily IMERG precipitation on the 30 m farm grid (nearest: the 0.1 degree cell containing each 30 m cell)."""
+    """Daily IMERG Early precipitation on the 30 m farm grid (nearest: the 0.1 degree cell containing each 30 m cell)."""
     geometry = json.loads(CATCHMENT.read_text(encoding="utf-8"))["features"][0]["geometry"]
     ring = np.array(geometry["coordinates"][0])
     win = index_window((ring[:, 0].min(), ring[:, 1].min(), ring[:, 0].max(), ring[:, 1].max()))
@@ -233,21 +244,22 @@ def farm_layer(grid: Grid, dates: list[str], aoi: str, out_dir: Path) -> dict:
     ci = np.floor((lons + 180) / STEP).astype(int) - win[0]
     ri = np.floor((lats + 90) / STEP).astype(int) - win[2]
     bands = np.full((len(dates), *grid.shape), np.nan, dtype="float32")
-    runs, missing = set(), []
+    missing, suffixes = [], []
     for k, day in enumerate(dates):
-        run_name, path = got.get(dt.date.fromisoformat(day), (None, None))
+        suffix, path = got.get(dt.date.fromisoformat(day), ("none", None))
+        suffixes.append(suffix)
         if path is None:
             missing.append(day)
             continue
-        runs.add(run_name)
         bands[k] = parse_subset(path.read_text(encoding="utf-8"), win)[ri, ci]
-    key = RUNS[sorted(runs)[0]][0] if len(runs) == 1 else "imerg_late_daily"
+    key, short_name, version = PRODUCT
     name = "imerg_precipitation_mm_30m.tif"
+    spans = suffix_spans(dates, suffixes)
     write_geotiff(out_dir / name, bands, grid, dataset_record(
-        f"prov-replay-imerg-{dates[0]}-{dates[-1]}", key, aoi=aoi, time_range=(dates[0], dates[-1]), accessed=utc_now(),
-        processing=["OPeNDAP subsets of daily `precipitation` (mm/day, UTC days); runs used: " + ", ".join(RUNS[r][1] for r in sorted(runs)),
+        f"prov-replay-imerg-early-{dates[0]}-{dates[-1]}", key, aoi=aoi, time_range=(dates[0], dates[-1]), accessed=utc_now(),
+        processing=[f"OPeNDAP subsets of daily `precipitation` (mm/day, UTC days) from {short_name} V{version}; granule versions: {spans}",
                     "placed on the 30 m farm grid by nearest: each 30 m cell takes the 0.1 degree cell containing it; coarse value kept coarse",
                     "one band per day; a day without a granule is a NaN band"],
         notes=f"Local (farm) daily rain. Missing days: {', '.join(missing) or 'none'}. Catchment-mean upstream rain: processed/rain/imerg_catchment_daily.csv."),
         band_names=dates)
-    return {"file": name, "runs": sorted(runs), "missing": missing}
+    return {"file": name, "product": short_name, "versions": spans, "missing": missing}

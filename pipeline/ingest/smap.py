@@ -25,6 +25,7 @@ GROUP_AM, GROUP_PM = "/Soil_Moisture_Retrieval_Data_AM", "/Soil_Moisture_Retriev
 FILL = -9999.0
 VALID = (0.02, 0.5)
 FLAG_FILL = 65534
+RECOMMENDED_FLAGS = (0, 8)  # SPL3SMP_E User Guide p.13 as quoted by scientist-reviewer (2026-11-14-2252, M1)
 VARS = {
     "soil_moisture_am": f"{GROUP_AM}/soil_moisture",
     "soil_moisture_pm": f"{GROUP_PM}/soil_moisture_pm",
@@ -162,9 +163,24 @@ def replay_layers(box, grid: Grid, dates: list[str], aoi: str, out_dir: Path) ->
         write_geotiff(out_dir / f"smap_{n}_30m.tif", stacks[n], grid, dataset_record(
             f"prov-replay-smap-{n}-{dates[0]}-{dates[-1]}", "smap", aoi=aoi, time_range=(dates[0], dates[-1]),
             processing=method, accessed=utc_now(),
-            notes=("Volumetric soil moisture, cm3/cm3 (stored as published; a 0..1 volume fraction)." if n.startswith("soil")
-                   else "retrieval_qual_flag as published (bit meanings per the SPL3SMP_E product documentation; not interpreted here).")
+            notes=("Volumetric soil moisture, cm3/cm3, ALL quality levels: includes retrievals NOT recommended by the product "
+                   "(retrieval_qual_flag other than 0 or 8). Do not use for alerts without the recommended-only layer." if n.startswith("soil")
+                   else "retrieval_qual_flag as published.")
             + f" Missing granule days: {', '.join(granule_missing) or 'none'}."), band_names=dates)
+    # Recommended-quality only (science review M1): keep a value only where its retrieval_qual_flag is 0 or 8.
+    recommended: dict[str, list[str]] = {}
+    for half in ("am", "pm"):
+        sm, flag = stacks[f"soil_moisture_{half}"], stacks[f"retrieval_qual_flag_{half}"]
+        rec = np.where(np.isin(flag, RECOMMENDED_FLAGS), sm, np.nan).astype("float32")
+        recommended[f"soil_moisture_{half}_recommended"] = [d for k, d in enumerate(dates) if np.isfinite(rec[k]).any()]
+        write_geotiff(out_dir / f"smap_soil_moisture_{half}_recommended_30m.tif", rec, grid, dataset_record(
+            f"prov-replay-smap-soil-moisture-{half}-recommended-{dates[0]}-{dates[-1]}", "smap", aoi=aoi, time_range=(dates[0], dates[-1]),
+            processing=method + [f"kept only where retrieval_qual_flag is in {RECOMMENDED_FLAGS} (recommended quality); every other value -> missing"],
+            accessed=utc_now(),
+            notes="Volumetric soil moisture, cm3/cm3, recommended-quality retrievals only. Flag rule (0 or 8 = high quality) as quoted from the "
+                  "SPL3SMP_E User Guide p.13 in docs/reports/science/2026-11-14-2252.md (M1)."), band_names=dates)
+    flags_seen = sorted({int(v) for n in ("retrieval_qual_flag_am", "retrieval_qual_flag_pm") for v in np.unique(stacks[n][np.isfinite(stacks[n])])})
     return {"window": window, "cells_used": sorted({(int(r), int(c)) for r, c in zip(ri[inside], ci[inside])}),
             "granule_missing": granule_missing,
-            "days_with_value": {k: len(v) for k, v in present.items()}, "dates_with_value": present}
+            "days_with_value": {k: len(v) for k, v in present.items()}, "dates_with_value": present,
+            "recommended_dates": recommended, "flags_seen": flags_seen}
