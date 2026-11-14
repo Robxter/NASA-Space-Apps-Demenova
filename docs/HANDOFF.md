@@ -27,11 +27,11 @@ Estado: fase 1 casi completa en la rama block/1-foundations (commit d22c638). Si
 Para revisar esta noche, en orden:
 1. `domain/tyson-review-queue.md` (19 preguntas, Q-01..Q-19). Las más urgentes: Q-01 (¿el daño empieza a los 2 días
    de encharcamiento o después de más de 2?) y Q-06 (¿5 = menor costo y menos mano de obra?).
-2. Fecha real de la inundación de demostración (P-007). Lluvia media de 72 h en la cuenca alta del río Buenavista
-   (IMERG, NASA), ver `pipeline/data/processed/rain/top15_72h_events.csv`:
-   - 22–24 feb 2026: 55,7 mm (dentro del evento más húmedo del 15–17 feb 2026: 82,1 mm, puesto 8).
-   - 27 feb–1 mar 2025: 72,7 mm (evento 16).  - 7–9 jun 2026: 109,8 mm (evento 4).
-   Pregunta: ¿qué fecha se inundó de verdad la zona Pasaje/Buenavista? ¿Y cuáles de los 15 eventos inundaron fincas?
+2. Fecha real de la inundación de demostración (P-007). **Corrección 23:10:** la lista de 15 eventos y las cifras de
+   lluvia que había aquí NO son comparables (mezclan dos productos IMERG distintos antes y después de oct 2025; revisión
+   científica B1). No las uses para decidir; se recalculan con un solo producto y te llegan corregidas.
+   Pregunta, sin depender de cifras: según lo que tú sabes, ¿qué fecha se inundó de verdad la zona Pasaje/Buenavista:
+   22–23 feb 2026, 27–28 feb 2025 o 9 jun 2026 (las dos últimas aparecen en prensa)? ¿Recuerdas otras inundaciones con fecha?
 3. Logo: tres opciones en `design/logo/options-sheet.png` (recomendada la 1, "Core").
 Nada de esto cambia el plazo: entrega el domingo 15 a las 20:00 (hora de España).
 
