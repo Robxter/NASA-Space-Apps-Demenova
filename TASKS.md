@@ -50,7 +50,9 @@ review queue, the flood candidates and the logo options.
 - [~] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying). Written, not applied:
   6 migrations + supabase/tests/rls_test.sql + README paste-in steps; waits on P-009 (Roster) and database-reviewer;
   database-review fixes applied (P-002 b telegram_code, column grants, RLS at creation, 79-check test);
-  then Roster runs README steps 1–6 (RLS tests need a real Supabase; no local Postgres)
+  P-009 approved (D-018). Local PostgreSQL 18.7 run (supabase/tests/run_local.ps1): migrations apply in one
+  transaction and re-run cleanly; 79/79 checks pass; 6/7 mutants caught (7th blocked by the policy layer).
+  Remaining: Roster runs README steps 1–6 on Supabase (hosted-only items in the report)
 - [ ] T-015b lead-architect: contract addition (class B) — Farm and TelegramSubscriber gain `telegram_code`
   (random, server-generated) per P-002 (b) / database review; update schemas, models.py, contracts.ts, drift test
 - [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;

@@ -1,8 +1,9 @@
 # supabase/
 
 Owner: database-engineer. Every schema change is class A (CLAUDE.md §6) and is reviewed by database-reviewer.
-Status: written for T-015 and revised after the database-review; **not applied**. Apply only after Roster approves
-PENDING.md **P-009**. Needs Postgres 15 or newer (new Supabase projects are).
+Status: written for T-015, revised after the database-review, approved by Roster (P-009, DECISIONS.md D-018) and
+tested on a local PostgreSQL 18.7 (see "Run locally"); **not yet applied to Supabase**. Needs Postgres 15 or newer
+(new Supabase projects are).
 
 Postgres schema for farms, lots, zones, daily features, alert state and events, flood memories, field notes,
 practices, strategies, provenance, email log, Telegram subscribers and user preferences (entities in
@@ -69,6 +70,20 @@ to delete that farm's subscriptions first. `email_log` has no foreign key to `fa
 6. Dashboard > Advisors > Security Advisor: expect no RLS or `security_definer view` warnings for these objects.
 
 All files are idempotent: running them again is harmless. Never paste the service-role key anywhere in SQL.
+
+## Run locally (plain PostgreSQL 15+, throwaway database; never touches Supabase)
+
+Needs a local PostgreSQL (tested on 18.7) and `LOCAL_PG_PASSWORD=<postgres password>` in `.env`. From the repo root:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File supabase/tests/run_local.ps1            # add -KeepDb to inspect afterwards
+```
+
+It drops and re-creates `demenova_rls_test`, applies `supabase/tests/local_shim.sql` (Supabase roles `anon`,
+`authenticated`, `service_role` with BYPASSRLS; `auth.users`, `auth.uid()`, `auth.jwt()`; Supabase's default grants on
+`public`; local only, never run it on Supabase), applies the six migrations in one `begin; … commit;` exactly as in
+step 2 above, applies them a second time (re-runnable), runs `rls_test.sql`, then drops the database and the roles it
+created. The password goes into `PGPASSWORD` for that process only and is never printed. Exit code 0 = all passed.
 
 ## Apply with the Supabase CLI (if installed; not a project dependency)
 
