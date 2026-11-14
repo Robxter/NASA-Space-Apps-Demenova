@@ -4,12 +4,34 @@ Mirrors GitHub Issues (one issue per task ID; label = agent, milestone = block).
 if the GitHub CLI is installed and authenticated, it may run `gh issue create --title "T-001 ..." --label <agent>`.
 Status: [ ] todo, [~] in progress, [x] done, [!] blocked (see PENDING.md).
 
+## Re-plan after FIX.md (14 Nov 18:10 Spain; deadline unchanged: submit by 20:00 on 15 Nov, hard close 23:59)
+Rule: at most 2 subagents at a time (CLAUDE.md §11), so phase 1 runs in two waves.
+
+| When (Spain) | What | Tasks |
+| --- | --- | --- |
+| 18:15-18:45 | Roster: FIX.md steps 4-6, restart with `scripts/start.ps1` | T-006, T-007 |
+| 18:45-19:30 | Finish phase 0 from commit 3a37c2b (lead-architect), review, commit, PR | T-001..T-005 |
+| 19:30-21:00 | Phase 1 wave A: data-engineer + agronomist (Tyson needs the review queue tonight) | T-010..T-014, T-017 |
+| 21:00-22:15 | Phase 1 wave B: database-engineer + product-designer | T-015, T-016 |
+| 22:15-22:45 | Checkpoint A (schema, logo, dependencies); flood candidates to Tyson | T-018 |
+| 22:45-23:30 | technical-writer block 1 report; HANDOFF for Tyson's night shift; `/save-session` | T-030 (part) |
+| Day 2 04:30-10:00 | Phase 2: engine + app shell, then email API + deploy (pairs of 2) | T-020..T-029 |
+| Day 2 10:00 | Gate: if must-haves are not green, every nice-to-have is cut (SPEC cut order) | - |
+| Day 2 10:00-15:00 | Phase 3 scope, as planned | T-040..T-046 |
+| 15:00 / 19:00 / 20:00 | Freeze, video, submit (unchanged) | T-050..T-053 |
+
+Moved: the Render preview link for Tyson's night shift is now day 2 (devops in phase 2). Tonight Tyson works on the
+review queue, the flood candidates and the logo options.
+
 ## Block 0: skeleton
-- [ ] T-001 lead-architect: repo tree and folder READMEs
-- [ ] T-002 lead-architect: JSON Schemas, Pydantic models, TS types, OpenAPI sketch from CONTRACTS.md
+- [~] T-001 lead-architect: repo tree and folder READMEs (pipeline/ packages exist; READMEs and rest of tree missing)
+- [~] T-002 lead-architect: JSON Schemas, Pydantic models, TS types, OpenAPI sketch from CONTRACTS.md (31 schemas,
+  models.py, contracts.ts done; openapi.yaml missing)
 - [ ] T-003 lead-architect: config stubs (datasets.yaml, alerts.yaml) with null values and origins
-- [ ] T-004 lead-architect: scripts/check_provenance.py + tests/test_provenance.py
-- [ ] T-005 lead-architect: ADR-001..004, DECISIONS.md, PENDING.md, HANDOFF.md
+- [x] T-004 lead-architect: scripts/check_provenance.py + tests/test_provenance.py (94 tests pass, commit 3a37c2b)
+- [~] T-005 lead-architect: ADR-001..004, DECISIONS.md, PENDING.md, HANDOFF.md (ADRs missing)
+- [ ] T-005b lead-architect: app/ scaffold (Vite React TS) and `npm --prefix app run build` green
+- [~] T-007 main session: apply FIX.md (steps 1-3 done in d2d6dac; 4-6 wait on Roster)
 - [ ] T-006 Roster: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
 
 ## Block 1: foundations

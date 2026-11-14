@@ -3,6 +3,11 @@
 All times are Spain time (CET). Deadline 15 Nov 23:59; target submission 20:00. Roster sleeps about 00:00 to 04:30.
 Every prompt below is meant to be pasted into the **main Claude Code session** as written.
 
+> **Re-planned 14 Nov 18:10 (FIX.md §8).** The times in this file are superseded by the timetable at the top of
+> `TASKS.md`. Phase 1 runs in two waves of two agents (CLAUDE.md §11: at most 2 subagents at a time): wave A
+> data-engineer + agronomist, wave B database-engineer + product-designer. The Render preview for Tyson moves to day 2.
+> Nice-to-haves are cut unless must-haves are green by day 2, 10:00.
+
 ---
 
 ## Step 0. Accounts and tools (Roster, about 25 min, can overlap with phase 0)
