@@ -1,0 +1,204 @@
+# domain/practices.yaml - management practices (levers) that strategies combine (owner: agronomist; Tyson approves).
+# Schema: docs/contracts/schemas/domain/practices.schema.json.
+# waterlogging_tolerance_days and root_depth_cm are crop values confirmed by Tyson; they do not change with the
+# practice. Costs and labour are pending Tyson's doc (costs and labour for strategies); none is invented here.
+# Biosecurity (Fusarium TR4) is deliberately absent until Tyson approves the text (T-062).
+
+practices:
+
+  - practice_id: drainage_improvement
+    name_es: "Mejora del drenaje (limpieza y apertura de canales)"
+    name_en: "Improved drainage (clearing and opening drains)"
+    waterlogging_tolerance_days:
+      value: 2
+      unit: d
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    root_depth_cm:
+      value: 70
+      unit: cm
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    soil_benefits:
+      value: "Lowers the water table faster after rain so the 70 cm root zone spends fewer days saturated; the aim is to stay within the 2-day tolerance."
+      origin: estimated
+      estimated_by: "agronomist agent draft from SPEC section 08 (water balance, damage line)"
+      reason: "Qualitative draft; no measured effect for El Oro was opened. Tyson to confirm wording."
+      task_id: T-040
+      approved_by: null
+    cost_usd_ha:
+      value: null
+      unit: "USD/ha"
+      origin: pending
+      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
+      task_id: T-040
+      approved_by: null
+    labour:
+      value: null
+      origin: pending
+      reason: "Labour for strategies is pending in Tyson's doc. Tyson lists labour cost and staff shortage as adoption barriers."
+      task_id: T-040
+      approved_by: null
+    risks:
+      value: "Drain depth and spacing for El Oro are not defined yet (questionnaire 5.4); badly placed drains may move water toward neighbouring lots."
+      origin: estimated
+      estimated_by: "agronomist agent draft"
+      reason: "Qualitative draft awaiting Tyson."
+      task_id: T-060
+      approved_by: null
+    sources:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+    approved_by: null
+
+  - practice_id: living_cover_mani_forrajero
+    name_es: "Cobertura viva con maní forrajero (Arachis pintoi)"
+    name_en: "Living cover with pinto peanut (maní forrajero, Arachis pintoi)"
+    waterlogging_tolerance_days:
+      value: 2
+      unit: d
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    root_depth_cm:
+      value: 70
+      unit: cm
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    soil_benefits:
+      value: "Perennial creeping legume (Fabaceae) with nodulated roots that forms a dense sward, so it keeps the soil covered between banana plants. Nitrogen supply and soil-structure effects in El Oro banana are claimed in the SPEC but not yet backed by an opened study."
+      origin: estimated
+      source: "https://en.wikipedia.org/wiki/Arachis_pintoi"
+      accessed: 2026-11-14
+      estimated_by: "agronomist agent draft; botany from the opened source, benefits from SPEC section 08"
+      reason: "Botanical facts read in the source; agronomic benefit in banana awaits a study or Tyson's field experience."
+      task_id: T-040
+      approved_by: null
+    cost_usd_ha:
+      value: null
+      unit: "USD/ha"
+      origin: pending
+      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
+      task_id: T-040
+      approved_by: null
+    labour:
+      value: null
+      origin: pending
+      reason: "Labour for strategies is pending in Tyson's doc."
+      task_id: T-040
+      approved_by: null
+    risks:
+      value: "Many El Oro farms do not use it (Tyson's family farm does not). Establishment needs work and access to planting material; competition with young plants is a question for Tyson."
+      origin: estimated
+      estimated_by: "agronomist agent draft from Tyson's answers (maní forrajero use, adoption barriers)"
+      reason: "Qualitative draft awaiting Tyson."
+      task_id: T-040
+      approved_by: null
+    sources:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+      - citation: "Arachis pintoi, Wikipedia"
+        url: "https://en.wikipedia.org/wiki/Arachis_pintoi"
+        accessed: 2026-11-14
+    approved_by: null
+
+  - practice_id: mycorrhizae_application
+    name_es: "Aplicación de micorrizas en suelo no saturado"
+    name_en: "Mycorrhizae application on unsaturated soil"
+    waterlogging_tolerance_days:
+      value: 2
+      unit: d
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    root_depth_cm:
+      value: 70
+      unit: cm
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    soil_benefits:
+      value: "Bio-input in Tyson's draft strategy C; applied only when the soil is not saturated, using the app's soil-moisture and waterlogging status to pick the date."
+      origin: estimated
+      estimated_by: "draft strategy C in Tyson's doc (domain/tyson-answers.md)"
+      reason: "Timing rule from Tyson's draft; no product, dose or measured effect is given or invented."
+      task_id: T-040
+      approved_by: null
+    cost_usd_ha:
+      value: null
+      unit: "USD/ha"
+      origin: pending
+      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
+      task_id: T-040
+      approved_by: null
+    labour:
+      value: null
+      origin: pending
+      reason: "Labour for strategies is pending in Tyson's doc."
+      task_id: T-040
+      approved_by: null
+    risks:
+      value: "Access to bio-inputs is an adoption barrier (Tyson). Applying into saturated soil may waste the application; Tyson to confirm."
+      origin: estimated
+      estimated_by: "agronomist agent draft from Tyson's answers"
+      reason: "Qualitative draft awaiting Tyson."
+      task_id: T-040
+      approved_by: null
+    sources:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+    approved_by: null
+
+  - practice_id: mm_drench
+    name_es: "Drench de microorganismos de montaña (MM) en suelo no saturado"
+    name_en: "Mountain microorganism (MM) drench on unsaturated soil"
+    waterlogging_tolerance_days:
+      value: 2
+      unit: d
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    root_depth_cm:
+      value: 70
+      unit: cm
+      origin: sourced
+      source: "Tyson, 14 Nov 2026"
+      approved_by: Tyson
+    soil_benefits:
+      value: "Bio-input in Tyson's draft strategy C, applied by drench only when the soil is not saturated, timed with the app's soil-moisture status."
+      origin: estimated
+      estimated_by: "draft strategy C in Tyson's doc (domain/tyson-answers.md)"
+      reason: "Timing rule from Tyson's draft; no product, dose or measured effect is given or invented."
+      task_id: T-040
+      approved_by: null
+    cost_usd_ha:
+      value: null
+      unit: "USD/ha"
+      origin: pending
+      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
+      task_id: T-040
+      approved_by: null
+    labour:
+      value: null
+      origin: pending
+      reason: "Labour for strategies is pending in Tyson's doc."
+      task_id: T-040
+      approved_by: null
+    risks:
+      value: "Needs labour for preparation and application; a drench just before heavy rain or on waterlogged soil may be washed out. Tyson to confirm."
+      origin: estimated
+      estimated_by: "agronomist agent draft"
+      reason: "Qualitative draft awaiting Tyson."
+      task_id: T-040
+      approved_by: null
+    sources:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+    approved_by: null

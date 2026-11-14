@@ -46,7 +46,10 @@ review queue, the flood candidates and the logo options.
 - [ ] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components
 - [ ] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
   in index.html; without them Android shows no install prompt (Phase 0 review, medium 7)
-- [ ] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots
+- [~] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots (thresholds,
+  practices, strategies, actions, glossary, flood_memories written + review queue Q-01..Q-19 + memory note;
+  checks run by the main session 19:45: pytest 154 passed (all 6 domain files validate), provenance checker OK;
+  domain/farm.json waits for T-012 lot geometry; P-004 raised)
 - [ ] T-018 Roster: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
   P-001 (state-machine diagram text), P-002 (Telegram farm code), P-003 (nullable country/province/canton)
 - [ ] T-019 data-engineer: `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m

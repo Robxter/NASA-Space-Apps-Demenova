@@ -1,0 +1,159 @@
+# domain/glossary.yaml - agronomic terms (owner: agronomist; Tyson approves).
+# Schema: docs/contracts/schemas/domain/glossary.schema.json.
+# Standard Spanish terms pending Tyson's local vocabulary (questionnaire 5.6, T-061). Definitions are drafts.
+
+terms:
+
+  - term_id: encharcamiento
+    term: {es: "Encharcamiento", en: "Waterlogging"}
+    definition:
+      es: "Suelo saturado de agua, con el nivel freático dentro de la zona de raíces (70 cm). El banano tolera como máximo 2 días."
+      en: "Soil saturated with water, with the water table inside the root zone (70 cm). Banana tolerates 2 days at most."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6); the 2 days and 70 cm are Tyson's confirmed values."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: lote
+    term: {es: "Lote", en: "Lot"}
+    definition:
+      es: "Parte de la finca que se maneja como una unidad (cosecha, labores, registros)."
+      en: "Part of the farm managed as one unit (harvest, field work, records)."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: cuadrilla
+    term: {es: "Cuadrilla", en: "Field crew"}
+    definition:
+      es: "Grupo de trabajadores que hace las labores de campo."
+      en: "Group of workers who carry out field work."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: drenaje
+    term: {es: "Drenaje", en: "Drainage"}
+    definition:
+      es: "Canales y salidas que sacan el exceso de agua del lote."
+      en: "Ditches and outlets that remove excess water from the lot."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: nivel_freatico
+    term: {es: "Nivel freático", en: "Water table"}
+    definition:
+      es: "Profundidad a la que el suelo está saturado de agua; si sube a menos de 70 cm por más de 2 días, daña las raíces."
+      en: "Depth at which the soil is saturated; if it rises above 70 cm depth for more than 2 days, roots are damaged."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6); damage line from Tyson's values (review queue Q-01)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: crecida
+    term: {es: "Crecida o desborde del río", en: "River overflow"}
+    definition:
+      es: "Agua de lluvia caída en la parte alta de la cuenca que llega horas o días después y se sale del cauce."
+      en: "Rain that fell in the upper catchment arriving hours or days later and leaving the river channel."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term; meaning from Tyson's field problems (water arriving from the highlands hours or days later). Local word pending (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: mani_forrajero
+    term: {es: "Maní forrajero", en: "Pinto peanut (Arachis pintoi)"}
+    definition:
+      es: "Leguminosa perenne rastrera (Arachis pintoi) que forma una cobertura densa; se usa como cobertura viva en algunas fincas bananeras."
+      en: "Perennial creeping legume (Arachis pintoi) that forms a dense cover; some banana farms use it as living cover."
+    origin: estimated
+    source: "https://en.wikipedia.org/wiki/Arachis_pintoi"
+    accessed: 2026-11-14
+    estimated_by: "agronomist agent; botany from the opened source, farm use from Tyson (many farms use it, many do not)"
+    reason: "Definition draft pending Tyson's wording (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: micorrizas
+    term: {es: "Micorrizas", en: "Mycorrhizae"}
+    definition:
+      es: "Hongos del suelo que se asocian con las raíces; bioinsumo en la estrategia C, aplicado con suelo no saturado."
+      en: "Soil fungi that associate with roots; a bio-input in strategy C, applied on unsaturated soil."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: microorganismos_de_montana
+    term: {es: "Microorganismos de montaña (MM)", en: "Mountain microorganisms (MM)"}
+    definition:
+      es: "Bioinsumo preparado con microorganismos colectados de suelo de bosque; en la estrategia C se aplica por drench con suelo no saturado."
+      en: "Bio-input prepared from microorganisms collected from forest soil; in strategy C it is applied by drench on unsaturated soil."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary and his description of how MM is prepared on farms (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: drench
+    term: {es: "Drench", en: "Drench"}
+    definition:
+      es: "Aplicación de un líquido dirigida al suelo alrededor de la planta."
+      en: "A liquid application aimed at the soil around the plant."
+    origin: estimated
+    estimated_by: questionnaire-default
+    reason: "Standard term pending Tyson's local vocabulary (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: sigatoka_negra
+    term: {es: "Sigatoka negra", en: "Black Sigatoka"}
+    definition:
+      es: "Enfermedad de las hojas del banano favorecida por calor, humedad alta y hojas mojadas."
+      en: "Banana leaf disease favoured by warmth, high humidity and wet leaves."
+    origin: estimated
+    estimated_by: "agronomist agent from SPEC section 08"
+    reason: "Definition draft; the Watch thresholds are in domain/thresholds.yaml, pending Tyson."
+    task_id: T-040
+    approved_by: null
+
+  - term_id: llenado_de_fruta
+    term: {es: "Llenado de fruta", en: "Fruit filling"}
+    definition:
+      es: "Crecimiento en grosor de los dedos del racimo hasta la cosecha; noches frías lo hacen más lento."
+      en: "Growth in thickness of the bunch fingers until harvest; cool nights slow it down."
+    origin: estimated
+    source: "https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/"
+    accessed: 2026-11-14
+    estimated_by: "agronomist agent; cold effect from the opened producer report (El Oro, 2010)"
+    reason: "Definition draft pending Tyson's wording (5.6)."
+    task_id: T-061
+    approved_by: null
+
+  - term_id: temporada_fresca
+    term: {es: "Temporada fresca", en: "Cool season"}
+    definition:
+      es: "En Machala, aproximadamente del 1 de julio al 13 de noviembre; agosto es el mes más frío."
+      en: "In Machala, roughly 1 July to 13 November; August is the coldest month."
+    origin: sourced
+    source: "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o"
+    accessed: 2026-11-14
+    approved_by: null
+
+  - term_id: fusarium_r4t
+    term: {es: "Fusarium R4T (marchitez por Fusarium raza 4 tropical)", en: "Fusarium wilt Tropical Race 4 (TR4)"}
+    definition: null
+    origin: pending
+    reason: "Biosecurity content: no text is shown in the app until Tyson approves the exact wording (T-062). Draft only in domain/tyson-review-queue.md."
+    task_id: T-062
+    approved_by: null

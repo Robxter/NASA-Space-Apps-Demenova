@@ -1,0 +1,6 @@
+# domain/flood_memories.yaml - past floods remembered by farmers (owner: agronomist; origin observed).
+# Schema: docs/contracts/schemas/domain/flood_memories.schema.json.
+# Empty on purpose: Tyson's flood memory of his farm and its approximate location (his doc, Task 6; T-063) has not
+# arrived yet. The February 2026 Buenavista flood is the demo replay event, not a farmer memory, so it is not here.
+
+flood_memories: []

@@ -1,0 +1,173 @@
+# domain/strategies.yaml - the three soil-management strategies (owner: agronomist; Tyson approves).
+# Schema: docs/contracts/schemas/domain/strategies.schema.json.
+# All three are drafts from Tyson's doc (domain/tyson-answers.md, "Research proposals awaiting his validation").
+# Scores 1-5 (higher is better for the farm: more soil benefit, more water control, lower cost, less labour) are
+# Tyson's draft numbers, estimated until he approves them. The app supports the agronomist's judgment; it does not
+# replace it. No Fusarium TR4 text here until Tyson approves it (T-062).
+
+strategies:
+
+  - strategy_id: a_current_management
+    lot_scope: ["*"]
+    label: A
+    origin: estimated
+    approved_by: null
+    what:
+      es: "Manejo actual de la finca, sin cambios en drenaje ni cobertura."
+      en: "The farm's current management, with no change to drainage or ground cover."
+    why:
+      es: "Es la línea base para comparar B y C."
+      en: "It is the baseline against which B and C are compared."
+    evidence:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+    benefits:
+      es: "No requiere inversión ni mano de obra adicional."
+      en: "Needs no extra investment or labour."
+    gaps:
+      es: "No reduce los días de encharcamiento en lotes bajos; la tolerancia del banano es de 2 días como máximo."
+      en: "Does not reduce waterlogging days on low lots; banana tolerates 2 days at most."
+    risks:
+      es: "Lotes bajos y planos siguen expuestos a encharcamiento y a crecidas del río."
+      en: "Low, flat lots stay exposed to waterlogging and river overflow."
+    scores:
+      soil:
+        value: 2
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      water:
+        value: 1
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      cost:
+        value: 5
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = lowest cost)."
+        task_id: T-040
+        approved_by: null
+      labour:
+        value: 5
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = least labour)."
+        task_id: T-040
+        approved_by: null
+
+  - strategy_id: b_improved_drainage
+    lot_scope: ["*"]
+    label: B
+    origin: estimated
+    approved_by: null
+    what:
+      es: "Mejorar el drenaje: limpiar y abrir canales para que el agua salga del lote antes de 2 días."
+      en: "Improve drainage: clear and open drains so water leaves the lot within 2 days."
+    why:
+      es: "El banano tolera como máximo 2 días de encharcamiento y sus raíces están a 70 cm (Tyson)."
+      en: "Banana tolerates at most 2 days of waterlogging and its roots sit at 70 cm (Tyson)."
+    evidence:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+    benefits:
+      es: "Menos días con la zona de raíces saturada en lotes bajos."
+      en: "Fewer days with a saturated root zone on low lots."
+    gaps:
+      es: "Faltan profundidad y espaciamiento de drenes para El Oro (pregunta 5.4) y los costos."
+      en: "Drain depth and spacing for El Oro (question 5.4) and costs are still missing."
+    risks:
+      es: "Requiere mano de obra; un drenaje mal ubicado puede pasar el agua a lotes vecinos."
+      en: "Needs labour; a badly placed drain can push water to neighbouring lots."
+    scores:
+      soil:
+        value: 3
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      water:
+        value: 4
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      cost:
+        value: 3
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = lowest cost)."
+        task_id: T-040
+        approved_by: null
+      labour:
+        value: 3
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = least labour)."
+        task_id: T-040
+        approved_by: null
+
+  - strategy_id: c_drainage_cover_bioinputs
+    lot_scope: ["*"]
+    label: C
+    origin: estimated
+    approved_by: null
+    what:
+      es: "Drenaje mejorado + cobertura viva con maní forrajero + bioinsumos (micorrizas y drench de microorganismos de montaña) aplicados solo con el suelo no saturado."
+      en: "Improved drainage + maní forrajero (Arachis pintoi) living cover + bio-inputs (mycorrhizae and mountain microorganism drench) applied only when the soil is not saturated."
+    why:
+      es: "Combina el control del agua de B con cobertura del suelo y bioinsumos; la app indica cuándo el suelo no está saturado para aplicar."
+      en: "Combines B's water control with ground cover and bio-inputs; the app shows when the soil is unsaturated so applications are timed."
+    evidence:
+      - citation: "Tyson, 14 Nov 2026"
+        url: null
+        accessed: null
+      - citation: "Arachis pintoi, Wikipedia"
+        url: "https://en.wikipedia.org/wiki/Arachis_pintoi"
+        accessed: 2026-11-14
+    benefits:
+      es: "Suelo cubierto por una leguminosa perenne rastrera, más el control del agua de B; efectos medidos en banano de El Oro aún sin fuente."
+      en: "Soil covered by a perennial creeping legume, plus B's water control; measured effects in El Oro banana have no source yet."
+    gaps:
+      es: "Faltan costos, mano de obra y evidencia local; muchas fincas no usan maní forrajero (la finca de Tyson no lo usa)."
+      en: "Costs, labour and local evidence are missing; many farms do not use maní forrajero (Tyson's farm does not)."
+    risks:
+      es: "Más mano de obra y acceso a bioinsumos (barreras que menciona Tyson)."
+      en: "More labour and access to bio-inputs (barriers Tyson names)."
+    scores:
+      soil:
+        value: 5
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      water:
+        value: 4
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval."
+        task_id: T-040
+        approved_by: null
+      cost:
+        value: 2
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = lowest cost)."
+        task_id: T-040
+        approved_by: null
+      labour:
+        value: 2
+        origin: estimated
+        estimated_by: "draft scores in Tyson's doc (domain/tyson-answers.md)"
+        reason: "Draft 1-5 score awaiting Tyson's approval (5 = least labour)."
+        task_id: T-040
+        approved_by: null

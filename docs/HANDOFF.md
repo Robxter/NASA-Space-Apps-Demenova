@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-14 19:30 - agronomist to main session
+State: T-017 domain files drafted (all unapproved except Tyson's 2 days / 70 cm); review queue ready for Tyson tonight.
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: domain/{thresholds,practices,strategies,actions,glossary,flood_memories}.yaml,
+domain/tyson-review-queue.md (Spanish, Q-01..Q-19); P-004 (unreadable Sigatoka/heat-unit PDFs, values kept estimated).
+Waiting on Roster: run `uv run pytest -q` and `python scripts/check_provenance.py`; P-004; paste the queue to Tyson.
+Waiting on Tyson: tyson-review-queue Q-01..Q-19 (biosecurity draft Q-17 never shown until he approves, T-062).
+Next for the receiver, in order: 1. Run checks. 2. Send queue to Tyson. 3. After T-012 geometry, agronomist writes
+domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by Tyson).
+Do not touch: domain/ approvals (only Tyson's answers, via tyson-answers.md, set approved_by).
+
 ## 2026-11-14 19:05 - Main session (Claude Code) to Roster
 State: Phase 0 complete and pushed on block/0-skeleton; review (1 HIGH, 6 MEDIUM) fixed with regression tests.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
