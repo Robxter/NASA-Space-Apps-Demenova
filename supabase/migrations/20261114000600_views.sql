@@ -84,7 +84,7 @@ comment on view public.v_alert_log is 'AlertEvent log with unit names; order by 
 
 -- Views are read-only for clients (simple views are auto-updatable; RLS would still block, this is belt and braces).
 revoke all on table public.v_farm_status, public.v_lot_history_7d, public.v_lot_history_90d, public.v_alert_log
-  from anon, authenticated;
+  from public, anon, authenticated;
 grant select on table public.v_farm_status, public.v_lot_history_7d, public.v_lot_history_90d, public.v_alert_log
   to anon, authenticated;
 grant all on table public.v_farm_status, public.v_lot_history_7d, public.v_lot_history_90d, public.v_alert_log

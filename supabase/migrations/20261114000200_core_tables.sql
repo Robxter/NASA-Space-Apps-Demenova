@@ -3,6 +3,7 @@
 -- Contracts: docs/contracts/schemas/entities/{farm,lot,zone,field_note,user_prefs}.schema.json; CONTRACTS.md §3.
 -- Units SI (ha, months, fractions 0..1); timestamps timestamptz (UTC); geometry GeoJSON EPSG:4326.
 -- Rule "null value <=> origin pending" (models.Contract._missing_values_are_pending) is enforced per <field>_origin.
+-- Every table gets RLS and loses all client privileges in the same step it is created (grants: migration 5).
 
 -- ---------------------------------------------------------------------------------------------------------
 -- farms
@@ -24,7 +25,12 @@ create table if not exists public.farms (
   variety_origin  public.origin_kind not null,
   catchment_id    text,
   -- Personal data, readable only by the owner. Always null on the demo farm (recipient lives in backend env).
+  -- v0: no client may write it (migration 5 column grants); only the service role.
   alert_email     text check (alert_email is null or alert_email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+  -- PENDING.md P-002 option (b): random, unguessable code for t.me/<bot>?start=<code>. Generated here, never
+  -- written by clients; readable with the farm row (owner, or everyone for the demo farm). Contract addition.
+  telegram_code   text not null unique default replace(gen_random_uuid()::text, '-', '')
+                  check (telegram_code ~ '^[A-Za-z0-9_-]{16,64}$'),
   language        text not null check (language in ('en', 'es')),
   units           text not null check (units in ('metric', 'imperial')),
   mode            text not null check (mode in ('farmer', 'agronomist')),
@@ -36,9 +42,15 @@ create table if not exists public.farms (
   constraint farms_variety_pending check ((variety is null) = (variety_origin = 'pending')),
   -- models.Farm._demo_farm_is_public, plus: every non-demo row in the database has an owner.
   constraint farms_demo_has_no_owner check ((is_demo and owner_id is null) or (not is_demo and owner_id is not null)),
-  constraint farms_demo_has_no_email check (not is_demo or alert_email is null)
+  constraint farms_demo_has_no_email check (not is_demo or alert_email is null),
+  -- User farms end in a random suffix of 6+ characters, so no device can squat a planned id (e.g. the demo's).
+  constraint farms_user_id_has_suffix check (is_demo or id ~ '-[a-z0-9]{6,}$'),
+  -- Target of telegram_subscribers' composite foreign key.
+  constraint farms_id_telegram_code_key unique (id, telegram_code)
 );
-comment on table public.farms is 'Farm (CONTRACTS.md §3). Demo farm: is_demo, no owner, public read. Others: owner = auth.uid().';
+comment on table public.farms is 'Farm (CONTRACTS.md §3) + telegram_code. Demo farm: is_demo, no owner, public read. Others: owner = auth.uid().';
+alter table public.farms enable row level security;
+revoke all on table public.farms from public, anon, authenticated;
 
 create index if not exists farms_owner_id_idx on public.farms (owner_id) where owner_id is not null;
 create index if not exists farms_is_demo_idx on public.farms (id) where is_demo;
@@ -95,7 +107,9 @@ create table if not exists public.lots (
   constraint lots_synthetic_has_redefiner check (
     coalesce(private.default_origin(origin), '') <> 'synthetic' or coalesce(btrim(to_be_redefined_by), '') <> '')
 );
-comment on table public.lots is 'Lot (CONTRACTS.md §3). Readable with its farm; writable by the farm owner.';
+comment on table public.lots is 'Lot (CONTRACTS.md §3). Readable with its farm; writable by the farm owner except twi_* (engine).';
+alter table public.lots enable row level security;
+revoke all on table public.lots from public, anon, authenticated;
 
 create index if not exists lots_farm_id_idx on public.lots (farm_id);
 
@@ -115,6 +129,8 @@ create table if not exists public.zones (
   constraint zones_id_matches_farm check (id = 'zone_' || substring(farm_id from 6) || '_' || tercile)
 );
 comment on table public.zones is 'Zone (CONTRACTS.md §3). Written by the pipeline (service role).';
+alter table public.zones enable row level security;
+revoke all on table public.zones from public, anon, authenticated;
 
 create index if not exists zones_farm_id_idx on public.zones (farm_id);
 
@@ -134,6 +150,8 @@ create table if not exists public.field_notes (
   created_at  timestamptz not null default now()
 );
 comment on table public.field_notes is 'FieldNote (CONTRACTS.md §3). Owner read/write; demo notes public read.';
+alter table public.field_notes enable row level security;
+revoke all on table public.field_notes from public, anon, authenticated;
 
 create index if not exists field_notes_lot_date_idx on public.field_notes (lot_id, date);
 create index if not exists field_notes_farm_created_idx on public.field_notes (farm_id, created_at);
@@ -151,3 +169,5 @@ create table if not exists public.user_prefs (
   theme         text not null check (theme in ('system', 'light', 'dark'))
 );
 comment on table public.user_prefs is 'UserPrefs (CONTRACTS.md §3). Only the owning user reads or writes its row.';
+alter table public.user_prefs enable row level security;
+revoke all on table public.user_prefs from public, anon, authenticated;

@@ -37,6 +37,8 @@ create table if not exists public.provenance (
         and coalesce(btrim(url), '') <> '' and accessed is not null))
 );
 comment on table public.provenance is 'Provenance records (DATA_POLICY.md §3). Public read; service role writes.';
+alter table public.provenance enable row level security;
+revoke all on table public.provenance from public, anon, authenticated;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- daily_features (one row per unit per day; PK serves (unit_id, date) range reads)
@@ -79,6 +81,8 @@ create table if not exists public.daily_features (
   constraint daily_features_ndvi_date check (ndvi is not null or ndvi_date is null)
 );
 comment on table public.daily_features is 'DailyFeature (CONTRACTS.md §3). Readable with its farm; service role writes.';
+alter table public.daily_features enable row level security;
+revoke all on table public.daily_features from public, anon, authenticated;
 
 create index if not exists daily_features_farm_date_idx on public.daily_features (farm_id, date);
 create index if not exists daily_features_lot_id_idx on public.daily_features (lot_id) where lot_id is not null;
@@ -107,6 +111,8 @@ create table if not exists public.alert_states (
   origin               jsonb not null check (private.is_origin_spec(origin))
 );
 comment on table public.alert_states is 'AlertState (CONTRACTS.md §3). Readable with its farm; service role writes.';
+alter table public.alert_states enable row level security;
+revoke all on table public.alert_states from public, anon, authenticated;
 
 create index if not exists alert_states_farm_id_idx on public.alert_states (farm_id);
 create index if not exists alert_states_lot_id_idx on public.alert_states (lot_id) where lot_id is not null;
@@ -131,9 +137,13 @@ create table if not exists public.alert_events (
   at             timestamptz not null,
   email_sent     boolean not null default false,
   telegram_sent  boolean not null default false,
-  origin         jsonb not null check (private.is_origin_spec(origin))
+  origin         jsonb not null check (private.is_origin_spec(origin)),
+  -- Target of flood_memories' composite foreign key: a memory can only match an event of its own farm.
+  constraint alert_events_id_farm_id_key unique (id, farm_id)
 );
 comment on table public.alert_events is 'AlertEvent (CONTRACTS.md §3). Readable with its farm; service role writes.';
+alter table public.alert_events enable row level security;
+revoke all on table public.alert_events from public, anon, authenticated;
 
 create index if not exists alert_events_farm_at_idx on public.alert_events (farm_id, at desc);
 create index if not exists alert_events_unit_at_idx on public.alert_events (unit_id, at desc);
@@ -153,14 +163,19 @@ create table if not exists public.flood_memories (
   damage_notes      text,
   reported_by       text not null check (btrim(reported_by) <> ''),
   origin            text not null default 'observed' check (origin = 'observed'),
-  matched_event_id  text references public.alert_events (id) on delete set null
-                    check (matched_event_id is null or matched_event_id ~ '^[0-9A-HJKMNP-TV-Z]{26}$'),
-  created_at        timestamptz not null default now()
+  -- Set by the engine's verification (service role); clients cannot write it (migration 5 column grants).
+  matched_event_id  text check (matched_event_id is null or matched_event_id ~ '^[0-9A-HJKMNP-TV-Z]{26}$'),
+  created_at        timestamptz not null default now(),
+  -- Same-farm match only; deleting the event clears the match, not the memory (column list: Postgres 15+).
+  constraint flood_memories_matched_event_fkey foreign key (matched_event_id, farm_id)
+    references public.alert_events (id, farm_id) on delete set null (matched_event_id)
 );
-comment on table public.flood_memories is 'FloodMemory (CONTRACTS.md §3). Owner read/write; demo memories public read.';
+comment on table public.flood_memories is 'FloodMemory (CONTRACTS.md §3). Owner read/write except matched_event_id; demo memories public read.';
+alter table public.flood_memories enable row level security;
+revoke all on table public.flood_memories from public, anon, authenticated;
 
 create index if not exists flood_memories_farm_created_idx on public.flood_memories (farm_id, created_at);
-create index if not exists flood_memories_matched_event_idx on public.flood_memories (matched_event_id)
+create index if not exists flood_memories_matched_event_idx on public.flood_memories (matched_event_id, farm_id)
   where matched_event_id is not null;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -181,6 +196,8 @@ create table if not exists public.practices (
   approved_by                  text
 );
 comment on table public.practices is 'PracticeTable row (domain/practices.yaml). Public read; service role writes.';
+alter table public.practices enable row level security;
+revoke all on table public.practices from public, anon, authenticated;
 
 create table if not exists public.strategies (
   strategy_id  text not null check (strategy_id ~ '^[a-z][a-z0-9_]*$'),
@@ -205,5 +222,7 @@ create table if not exists public.strategies (
   primary key (strategy_id, lot_scope)
 );
 comment on table public.strategies is 'Strategy (domain/strategies.yaml). Regional/demo public read; farm-scoped owner read; service role writes.';
+alter table public.strategies enable row level security;
+revoke all on table public.strategies from public, anon, authenticated;
 
 create index if not exists strategies_farm_id_idx on public.strategies (farm_id) where farm_id is not null;

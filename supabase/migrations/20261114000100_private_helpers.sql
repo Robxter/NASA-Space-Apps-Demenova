@@ -9,8 +9,9 @@
 create schema if not exists private;
 comment on schema private is 'Demenova helpers used by constraints, generated columns and policies. Not exposed by the Data API.';
 
--- Constraints and policies call these helpers as the requesting role.
-grant usage on schema private to anon, authenticated, service_role;
+-- Constraints and generated columns call these helpers as the writing role (authenticated, service_role).
+-- anon never writes, so it gets no EXECUTE (see the end of this file); policies and views use no helper.
+grant usage on schema private to authenticated, service_role;
 
 -- ---------------------------------------------------------------------------------------------------------
 -- Domains (contract enums). Created only when missing so the file can be re-run.
@@ -180,12 +181,27 @@ returns boolean language sql immutable parallel safe set search_path = '' as $$
   end
 $$;
 
+-- YYYY-MM-DD that is a real calendar day (2026-02-30 is false). ISO input does not depend on DateStyle.
+create or replace function private.is_iso_date(t text)
+returns boolean language plpgsql immutable parallel restricted set search_path = '' as $$
+begin
+  if t is null or t !~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' then
+    return false;
+  end if;
+  perform t::date;
+  return true;
+exception when others then
+  return false;
+end
+$$;
+
 create or replace function private.is_date_or_null(v jsonb)
-returns boolean language sql immutable parallel safe set search_path = '' as $$
+returns boolean language sql immutable parallel restricted set search_path = '' as $$
   select case
     when v is null then false
     when jsonb_typeof(v) = 'null' then true
-    else jsonb_typeof(v) = 'string' and (v #>> '{}') ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$'
+    when jsonb_typeof(v) <> 'string' then false
+    else private.is_iso_date(v #>> '{}')
   end
 $$;
 
@@ -194,7 +210,7 @@ $$;
 
 -- Lot.last_soil_analysis {date, ph 0..14, organic_matter_pct 0..1 fraction}
 create or replace function private.is_soil_analysis(v jsonb)
-returns boolean language sql immutable parallel safe set search_path = '' as $$
+returns boolean language sql immutable parallel restricted set search_path = '' as $$
   select case when coalesce(jsonb_typeof(v), '') <> 'object' then false else coalesce(
     (select count(*) from jsonb_object_keys(v)) = 3
     and private.is_date_or_null(v -> 'date')
@@ -204,7 +220,7 @@ $$;
 
 -- Lot.bioinputs {mycorrhizae_last, mm_last} (dates)
 create or replace function private.is_bioinputs(v jsonb)
-returns boolean language sql immutable parallel safe set search_path = '' as $$
+returns boolean language sql immutable parallel restricted set search_path = '' as $$
   select case when coalesce(jsonb_typeof(v), '') <> 'object' then false else coalesce(
     (select count(*) from jsonb_object_keys(v)) = 2
     and private.is_date_or_null(v -> 'mycorrhizae_last')
@@ -256,11 +272,13 @@ returns boolean language sql immutable parallel safe set search_path = '' as $$
     and jsonb_typeof(v -> 'origin') = 'string' and private.is_origin(v ->> 'origin'), false)
 $$;
 
--- LocalizedText {es, en}: at least one language
+-- LocalizedText {es, en}: each a string or null, at least one non-blank
 create or replace function private.is_localized_text(v jsonb)
 returns boolean language sql immutable parallel safe set search_path = '' as $$
-  select coalesce(jsonb_typeof(v) = 'object' and v ? 'es' and v ? 'en'
-    and (coalesce(btrim(v ->> 'es'), '') <> '' or coalesce(btrim(v ->> 'en'), '') <> ''), false)
+  select case when coalesce(jsonb_typeof(v), '') <> 'object' then false else coalesce(
+    (select count(*) from jsonb_object_keys(v)) = 2
+    and jsonb_typeof(v -> 'es') in ('string', 'null') and jsonb_typeof(v -> 'en') in ('string', 'null')
+    and (coalesce(btrim(v ->> 'es'), '') <> '' or coalesce(btrim(v ->> 'en'), '') <> ''), false) end
 $$;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -273,3 +291,10 @@ begin
   return new;
 end
 $$;
+
+-- ---------------------------------------------------------------------------------------------------------
+-- Function privileges: nothing for PUBLIC (functions default to EXECUTE for PUBLIC); only the writing roles.
+-- ---------------------------------------------------------------------------------------------------------
+revoke execute on all functions in schema private from public, anon;
+alter default privileges in schema private revoke execute on functions from public;
+grant execute on all functions in schema private to authenticated, service_role;
