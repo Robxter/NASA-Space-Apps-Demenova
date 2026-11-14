@@ -146,6 +146,36 @@ def test_run_selection_final_then_late():
     assert imerg.run_for(dt.date(2025, 9, 30)) == "final" and imerg.run_for(dt.date(2025, 10, 1)) == "late"
 
 
+def test_smap_dap_csv_parse_and_clean():
+    from pipeline.ingest import smap
+
+    text = "Dataset: x.h5\n/G/soil_moisture[0], 0.30, -9999\n/G/soil_moisture[1], 0.60, 0.01\n/G/lat[0], -3.3, -3.3\n/G/lat[1], -3.4, -3.4\n"
+    arrays = smap.parse_dap_csv(text)
+    assert arrays["/G/soil_moisture"].shape == (2, 2)
+    cleaned = smap.clean(arrays["/G/soil_moisture"])
+    assert cleaned[0, 0] == 0.30 and np.isnan(cleaned[0, 1]) and np.isnan(cleaned[1, 0]) and np.isnan(cleaned[1, 1])
+
+
+def test_smap_axis_coords_ignore_fill():
+    from pipeline.ingest import smap
+
+    lat2d = np.array([[-9999.0, -3.3], [-3.4, -9999.0]])
+    lon2d = np.array([[-9999.0, -79.8], [-79.9, -9999.0]])
+    lat, lon = smap.axis_coords(lat2d, lon2d)
+    assert lat.tolist() == [-3.3, -3.4] and lon.tolist() == [-79.9, -79.8]
+
+
+def test_smap_nearest_index_maps_every_farm_cell_to_one_source_cell():
+    from pipeline.ingest import smap
+
+    grid = grid_from_lonlat(-79.875, -3.405, -79.805, -3.345)
+    lat_c = np.array([-3.285, -3.356, -3.427, -3.497])  # decreasing with row, as in EASE-Grid 2.0
+    lon_c = np.array([-79.964, -79.870, -79.777, -79.684])
+    ri, ci = smap.nearest_index(grid, lat_c, lon_c)
+    assert (ri >= 0).all() and (ci >= 0).all()
+    assert set(np.unique(ri)) <= {1, 2} and set(np.unique(ci)) <= {1, 2}
+
+
 def test_dataset_record_refuses_pending_entry():
     with pytest.raises(UnverifiedDatasetError):
         dataset_record("prov-x", "gaez", processing=[], aoi=None, time_range=None)

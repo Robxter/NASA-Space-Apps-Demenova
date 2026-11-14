@@ -5,7 +5,7 @@
   "version": "Earth Search STAC API v1",
   "provider": "Copernicus Sentinel-2 (ESA); Cloud-Optimized GeoTIFFs managed by Element 84 on AWS Open Data",
   "url": "https://registry.opendata.aws/sentinel-2-l2a-cogs/",
-  "accessed": "2026-11-14T18:30:42Z",
+  "accessed": "2026-11-14T18:41:29Z",
   "spatial_resolution": null,
   "temporal_resolution": null,
   "aoi": "aoi_pasaje_buenavista",
@@ -17,7 +17,7 @@
    "per scene: reflectance from DN with the item's raster:bands scale/offset; clear = SCL in {4,5,6}",
    "NDVI at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear, else missing"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "a1c5b4e+uncommitted",
   "agent": "data-engineer",
   "notes": "STAC item S2C_17MPS_20260301_0_L2A; clear fraction of the farm grid 0.000."
  },

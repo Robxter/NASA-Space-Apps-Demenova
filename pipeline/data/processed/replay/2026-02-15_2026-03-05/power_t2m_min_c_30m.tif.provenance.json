@@ -5,7 +5,7 @@
   "version": "v2.10.3",
   "provider": "NASA POWER (Langley Research Center)",
   "url": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
-  "accessed": "2026-11-14T18:30:15Z",
+  "accessed": "2026-11-14T18:41:27Z",
   "spatial_resolution": null,
   "temporal_resolution": "daily (time_standard LST); an hourly API also exists",
   "aoi": "aoi_pasaje_buenavista",
@@ -18,7 +18,7 @@
    "placed on the 30 m farm grid by nearest: one POWER cell covers the AOI, so each band is that cell's value",
    "one band per day, band description = date; missing day = NaN band"
   ],
-  "code_commit": "23660af+uncommitted",
+  "code_commit": "a1c5b4e+uncommitted",
   "agent": "data-engineer",
   "notes": "Coarse value kept coarse; no sub-cell detail."
  },

@@ -43,9 +43,10 @@ review queue, the flood candidates and the logo options.
 - [x] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI) ->
   processed/aoi/demo_lots.geojson (geometry only; agronomist merges into domain/farm.json)
 - [!] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (code + tests ready,
-  `python -m pipeline.ingest imerg`; blocked on Earthdata credentials, PENDING P-005)
+  `python -m pipeline.ingest imerg`; credentials OK since 2026-11-14; blocked on GES DISC EULA approval, PENDING P-008)
 - [~] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
-  (POWER 7 layers + 3 S2 NDVI scenes + terrain built; IMERG/SMAP/GLDAS blocked P-005; flood date P-007)
+  (POWER 7 layers + 3 S2 NDVI scenes + terrain + SMAP AM/PM and qual flags built; IMERG/GLDAS blocked by GES DISC
+  EULA P-008; flood date P-007)
 - [ ] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying)
 - [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;
   next pass: Sheet, TabBar, chart frame; wordmark to paths after the pick)

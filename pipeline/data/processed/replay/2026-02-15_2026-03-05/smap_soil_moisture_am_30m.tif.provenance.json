@@ -1,0 +1,27 @@
+{
+ "provenance": {
+  "id": "prov-replay-smap-soil_moisture_am-2026-02-15-2026-03-05",
+  "dataset": "SPL3SMP_E",
+  "version": "006",
+  "provider": "NASA NSIDC DAAC",
+  "url": "https://nsidc.org/data/spl3smp_e/versions/6",
+  "accessed": "2026-11-14T18:42:48Z",
+  "spatial_resolution": "9 km (EASE-Grid 2.0)",
+  "temporal_resolution": "1 day",
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2026-02-15",
+   "2026-03-05"
+  ],
+  "processing": [
+   "OPeNDAP CSV subsets of SPL3SMP_E 006 (one granule per day, UTC day of the file name)",
+   "fill -9999 and values outside the valid range 0.02-0.5 cm3/cm3 -> missing; flag fill 65534 -> missing",
+   "placed on the 30 m farm grid by nearest: each 30 m cell takes the 9 km EASE-Grid 2.0 cell containing it (cell bounds halfway between the granule's published cell centres, read once from a coordinate probe of EASE rows/cols (800, 920, 1000, 1150)); coarse value kept coarse",
+   "AM and PM retrievals kept separate; no gap filling, no temporal compositing"
+  ],
+  "code_commit": "a1c5b4e+uncommitted",
+  "agent": "data-engineer",
+  "notes": "Volumetric soil moisture, cm3/cm3 (stored as published; a 0..1 volume fraction). Missing granule days: none."
+ },
+ "origin": "sourced"
+}

@@ -51,11 +51,11 @@ datasets:
     spatial_res: "0.1 degree"
     temporal_res: "daily (accumulated from half-hourly IMERG)"
     latency: "Final Run, 3.5-month latency"
-    variables: null
+    variables: ["precipitation (mm/day, dims time/lon/lat, fill -9999.9)"]
     use_in_demenova: "Alert trigger: upstream and local rain"
     verified_by: data-engineer
     origin: sourced
-    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Download needs Earthdata login."
+    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Variables read from a granule DMR via NASA cloud OPeNDAP 2026-11-14. Data access needs Earthdata login plus GES DISC EULA approval (PENDING P-008)."
 
   - key: smap
     provider: "NASA NSIDC DAAC"
@@ -66,11 +66,11 @@ datasets:
     spatial_res: "9 km (EASE-Grid 2.0)"
     temporal_res: "1 day"
     latency: null
-    variables: null
+    variables: ["Soil_Moisture_Retrieval_Data_AM/soil_moisture (cm**3/cm**3, fill -9999, valid 0.02-0.5)", "Soil_Moisture_Retrieval_Data_PM/soil_moisture_pm", "retrieval_qual_flag / retrieval_qual_flag_pm (fill 65534)"]
     use_in_demenova: "Soil saturation indicator"
     verified_by: data-engineer
     origin: sourced
-    notes: "SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture, Version 6 (CMR version 006, DOI 10.5067/M20OXIZHY3RJ). Coverage 31 March 2015 to present. Latency and variable names not stated on the page read. Download needs Earthdata login."
+    notes: "SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture, Version 6 (CMR version 006, DOI 10.5067/M20OXIZHY3RJ). Coverage 31 March 2015 to present. Latency not stated on the page read. Variables read from a granule DMR (NASA cloud OPeNDAP) 2026-11-14; data reachable with Earthdata login (no extra EULA)."
 
   - key: gldas
     provider: "NASA GES DISC"

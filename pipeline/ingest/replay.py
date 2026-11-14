@@ -74,9 +74,27 @@ def build(start: dt.date, end: dt.date) -> dict:
     for name in ("dem_farm_30m.tif", "upslope_area_farm_30m.tif"):
         layers.append({"layer": name.removesuffix("_30m.tif").removesuffix("_farm"), "file": f"../../terrain/{name}", "dataset": "srtm",
                        "resampling": "bilinear (DEM); D8 accumulation for upslope area", "status": "available"})
-    for key, reason in (("imerg", "Earthdata login needed (GPM_3IMERGHHE / GPM_3IMERGDL V07)"),
-                        ("smap", "Earthdata login needed (SPL3SMP_E 006)"),
-                        ("gldas", "Earthdata login needed (GLDAS_NOAH025_3H 2.1); availability for Feb 2026 to be checked")):
+    pending = []
+    try:
+        from pipeline.ingest import smap
+
+        sm = smap.replay_layers(FARM_BOX, grid, dates, AOI_ID, out)
+        for name in ("soil_moisture_am", "soil_moisture_pm", "retrieval_qual_flag_am", "retrieval_qual_flag_pm"):
+            entry = {"layer": f"smap_{name}", "file": f"smap_{name}_30m.tif", "dataset": "smap",
+                     "resampling": "nearest (9 km EASE-Grid 2.0 cell containing the 30 m cell)", "status": "available",
+                     "missing_granule_dates": sm["granule_missing"]}
+            if name in sm["dates_with_value"]:
+                entry["dates_with_value"] = sm["dates_with_value"][name]
+            layers.append(entry)
+    except PermissionError as error:
+        pending.append(("smap", f"SPL3SMP_E 006 not reachable: {error}"))
+    imerg_layers = getattr(build, "imerg_layers", None)
+    if imerg_layers:
+        layers.extend(imerg_layers(grid, dates, out))
+    else:
+        pending.append(("imerg", "GES DISC data access refused (EULA not accepted, PENDING P-008)"))
+    pending.append(("gldas", "GES DISC data access refused (EULA not accepted, PENDING P-008); Feb 2026 availability unchecked"))
+    for key, reason in pending:
         layers.append({"layer": key, "file": None, "dataset": key, "resampling": "nearest (planned; coarse value kept coarse)", "status": "pending", "reason": reason})
 
     clear_fracs = [s["clear_fraction"] for s in scenes]
