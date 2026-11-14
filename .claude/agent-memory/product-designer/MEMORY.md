@@ -1,0 +1,2 @@
+- [Design direction v1](design-direction.md) — soil-core signature, palette roles, rejected ideas (sparkle, torn leaf, faded bars)
+- [Screenshot tooling](screenshot-tooling.md) — headless Edge recipe, 500 px clamp → iframe, transparent icon PNGs

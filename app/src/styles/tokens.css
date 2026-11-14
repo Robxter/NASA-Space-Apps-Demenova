@@ -1,0 +1,145 @@
+/*
+ * Demenova design tokens (design/BRIEF.md). Owner: product-designer.
+ * Raw values live here as --dn-* custom properties; theme.css maps them to Tailwind utilities.
+ * Dark mode follows the phone (prefers-color-scheme) and can be forced with <html data-theme="dark|light">.
+ * Contrast ratios for every text pair are listed in design/BRIEF.md (all status text >= 7:1).
+ */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces and ink */
+  --dn-bg: #eef2ef; /* Mist */
+  --dn-surface: #ffffff;
+  --dn-surface-2: #e3e9e5;
+  --dn-line: #d2dbd6; /* hairline, decorative only */
+  --dn-line-strong: #56677a; /* control borders, >= 3:1 */
+  --dn-ink: #0e2135; /* Orbit */
+  --dn-ink-2: #44566a;
+  --dn-ink-3: #56677a;
+  --dn-leaf: #2a6343;
+  --dn-focus: #1d5fc2;
+  --dn-primary: #0e2135;
+  --dn-on-primary: #ffffff;
+  --dn-alluvium: #5a4a36;
+  --dn-starlight: #f4df8e;
+  --dn-skeleton: #dfe6e2;
+
+  /* Severity: fill (map, core water), ink (text, outlines), tint (badge background) */
+  --dn-normal-fill: #3591a0;
+  --dn-normal-ink: #0f5258;
+  --dn-normal-tint: #dceeee;
+  --dn-watch-fill: #f0c63a;
+  --dn-watch-ink: #5c4100;
+  --dn-watch-tint: #faefc2;
+  --dn-warning-fill: #d4560a;
+  --dn-warning-ink: #7f2e00;
+  --dn-warning-tint: #fbe0cb;
+  --dn-severe-fill: #93154f;
+  --dn-severe-ink: #7e1046;
+  --dn-severe-tint: #f7dce8;
+  --dn-stale-fill: #8a949c;
+  --dn-stale-ink: #3f4a55;
+  --dn-stale-tint: #e4e9ec;
+  --dn-severe-solid: #93154f; /* white text 8.53:1, both themes */
+  --dn-on-severe-solid: #ffffff;
+
+  /* Motion */
+  --dn-ease: cubic-bezier(0.2, 0, 0, 1);
+  --dn-dur-press: 120ms;
+  --dn-dur-state: 200ms;
+  --dn-dur-sheet: 320ms;
+  --dn-dur-onset: 600ms;
+
+  /* Elevation */
+  --dn-shadow-sheet: 0 -1px 0 rgb(14 33 53 / 0.06), 0 -8px 24px rgb(14 33 53 / 0.08);
+  --dn-shadow-banner: 0 1px 2px rgb(14 33 53 / 0.08), 0 6px 16px rgb(14 33 53 / 0.1);
+
+  /* Hatch for synthetic (demo) content */
+  --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(90 74 54 / 0.12) 3px 4px);
+}
+
+/* Dark values. Duplicated on purpose: one block for the phone setting, one for a forced theme. */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --dn-bg: #0a1726;
+  --dn-surface: #12233a;
+  --dn-surface-2: #1a2f4a;
+  --dn-line: #233853;
+  --dn-line-strong: #8e9dab;
+  --dn-ink: #e7edf2;
+  --dn-ink-2: #b3c0cc;
+  --dn-ink-3: #8e9dab;
+  --dn-leaf: #86cda2;
+  --dn-focus: #7fb2ff;
+  --dn-primary: #e7edf2;
+  --dn-on-primary: #0a1726;
+  --dn-alluvium: #d9c6aa;
+  --dn-skeleton: #1d3150;
+  --dn-normal-fill: #72ceda;
+  --dn-normal-ink: #93dce0;
+  --dn-normal-tint: #0f3238;
+  --dn-watch-fill: #f9da62;
+  --dn-watch-ink: #f6d87a;
+  --dn-watch-tint: #36300f;
+  --dn-warning-fill: #ee7a26;
+  --dn-warning-ink: #ffb680;
+  --dn-warning-tint: #3d2412;
+  --dn-severe-fill: #e0336f;
+  --dn-severe-ink: #ff9dbf;
+  --dn-severe-tint: #461530;
+  --dn-stale-fill: #7c8893;
+  --dn-stale-ink: #b9c3cc;
+  --dn-stale-tint: #1d2a39;
+  --dn-shadow-sheet: 0 -1px 0 rgb(0 0 0 / 0.3), 0 -8px 24px rgb(0 0 0 / 0.35);
+  --dn-shadow-banner: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.35);
+  --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --dn-bg: #0a1726;
+    --dn-surface: #12233a;
+    --dn-surface-2: #1a2f4a;
+    --dn-line: #233853;
+    --dn-line-strong: #8e9dab;
+    --dn-ink: #e7edf2;
+    --dn-ink-2: #b3c0cc;
+    --dn-ink-3: #8e9dab;
+    --dn-leaf: #86cda2;
+    --dn-focus: #7fb2ff;
+    --dn-primary: #e7edf2;
+    --dn-on-primary: #0a1726;
+    --dn-alluvium: #d9c6aa;
+    --dn-skeleton: #1d3150;
+    --dn-normal-fill: #72ceda;
+    --dn-normal-ink: #93dce0;
+    --dn-normal-tint: #0f3238;
+    --dn-watch-fill: #f9da62;
+    --dn-watch-ink: #f6d87a;
+    --dn-watch-tint: #36300f;
+    --dn-warning-fill: #ee7a26;
+    --dn-warning-ink: #ffb680;
+    --dn-warning-tint: #3d2412;
+    --dn-severe-fill: #e0336f;
+    --dn-severe-ink: #ff9dbf;
+    --dn-severe-tint: #461530;
+    --dn-stale-fill: #7c8893;
+    --dn-stale-ink: #b9c3cc;
+    --dn-stale-tint: #1d2a39;
+    --dn-shadow-sheet: 0 -1px 0 rgb(0 0 0 / 0.3), 0 -8px 24px rgb(0 0 0 / 0.35);
+    --dn-shadow-banner: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.35);
+    --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
+  }
+}
+
+/*
+ * Level scope: any element with data-level="normal|watch|warning|severe|stale" exposes
+ * --lvl-fill / --lvl-ink / --lvl-tint to its subtree (utilities: bg-lvl-tint, text-lvl-ink, ...).
+ */
+[data-level='normal'] { --lvl-fill: var(--dn-normal-fill); --lvl-ink: var(--dn-normal-ink); --lvl-tint: var(--dn-normal-tint); --lvl-ratio: 0.25; }
+[data-level='watch'] { --lvl-fill: var(--dn-watch-fill); --lvl-ink: var(--dn-watch-ink); --lvl-tint: var(--dn-watch-tint); --lvl-ratio: 0.5; }
+[data-level='warning'] { --lvl-fill: var(--dn-warning-fill); --lvl-ink: var(--dn-warning-ink); --lvl-tint: var(--dn-warning-tint); --lvl-ratio: 0.75; }
+[data-level='severe'] { --lvl-fill: var(--dn-severe-fill); --lvl-ink: var(--dn-severe-ink); --lvl-tint: var(--dn-severe-tint); --lvl-ratio: 1; }
+[data-level='stale'] { --lvl-fill: var(--dn-stale-fill); --lvl-ink: var(--dn-stale-ink); --lvl-tint: var(--dn-stale-tint); --lvl-ratio: 0; }

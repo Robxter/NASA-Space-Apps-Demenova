@@ -1,2 +1,129 @@
-/* Entry stylesheet. Owner: product-designer (tokens via @theme in T-016). */
-@import "tailwindcss";
+/* Entry stylesheet. Owner: product-designer. Tokens: tokens.css; Tailwind theme: theme.css; spec: design/BRIEF.md. */
+@import 'tailwindcss';
+@import './tokens.css';
+@import './theme.css';
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--dn-bg);
+    color: var(--dn-ink);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.47;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--dn-focus);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Tabular figures for every number that can change while the user watches. */
+  .dn-num {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  /* Inset grouped list: hairline between rows, inset from the leading edge (iOS pattern). */
+  .dn-list > li + li {
+    position: relative;
+  }
+  .dn-list > li + li::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 16px;
+    border-top: 1px solid var(--dn-line);
+  }
+
+  /* Replay scrubber: native range input, track drawn by the day strip underneath. */
+  .dn-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 48px;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+  .dn-range::-webkit-slider-runnable-track {
+    height: 48px;
+    background: transparent;
+  }
+  .dn-range::-moz-range-track {
+    height: 48px;
+    background: transparent;
+  }
+  .dn-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 4px;
+    height: 48px;
+    border-radius: 2px;
+    background: var(--dn-ink);
+    box-shadow: 0 0 0 2px var(--dn-surface);
+  }
+  .dn-range::-moz-range-thumb {
+    width: 4px;
+    height: 48px;
+    border: 0;
+    border-radius: 2px;
+    background: var(--dn-ink);
+    box-shadow: 0 0 0 2px var(--dn-surface);
+  }
+  .dn-range:focus-visible {
+    outline-offset: 4px;
+  }
+
+  /*
+   * Map lots (Leaflet: pass className "dn-lot-shape" and set data-level on the path, or add
+   * "dn-lot-shape dn-lot--<level>"). CSS overrides Leaflet's presentation attributes.
+   * Fill opacity rises with the level: a second, colour-free cue.
+   */
+  .dn-lot-shape {
+    stroke-width: 2;
+    transition:
+      fill var(--dn-dur-onset) var(--dn-ease),
+      fill-opacity var(--dn-dur-onset) var(--dn-ease),
+      stroke var(--dn-dur-onset) var(--dn-ease);
+  }
+  .dn-lot-shape[data-level='normal'], .dn-lot--normal { fill: var(--dn-normal-fill); stroke: var(--dn-normal-ink); fill-opacity: 0.25; }
+  .dn-lot-shape[data-level='watch'], .dn-lot--watch { fill: var(--dn-watch-fill); stroke: var(--dn-watch-ink); fill-opacity: 0.4; }
+  .dn-lot-shape[data-level='warning'], .dn-lot--warning { fill: var(--dn-warning-fill); stroke: var(--dn-warning-ink); fill-opacity: 0.55; }
+  .dn-lot-shape[data-level='severe'], .dn-lot--severe { fill: var(--dn-severe-fill); stroke: var(--dn-severe-ink); fill-opacity: 0.75; stroke-width: 3; }
+  .dn-lot-shape[data-level='stale'], .dn-lot--stale { fill: var(--dn-stale-fill); stroke: var(--dn-stale-ink); fill-opacity: 0.15; stroke-dasharray: 6 4; }
+
+  /* Severe onset on the map: the stroke swells and settles twice. Add .is-onset for ~2.4 s. */
+  .dn-lot-shape.is-onset {
+    animation: dn-lot-onset 1.1s var(--dn-ease) 2;
+  }
+  @keyframes dn-lot-onset {
+    0% { stroke-width: 3; stroke-opacity: 1; }
+    45% { stroke-width: 12; stroke-opacity: 0.35; }
+    100% { stroke-width: 3; stroke-opacity: 1; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .dn-ripple {
+    display: none;
+  }
+}

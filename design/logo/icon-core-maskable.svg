@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Maskable icon: same as icon-core.svg, star and water scaled to 0.82 so they sit inside the 80 % safe circle. -->
+  <rect width="512" height="512" fill="#0E2135"/>
+  <path d="M0 300 Q256 244 512 300 V512 H0Z" fill="#2A6343"/>
+  <g transform="translate(256 256) scale(0.82) translate(-256 -256)">
+    <g fill="none" stroke="#9ED8DE" stroke-width="16" stroke-linecap="round">
+      <path d="M136 372 q30 -16 60 0 t60 0 t60 0 t60 0"/>
+      <path d="M176 432 q20 -12 40 0 t40 0 t40 0 t40 0"/>
+    </g>
+    <g fill="#F4DF8E">
+      <path d="M256 74 L267 150 L256 226 L245 150Z"/>
+      <path d="M256 74 L267 150 L256 226 L245 150Z" transform="rotate(60 256 150)"/>
+      <path d="M256 74 L267 150 L256 226 L245 150Z" transform="rotate(-60 256 150)"/>
+      <path d="M212 150 L256 155 L300 150 L256 145Z"/>
+      <circle cx="256" cy="150" r="15"/>
+    </g>
+  </g>
+</svg>

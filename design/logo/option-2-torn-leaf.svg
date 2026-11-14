@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 200" role="img" aria-labelledby="t">
+  <title id="t">Demenova, option 2: Torn leaf</title>
+  <!-- Mark: a banana leaf torn by wind along its parallel veins; the strips fan out as the rays of a nova. -->
+  <g fill="#2A6343">
+    <path d="M80 188 C71 150 71 80 80 26 C89 80 89 150 80 188Z"/>
+    <path d="M80 188 C71 152 71 92 80 44 C89 92 89 152 80 188Z" transform="rotate(-19 80 188)"/>
+    <path d="M80 188 C71 152 71 92 80 44 C89 92 89 152 80 188Z" transform="rotate(19 80 188)"/>
+    <path d="M80 188 C72 156 72 108 80 70 C88 108 88 156 80 188Z" transform="rotate(-38 80 188)"/>
+    <path d="M80 188 C72 156 72 108 80 70 C88 108 88 156 80 188Z" transform="rotate(38 80 188)"/>
+  </g>
+  <path d="M80 182 L80 40" stroke="#9ED8DE" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <g fill="#E0B92C">
+    <path d="M80 160 L82.6 176 L80 192 L77.4 176Z"/>
+    <path d="M80 164 L82 176 L80 188 L78 176Z" transform="rotate(60 80 176)"/>
+    <path d="M80 164 L82 176 L80 188 L78 176Z" transform="rotate(-60 80 176)"/>
+    <circle cx="80" cy="176" r="3.6"/>
+  </g>
+  <text x="196" y="124" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="74" font-weight="600" letter-spacing="-1.5" fill="#0E2135">Demenova</text>
+</svg>
