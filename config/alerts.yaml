@@ -1,45 +1,71 @@
-# config/alerts.yaml - owner: data-scientist (T-021..T-023, T-041). Stub written by lead-architect in phase 0.
+# config/alerts.yaml - owner: data-scientist (T-021..T-024, T-041, T-047).
 # Contract: docs/contracts/schemas/config/alerts.schema.json (model AlertsConfig, pipeline/common/models.py).
 #
-# Keys only. Every parameter is `value: null, origin: pending` (Rule zero, CLAUDE.md §1). data-scientist
-# fills each one from the SPEC "Risk engine and weighted alerts" and "Prediction science" sections with
-# origin sourced | calibrated | estimated | design and its source or reason, then updates last_changed.
-# Setting or changing any weight or threshold is class A (CLAUDE.md §6): PENDING.md first.
-# Units are SI (ADR-002): put the unit in `unit` when the value is filled.
-# Further engine parameters may be added as extra top-level keys holding a parameter or a map of parameters.
+# Every parameter: value, origin (sourced | calibrated | estimated | design | pending), source or reason,
+# last_changed; `estimated` also names estimated_by and the TASKS.md item that replaces it (Rule zero).
+# Weights and W thresholds below are the SPEC starting values written as `estimated` (2026-11-14); writing or
+# changing them is class A: PENDING.md P-011 asks Roster to approve them. Nothing here is calibrated yet: the
+# documented-flood date (P-007) is open, so no threshold or lag has been fitted to rain (science review B1).
+# Units are SI (ADR-002); `unit` names them.
 
 weights:
-  upstream: {value: null, origin: pending, reason: "Weight of upstream rain in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  saturation: {value: null, origin: pending, reason: "Weight of soil saturation in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  terrain: {value: null, origin: pending, reason: "Weight of terrain wetness (TWI) in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  local: {value: null, origin: pending, reason: "Weight of local rain in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  balance: {value: null, origin: pending, reason: "Weight of the water balance in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  upstream: {value: 0.35, origin: estimated, estimated_by: "SPEC starting weight (docs/spec/12, Risk engine table)", reason: "Starting weight of upstream rain, not a finding; replaced by Tyson's AHP weights (method 13) once his pairwise matrix arrives and CR <= 0.10. Class A: PENDING.md P-011.", task_id: T-041, last_changed: 2026-11-14}
+  saturation: {value: 0.25, origin: estimated, estimated_by: "SPEC starting weight (docs/spec/12, Risk engine table)", reason: "Starting weight of soil saturation (here the antecedent precipitation index, D-019: no SMAP). Class A: P-011.", task_id: T-041, last_changed: 2026-11-14}
+  terrain: {value: 0.20, origin: estimated, estimated_by: "SPEC starting weight (docs/spec/12, Risk engine table)", reason: "Starting weight of terrain wetness (TWI rank within the farm). Class A: P-011.", task_id: T-041, last_changed: 2026-11-14}
+  local: {value: 0.10, origin: estimated, estimated_by: "SPEC starting weight (docs/spec/12, Risk engine table)", reason: "Starting weight of local 24 h rain. Class A: P-011.", task_id: T-041, last_changed: 2026-11-14}
+  balance: {value: 0.10, origin: estimated, estimated_by: "SPEC starting weight (docs/spec/12, Risk engine table)", reason: "Starting weight of the 7-day water balance (rain minus ETc). Class A: P-011.", task_id: T-041, last_changed: 2026-11-14}
 
 levels:
-  watch: {value: null, origin: pending, reason: "W threshold to escalate to Watch; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  warning: {value: null, origin: pending, reason: "W threshold to escalate to Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  severe: {value: null, origin: pending, reason: "W threshold to escalate to Severe; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  watch: {value: 0.40, origin: estimated, estimated_by: "SPEC severity table (docs/spec/12) and state diagram (docs/spec/16)", reason: "Starting W threshold for Watch; to be calibrated with hits, misses and false alarms once P-007 and more documented floods exist. Class A: P-011.", task_id: T-047, last_changed: 2026-11-14}
+  warning: {value: 0.60, origin: estimated, estimated_by: "SPEC severity table (docs/spec/12) and state diagram (docs/spec/16)", reason: "Starting W threshold for Warning; calibration waits for P-007. Class A: P-011.", task_id: T-047, last_changed: 2026-11-14}
+  severe: {value: 0.80, origin: estimated, estimated_by: "SPEC severity table (docs/spec/12) and state diagram (docs/spec/16)", reason: "Starting W threshold for Severe; calibration waits for P-007. Class A: P-011.", task_id: T-047, last_changed: 2026-11-14}
 
 deescalate:
-  watch: {value: null, origin: pending, reason: "W below which a unit leaves Watch; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  warning: {value: null, origin: pending, reason: "W below which a unit leaves Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-  severe: {value: null, origin: pending, reason: "W below which a unit leaves Severe; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  watch: {value: 0.30, origin: design, reason: "Hysteresis: leave Watch only when W falls 0.10 below its threshold (docs/spec/12 anti-noise rules; docs/spec/16 Watch -> Normal at W < 0.30).", last_changed: 2026-11-14}
+  warning: {value: 0.50, origin: design, reason: "Hysteresis (docs/spec/16 Warning -> Watch at W < 0.50).", last_changed: 2026-11-14}
+  severe: {value: 0.70, origin: design, reason: "Hysteresis (docs/spec/16 Severe -> Warning at W < 0.70).", last_changed: 2026-11-14}
 
-severe_confirmations: {value: null, origin: pending, reason: "Consecutive updates needed to confirm Severe; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-stale_after_hours: {value: null, origin: pending, reason: "Age of the newest rain data after which a unit turns Stale; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-waterlogging_days_floor_warning: {value: null, origin: pending, reason: "Waterlogging-days floor rule for Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
-root_depth_cm: {value: null, origin: pending, reason: "Banana root depth for the water balance; set by data-scientist or agronomist from a cited source.", last_changed: 2026-11-14}
-api_k: {value: null, origin: pending, reason: "Antecedent precipitation index decay constant; set by data-scientist from a cited source or calibration.", last_changed: 2026-11-14}
-curve_number_by_cover_soil: {value: null, origin: pending, reason: "SCS curve numbers by cover and soil group; set by data-scientist from a cited source.", last_changed: 2026-11-14}
-travel_lag_hours: {value: null, origin: pending, reason: "Upstream-to-farm travel lag; first estimate (Kirpich) then calibrated on the Feb 2026 event (T-021).", last_changed: 2026-11-14}
+severe_confirmations: {value: 2, origin: design, reason: "Severe needs W >= levels.severe on two consecutive updates so one noisy rain estimate emails nobody (docs/spec/12, 16).", last_changed: 2026-11-14}
+stale_after_hours: {value: 12, origin: design, unit: h, reason: "A unit whose newest rain data is older than 12 h is Stale and never emails (docs/spec/12, 16).", last_changed: 2026-11-14}
+waterlogging_days_floor_warning: {value: 2, origin: sourced, unit: d, source: "Tyson, 14 Nov 2026: banana tolerates at most 2 days of waterlogging (domain/thresholds.yaml waterlogging_tolerance_days; DATA_POLICY.md §5)", notes: "Rule (docs/spec/12): 2 consecutive positive-balance days on a top-tercile unit set a floor of Warning. Not applied while drainage_mm_per_day is pending (PENDING.md P-012).", last_changed: 2026-11-14}
+root_depth_cm: {value: 70, origin: sourced, unit: cm, source: "Tyson, 14 Nov 2026: banana roots at 70 cm (domain/thresholds.yaml root_zone_depth_cm)", notes: "Not used by the engine yet: the balance has no drainage term until drainage_mm_per_day is known.", last_changed: 2026-11-14}
+api_k: {value: 0.90, origin: estimated, estimated_by: "SPEC Prediction science method 5 (Kohler & Linsley 1951: k between 0.85 and 0.98, 0.90 common)", reason: "k is site-specific; 0.90 is the SPEC's common value. The cited NWS PDF was not opened by data-scientist, so the value is not marked sourced. Calibrate against observed wetness when any exists.", task_id: T-047, last_changed: 2026-11-14}
+curve_number_by_cover_soil: {value: null, origin: pending, reason: "No land-cover or hydrologic-soil-group layer is ingested for the catchment, so no curve number can be read from NEH 630 tables. runoff_upstream_mm stays null and the upstream indicator uses the 72 h catchment rain, which has the same percentile rank as CN runoff of that rain for a fixed CN (Q rises monotonically with P above Ia).", task_id: T-047, last_changed: 2026-11-14}
+travel_lag_hours: {value: 4.18, origin: estimated, unit: h, estimated_by: "data-scientist: Kirpich (1940) tc on SRTM (see kirpich below)", reason: "First estimate only (docs/spec/09 method 4). On the daily IMERG series it rounds to a 0-day shift. The calibrated lag on the February 2026 event is pending: P-007 (event confirmation) and IMERG Early half-hourly rain (the daily product cannot resolve hours).", task_id: T-047, last_changed: 2026-11-14}
 
 sigatoka:
-  t_mean_c: {value: null, origin: pending, reason: "Sigatoka side indicator: mean temperature condition; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-  rh_mean: {value: null, origin: pending, reason: "Sigatoka side indicator: mean relative humidity condition (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-  rh_unfavourable: {value: null, origin: pending, reason: "Sigatoka side indicator: unfavourable humidity bound (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-  days: {value: null, origin: pending, reason: "Sigatoka side indicator: consecutive days rule; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-  leaf_wet_rh: {value: null, origin: pending, reason: "Relative humidity counted as leaf wetness (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  t_mean_c: {value: 23, origin: estimated, unit: "°C", estimated_by: "research proposal in Tyson's doc (domain/thresholds.yaml sigatoka_watch_mean_temp_c)", reason: "Favourable when daily mean temperature is above this value (docs/spec/12). Awaits Tyson (D-014, review queue Q-02).", task_id: T-040, last_changed: 2026-11-14}
+  rh_mean: {value: 0.75, origin: estimated, estimated_by: "research proposal in Tyson's doc (domain/thresholds.yaml sigatoka_watch_rh_pct)", reason: "Favourable when daily mean relative humidity is above 75 % (stored as a 0..1 fraction). Awaits Tyson (D-014, Q-02).", task_id: T-040, last_changed: 2026-11-14}
+  rh_unfavourable: {value: 0.70, origin: estimated, estimated_by: "research proposal in Tyson's doc (domain/thresholds.yaml sigatoka_unfavourable_rh_pct)", reason: "Mean RH below 70 % is unfavourable for the disease. Awaits Tyson (D-014, Q-02).", task_id: T-040, last_changed: 2026-11-14}
+  days: {value: 3, origin: estimated, unit: d, estimated_by: "research proposal in Tyson's doc (domain/thresholds.yaml sigatoka_watch_consecutive_days)", reason: "Watch after 3 consecutive favourable days with rain (rain read as > 0 mm IMERG that UTC day). Awaits Tyson (DATA_POLICY.md §4).", task_id: T-040, last_changed: 2026-11-14}
+  leaf_wet_rh: {value: 0.90, origin: estimated, estimated_by: "SPEC Prediction science method 8 (Sentelhas et al. 2008, hours with RH >= 90 %)", reason: "The cited paper was not opened by data-scientist; local thresholds improve the method (SPEC limit).", task_id: T-040, last_changed: 2026-11-14}
 
 cold:
-  base_c: {value: null, origin: pending, reason: "Base temperature for banana heat units and cold stress; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
-  weekly_threshold_rule: {value: null, origin: pending, reason: "Weekly cold-stress rule; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  base_c: {value: 14, origin: estimated, unit: "°C", estimated_by: "research proposal in Tyson's doc (domain/thresholds.yaml heat_unit_base_temp_c)", reason: "Base temperature of banana heat units (docs/spec/09 method 10). Awaits Tyson (D-014, Q-04).", task_id: T-040, last_changed: 2026-11-14}
+  weekly_threshold_rule: {value: "Cold-stress Watch when the 7-day heat-unit sum ending on a day is below the mean of the 7-day sums ending on the same month-day in earlier years (at least engine.cold_climatology_min_years of them).", origin: estimated, estimated_by: "literal reading of domain/thresholds.yaml cold_stress_rule", reason: "How far below the climatology counts as stress is not defined yet (review queue Q-04). The SPEC Risk engine text says '7-day mean below 23 °C' instead; the Prediction science table (method 10) is followed here, PENDING.md P-012.", task_id: T-040, last_changed: 2026-11-14}
+
+# ---- Further engine parameters (extra top-level keys, CONTRACTS.md §5) --------------------------------------
+
+kc_banana: {value: 1.10, origin: estimated, estimated_by: "data-scientist from FAO-56 Table 12 (opened https://www.fao.org/4/x0490e/x0490e0b.htm on 2026-11-14)", reason: "Single crop coefficient for ETc = Kc x ETo: FAO-56 Table 12, Banana 1st year, Kc mid = 1.10 (Kc ini 0.50, Kc end 1.00; 2nd year 1.00 / 1.20 / 1.10). Plant age of the demo lots is unknown (T-060), so the year-one mid-season value the SPEC refers to is used. Table 12 values are for a sub-humid climate (RHmin about 45 %, u2 about 2 m/s) and are not climate-adjusted (FAO-56 eq. 62 needs RHmin, which the POWER daily file does not hold). The SPEC quotes Table 17 (basal Kcb about 1.05), which excludes soil evaporation; the single Kc is the coefficient of ETc = Kc x ETo.", task_id: T-060, last_changed: 2026-11-14}
+drainage_mm_per_day: {value: null, origin: pending, unit: mm/d, reason: "D in Delta S = P - ETc - D comes from drainage class, drain depth and spacing (T-060, review queue Q-13); none is known. The engine's balance is P - ETc (D not subtracted) and the 2-day floor rule is not applied until D exists (PENDING.md P-012).", task_id: T-060, last_changed: 2026-11-14}
+
+kirpich:
+  length_m: {value: 47995, origin: sourced, unit: m, source: "SRTMGL1 v003 (provenance prov-catchment-buenavista-srtm): longest D8 path to the outlet on the OSM-burned routing surface; `uv run python -m pipeline.engine kirpich` (re-delineated area 253.79 km2 vs published 253.8 km2)", last_changed: 2026-11-14}
+  drop_m: {value: 2346.0, origin: sourced, unit: m, source: "SRTMGL1 v003, unburned DEM: 2361.5 m at the most remote cell (-79.67526, -3.53583) minus 15.5 m at the outlet (-79.87825, -3.37654)", last_changed: 2026-11-14}
+  slope_m_per_m: {value: 0.04888, origin: sourced, unit: m/m, source: "drop_m / length_m along the longest flow path (SRTMGL1 v003)", last_changed: 2026-11-14}
+  tc_minutes: {value: 250.7, origin: estimated, unit: min, estimated_by: "data-scientist: tc = 0.0195 L^0.77 S^-0.385 (Kirpich 1940, docs/spec/09 method 4)", reason: "Kirpich was derived on small steep Tennessee watersheds; first guess only, replaced by the observed lag (T-047).", task_id: T-047, last_changed: 2026-11-14}
+
+engine:
+  upstream_window_hours: {value: 72, origin: design, unit: h, reason: "The upstream indicator is the catchment rain of the last 72 h (SPEC 'last 24-72 h'; 72 h matches the event ranking of T-013), shifted by the travel lag in whole days.", last_changed: 2026-11-14}
+  local_window_hours: {value: 24, origin: design, unit: h, reason: "Local rain of the last 24 h (docs/spec/12): one IMERG Early UTC day over the farm cell.", last_changed: 2026-11-14}
+  balance_window_days: {value: 7, origin: design, unit: d, reason: "7-day water balance (docs/spec/12).", last_changed: 2026-11-14}
+  percentile_min_history_days: {value: 365, origin: design, unit: d, reason: "A percentile needs at least one year of earlier values, so every season is in the history; before that the indicator is missing.", last_changed: 2026-11-14}
+  percentile_method: {value: "mid-rank against strictly earlier days: (count below + half the ties) / count", origin: design, reason: "No look-ahead in replay; ties (many dry days) are split so a dry day does not rank as wet.", last_changed: 2026-11-14}
+  state_start: {value: "2016-01-01", origin: design, reason: "The state machine starts at Normal on the first day all percentiles exist (365 days after the IMERG record starts on 2015-01-01) and runs daily, so the replay window starts from a settled state.", last_changed: 2026-11-14}
+  update_time: {value: "end of the UTC day of the newest IMERG Early daily value", origin: design, reason: "The replay has one update per UTC day; newest_rain_data_at is the end of that day, so a missing day makes the unit Stale after 12 h.", last_changed: 2026-11-14}
+  cold_climatology_min_years: {value: 5, origin: design, unit: yr, reason: "The same-week climatology needs at least 5 earlier years before cold stress is evaluated.", last_changed: 2026-11-14}
+
+verification:
+  alert_level: {value: "severe", origin: design, reason: "An alert, for verification, is a unit at Severe (the level that emails, docs/spec/12).", last_changed: 2026-11-14}
+  days_before: {value: 1, origin: design, unit: d, reason: "An alert on the UTC day before a documented flood counts as a hit (early warning).", last_changed: 2026-11-14}
+  days_after: {value: 1, origin: design, unit: d, reason: "Floods are reported in local dates (UTC-5); a local day ends at 05:00 UTC the next day, so one UTC day after the reported end is included.", last_changed: 2026-11-14}
