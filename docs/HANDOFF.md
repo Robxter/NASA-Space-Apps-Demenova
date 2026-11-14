@@ -22,6 +22,19 @@ Next for the receiver, in order: 1. Run checks. 2. Send queue to Tyson. 3. After
 domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by Tyson).
 Do not touch: domain/ approvals (only Tyson's answers, via tyson-answers.md, set approved_by).
 
+## 2026-11-14 23:00 - Main session (Claude Code) to Tyson (turno de noche)
+Estado: fase 1 casi completa en la rama block/1-foundations (commit d22c638). Sin enlace de la app todavía (domingo).
+Para revisar esta noche, en orden:
+1. `domain/tyson-review-queue.md` (19 preguntas, Q-01..Q-19). Las más urgentes: Q-01 (¿el daño empieza a los 2 días
+   de encharcamiento o después de más de 2?) y Q-06 (¿5 = menor costo y menos mano de obra?).
+2. Fecha real de la inundación de demostración (P-007). Lluvia media de 72 h en la cuenca alta del río Buenavista
+   (IMERG, NASA), ver `pipeline/data/processed/rain/top15_72h_events.csv`:
+   - 22–24 feb 2026: 55,7 mm (dentro del evento más húmedo del 15–17 feb 2026: 82,1 mm, puesto 8).
+   - 27 feb–1 mar 2025: 72,7 mm (evento 16).  - 7–9 jun 2026: 109,8 mm (evento 4).
+   Pregunta: ¿qué fecha se inundó de verdad la zona Pasaje/Buenavista? ¿Y cuáles de los 15 eventos inundaron fincas?
+3. Logo: tres opciones en `design/logo/options-sheet.png` (recomendada la 1, "Core").
+Nada de esto cambia el plazo: entrega el domingo 15 a las 20:00 (hora de España).
+
 ## 2026-11-14 19:05 - Main session (Claude Code) to Roster
 State: Phase 0 complete and pushed on block/0-skeleton; review (1 HIGH, 6 MEDIUM) fixed with regression tests.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
