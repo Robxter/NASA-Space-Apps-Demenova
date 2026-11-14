@@ -17,8 +17,10 @@ Verified 2026-11-14 (details and URLs in config/datasets.yaml; re-check only if 
   Farm AOI lies in one POWER cell (centre + corners identical).
 - Sentinel-2 L2A: Earth Search v1 `sentinel-2-l2a`, anonymous; per-item raster:bands scale 0.0001 offset -0.1; AOI tile 17MPS.
 - OSM: Rio Buenavista = way 468343174. pysheds 0.5 needs an np.in1d shim on numpy 2.4.
-- Access (2026-11-14): Earthdata login OK from .env; GES DISC (IMERG, GLDAS) 403 "EULA Acceptance Failure" until the account
-  approves https://urs.earthdata.nasa.gov/approve_app?client_id=e2WVk8Pw6weeLUKZYOxvTQ (P-008). NSIDC SMAP works.
+- Access (2026-11-14): Earthdata login OK from .env; GES DISC app approved by Roster (P-008 resolved), NSIDC needs nothing extra.
+  If GES DISC ever returns 403 "EULA Acceptance Failure", the fix is the approve_app link in the JSON error body.
+- GLDAS_NOAH025_3H 2.1 main stream covered Feb 2026 (latest granule 2026-07-31 on 2026-11-14); farm = cell lon i 400, lat j 226.
+- IMERG catchment window = grid indices lon 1000-1004, lat 863-867; whole 2015-2026 run takes ~25 min with 6 workers.
 - Cloud OPeNDAP: granule RelatedUrls "USE SERVICE API" -> `<url>.dmr.xml` (metadata, readable even when data 403) and
   `<url>.dap.csv?dap4.ce=/grp/var[r0:r1][c0:c1]` (lines `/grp/var[i], v...`). A 1-element-wide hyperslab returns empty rows.
 - SMAP SPL3SMP_E: lat/lon arrays are -9999 where no retrieval; farm = EASE rows 859-860, cols 1072-1073. IMERG daily

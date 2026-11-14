@@ -42,12 +42,14 @@ review queue, the flood candidates and the logo options.
   processed/aoi/{farm_aoi,catchment}.geojson, processed/terrain/{dem,upslope_area}_farm_30m.tif)
 - [x] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI) ->
   processed/aoi/demo_lots.geojson (geometry only; agronomist merges into domain/farm.json)
-- [!] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (code + tests ready,
-  `python -m pipeline.ingest imerg`; credentials OK since 2026-11-14; blocked on GES DISC EULA approval, PENDING P-008)
-- [~] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
-  (POWER 7 layers + 3 S2 NDVI scenes + terrain + SMAP AM/PM and qual flags built; IMERG/GLDAS blocked by GES DISC
-  EULA P-008; flood date P-007)
-- [ ] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying)
+- [x] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (4,335 days, 0 missing;
+  processed/rain/{imerg_catchment_daily,top15_72h_events}.csv; P-007 numbers added; P-008 resolved)
+- [x] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
+  (POWER 7, S2 NDVI 3 scenes, terrain, SMAP AM/PM + flags, IMERG Late daily, GLDAS 4 depths; flood date P-007 open;
+  follow-up: IMERG Early half-hourly for the window)
+- [~] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying). Written, not applied:
+  6 migrations + supabase/tests/rls_test.sql + README paste-in steps; waits on P-009 (Roster) and database-reviewer;
+  then Roster runs README steps 1–9 (RLS tests need a real Supabase; no local Postgres)
 - [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;
   next pass: Sheet, TabBar, chart frame; wordmark to paths after the pick)
 - [x] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon

@@ -1,0 +1,26 @@
+{
+ "provenance": {
+  "id": "prov-replay-imerg-2026-02-15-2026-03-05",
+  "dataset": "GPM_3IMERGDL",
+  "version": "07",
+  "provider": "NASA GES DISC",
+  "url": "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDL&version=07",
+  "accessed": "2026-11-14T21:37:15Z",
+  "spatial_resolution": "0.1 degree",
+  "temporal_resolution": "daily (accumulated from half-hourly IMERG)",
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2026-02-15",
+   "2026-03-05"
+  ],
+  "processing": [
+   "OPeNDAP subsets of daily `precipitation` (mm/day, UTC days); runs used: GPM_3IMERGDL",
+   "placed on the 30 m farm grid by nearest: each 30 m cell takes the 0.1 degree cell containing it; coarse value kept coarse",
+   "one band per day; a day without a granule is a NaN band"
+  ],
+  "code_commit": "8ae88e9+uncommitted",
+  "agent": "data-engineer",
+  "notes": "Local (farm) daily rain. Missing days: none. Catchment-mean upstream rain: processed/rain/imerg_catchment_daily.csv."
+ },
+ "origin": "sourced"
+}

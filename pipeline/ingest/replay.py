@@ -88,12 +88,25 @@ def build(start: dt.date, end: dt.date) -> dict:
             layers.append(entry)
     except PermissionError as error:
         pending.append(("smap", f"SPL3SMP_E 006 not reachable: {error}"))
-    imerg_layers = getattr(build, "imerg_layers", None)
-    if imerg_layers:
-        layers.extend(imerg_layers(grid, dates, out))
-    else:
-        pending.append(("imerg", "GES DISC data access refused (EULA not accepted, PENDING P-008)"))
-    pending.append(("gldas", "GES DISC data access refused (EULA not accepted, PENDING P-008); Feb 2026 availability unchecked"))
+    try:
+        from pipeline.ingest import imerg
+
+        im = imerg.farm_layer(grid, dates, AOI_ID, out)
+        layers.append({"layer": "imerg_precipitation_mm", "file": im["file"], "dataset": "imerg_late_daily" if im["runs"] == ["late"] else "imerg",
+                       "runs": im["runs"], "resampling": "nearest (0.1 degree cell containing the 30 m cell)", "status": "available",
+                       "missing_dates": im["missing"], "upstream_series": "../../rain/imerg_catchment_daily.csv"})
+    except PermissionError as error:
+        pending.append(("imerg", f"IMERG not reachable: {error}"))
+    try:
+        from pipeline.ingest import gldas
+
+        gl = gldas.replay_layers(FARM_BOX, grid, dates, AOI_ID, out)
+        for name in gl["files"]:
+            layers.append({"layer": name.removesuffix("_30m.tif"), "file": name, "dataset": "gldas",
+                           "resampling": "daily mean of 8 three-hourly instants; nearest (0.25 degree cell containing the 30 m cell)",
+                           "status": "available", "missing_dates": gl["incomplete_days"]})
+    except PermissionError as error:
+        pending.append(("gldas", f"GLDAS not reachable: {error}"))
     for key, reason in pending:
         layers.append({"layer": key, "file": None, "dataset": key, "resampling": "nearest (planned; coarse value kept coarse)", "status": "pending", "reason": reason})
 

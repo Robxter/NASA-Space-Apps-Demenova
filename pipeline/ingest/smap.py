@@ -17,6 +17,7 @@ import numpy as np
 from pipeline.common.grid import Grid, to_lonlat
 from pipeline.common.io import write_geotiff
 from pipeline.common.provenance import dataset_record, utc_now, write_sidecar
+from pipeline.ingest import opendap
 from pipeline.ingest.cache import RAW_ROOT
 
 SHORT_NAME, VERSION = "SPL3SMP_E", "006"
@@ -34,16 +35,7 @@ VARS = {
 }
 
 
-def parse_dap_csv(text: str) -> dict[str, np.ndarray]:
-    """Parse Hyrax DAP4 CSV: lines '/group/var[i], v0, v1, ...' -> {full var path: 2-D array (rows, cols)}."""
-    rows: dict[str, dict[int, list[float]]] = {}
-    for line in text.splitlines():
-        if not line.startswith("/") or "[" not in line:
-            continue
-        head, _, values = line.partition(",")
-        name, _, index = head.partition("[")
-        rows.setdefault(name.strip(), {})[int(index.rstrip("]").strip())] = [float(v) for v in values.split(",") if v.strip()]
-    return {name: np.array([r[i] for i in sorted(r)], dtype="float64") for name, r in rows.items()}
+parse_dap_csv = opendap.parse_dap_csv  # shared parser (2-D variables come back as (rows, cols))
 
 
 def clean(sm: np.ndarray) -> np.ndarray:

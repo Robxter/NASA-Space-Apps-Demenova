@@ -176,6 +176,43 @@ def test_smap_nearest_index_maps_every_farm_cell_to_one_source_cell():
     assert set(np.unique(ri)) <= {1, 2} and set(np.unique(ci)) <= {1, 2}
 
 
+def test_opendap_parser_handles_1d_and_3d():
+    from pipeline.ingest import opendap
+
+    text = "Dataset: x\n/lon, -79.95, -79.85\n/lat, -3.45, -3.35\n/p[0][0], 1, 2\n/p[0][1], 3, 4\n"
+    a = opendap.parse_dap_csv(text)
+    assert a["/lon"].shape == (2,) and a["/p"].shape == (1, 2, 2) and a["/p"][0, 1, 0] == 3
+
+
+def test_imerg_window_and_coordinate_check():
+    win = imerg.index_window((-79.875, -3.579, -79.629, -3.340))
+    assert win == (1000, 1004, 863, 867)
+    lon, lat = imerg.expected_centres(win)
+    good = "Dataset: x\n/lon, " + ", ".join(f"{v:.2f}" for v in lon) + "\n/lat, " + ", ".join(f"{v:.2f}" for v in lat) + "\n"
+    good += "".join(f"/precipitation[0][{i}], " + ", ".join(["1"] * 4 + ["-9999.9"]) + "\n" for i in range(5))
+    data = imerg.parse_subset(good, win)
+    assert data.shape == (5, 5) and np.isnan(data[4]).all() and data[0, 0] == 1  # (lat, lon); fill -> NaN
+    with pytest.raises(ValueError):
+        imerg.parse_subset(good.replace("-79.95", "-79.90"), win)
+
+
+def test_window_stats_rank():
+    dates = [dt.date(2026, 1, 1) + dt.timedelta(days=i) for i in range(8)]
+    rain = [0, 10, 20, 30, 0, 0, 5, 1]
+    events = imerg.top_events(dates, rain, n=0)
+    s = imerg.window_stats(dates, rain, dt.date(2026, 1, 5), dt.date(2026, 1, 8), events)
+    assert s["window"] == ["2026-01-06", "2026-01-08"] and s["max_72h_mm"] == 6.0
+    assert s["rank_all_windows"] == 5 and s["n_windows"] == 6
+
+
+def test_gldas_daily_mean_needs_all_8_instants():
+    from pipeline.ingest import gldas
+
+    ones = [np.ones((2, 2))] * 8
+    assert gldas.daily_mean(ones)[0, 0] == 1
+    assert gldas.daily_mean(ones[:7]) is None and gldas.daily_mean(ones[:7] + [None]) is None
+
+
 def test_dataset_record_refuses_pending_entry():
     with pytest.raises(UnverifiedDatasetError):
         dataset_record("prov-x", "gaez", processing=[], aoi=None, time_range=None)

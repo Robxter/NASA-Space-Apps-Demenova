@@ -36,7 +36,7 @@ datasets:
     spatial_res: "0.1 degree"
     temporal_res: "daily (accumulated from half-hourly IMERG)"
     latency: "Late Run, 14-h latency"
-    variables: null
+    variables: ["precipitation (mm/day, dims time/lon/lat, fill -9999.9)"]
     use_in_demenova: "Alert trigger: upstream and local rain"
     verified_by: data-engineer
     origin: sourced
@@ -55,7 +55,7 @@ datasets:
     use_in_demenova: "Alert trigger: upstream and local rain"
     verified_by: data-engineer
     origin: sourced
-    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Variables read from a granule DMR via NASA cloud OPeNDAP 2026-11-14. Data access needs Earthdata login plus GES DISC EULA approval (PENDING P-008)."
+    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Variables read from a granule DMR via NASA cloud OPeNDAP 2026-11-14. Data access needs Earthdata login plus the GES DISC application approval (done 2026-11-14, P-008)."
 
   - key: smap
     provider: "NASA NSIDC DAAC"
@@ -81,11 +81,11 @@ datasets:
     spatial_res: "0.25 degree"
     temporal_res: "3-hourly"
     latency: "Early Products about 1.5 month latency; main production stream after GPCP v1.3 (3-4 month latency)"
-    variables: null
+    variables: ["SoilMoi0_10cm_inst", "SoilMoi10_40cm_inst", "SoilMoi40_100cm_inst", "SoilMoi100_200cm_inst", "RootMoist_inst (all kg m-2, fill -9999, dims time/lat/lon)"]
     use_in_demenova: "Root-zone wetness history, gap filling"
     verified_by: data-engineer
     origin: sourced
-    notes: "GLDAS-2.1 Noah, CMR concept C1342986035-GES_DISC, DOI 10.5067/E7TYRXPJKWOQ, ACTIVE. Cannot cover the Feb 2026 replay until its main stream reaches that month; check granules before use. Download needs Earthdata login."
+    notes: "GLDAS-2.1 Noah, CMR concept C1342986035-GES_DISC, DOI 10.5067/E7TYRXPJKWOQ, ACTIVE. Main stream covered 2026-02-15..03-05 (152 granules, CMR 2026-11-14; latest granule 2026-07-31). Variables read from a granule DMR. Needs Earthdata login + GES DISC approval."
 
   - key: srtm
     provider: "NASA LP DAAC (archive); OpenTopography (open redistribution, used for download)"
