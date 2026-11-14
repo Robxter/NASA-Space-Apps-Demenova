@@ -10,6 +10,11 @@
 .netrc
 _netrc
 *.pem
+# Plain-text key notes kept by the team (never commit; values belong in .env)
+api keys.txt
+*api*key*.txt
+*secret*.txt
+*password*.txt
 
 # --- Python (uv) ---
 __pycache__/
