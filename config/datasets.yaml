@@ -1,0 +1,237 @@
+# config/datasets.yaml - owner: data-engineer (T-010). Stub written by lead-architect in phase 0.
+# Contract: docs/contracts/schemas/config/datasets.schema.json (model DatasetsConfig, pipeline/common/models.py).
+#
+# Rule zero (CLAUDE.md §1): nothing below is verified. Every identifier is null and every entry is
+# `origin: pending` until data-engineer opens the official page, fills provider, short_name, version,
+# url_opened, accessed, spatial_res, temporal_res, latency, variables and verified_by, and sets
+# `origin: sourced`. The model rejects a pending entry with a filled identifier.
+#
+# `key` is Demenova's own name for the dataset, never a provider identifier.
+# `use_in_demenova` is quoted from the SPEC "Data architecture" table (docs/spec/10-data-architecture.md),
+# except gibs (docs/spec/11-stack-and-deployment.md). Global datasets only; US-only sources are forbidden.
+
+datasets:
+  - key: imerg
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Alert trigger: upstream and local rain"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: GPM IMERG (Early run)."
+
+  - key: smap
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Soil saturation indicator"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: SMAP."
+
+  - key: gldas
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Root-zone wetness history, gap filling"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: GLDAS."
+
+  - key: srtm
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "TWI, watershed outline, lot-level detail"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010, T-011). SPEC label: SRTM."
+
+  - key: power
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Water balance, cold and heat stress, history"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: NASA POWER."
+
+  - key: ecostress
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Field-level heat and water demand"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: ECOSTRESS."
+
+  - key: landsat
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Crop greenness history"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC row: Landsat / Sentinel-2 (NDVI, bare soil)."
+
+  - key: sentinel2
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Crop greenness history"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC row: Landsat / Sentinel-2 (NDVI, bare soil); CLAUDE.md lists Sentinel-2 as an ESA partner dataset."
+
+  - key: modis
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Greenness when finer imagery is cloudy"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC row: MODIS / VIIRS (NDVI, vegetation stress)."
+
+  - key: viirs
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Greenness when finer imagery is cloudy"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC row: MODIS / VIIRS (NDVI, vegetation stress)."
+
+  - key: grace
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Regional context only, never lot-level"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: GRACE / GRACE-FO."
+
+  - key: era5
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Backup for gaps in POWER"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: ERA5 (ESA partner); record the provider exactly as the official page states it."
+
+  - key: gaez
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Sanity check for alternative crops"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: FAO GAEZ (non-NASA, cite it)."
+
+  - key: soilgrids
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Soil properties (global, non-NASA option; cite it if used)"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010). SPEC label: ISRIC SoilGrids. Remove this entry if it is not used."
+
+  - key: gibs
+    provider: null
+    short_name: null
+    version: null
+    url_opened: null
+    accessed: null
+    spatial_res: null
+    temporal_res: null
+    latency: null
+    variables: null
+    use_in_demenova: "Map imagery tiles (Leaflet + NASA GIBS)"
+    verified_by: null
+    origin: pending
+    notes: "To verify by data-engineer (T-010) with frontend-engineer: layer names used by the map. SPEC: cite GIBS and the base map provider."

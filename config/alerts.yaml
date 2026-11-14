@@ -1,0 +1,45 @@
+# config/alerts.yaml - owner: data-scientist (T-021..T-023, T-041). Stub written by lead-architect in phase 0.
+# Contract: docs/contracts/schemas/config/alerts.schema.json (model AlertsConfig, pipeline/common/models.py).
+#
+# Keys only. Every parameter is `value: null, origin: pending` (Rule zero, CLAUDE.md §1). data-scientist
+# fills each one from the SPEC "Risk engine and weighted alerts" and "Prediction science" sections with
+# origin sourced | calibrated | estimated | design and its source or reason, then updates last_changed.
+# Setting or changing any weight or threshold is class A (CLAUDE.md §6): PENDING.md first.
+# Units are SI (ADR-002): put the unit in `unit` when the value is filled.
+# Further engine parameters may be added as extra top-level keys holding a parameter or a map of parameters.
+
+weights:
+  upstream: {value: null, origin: pending, reason: "Weight of upstream rain in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  saturation: {value: null, origin: pending, reason: "Weight of soil saturation in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  terrain: {value: null, origin: pending, reason: "Weight of terrain wetness (TWI) in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  local: {value: null, origin: pending, reason: "Weight of local rain in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  balance: {value: null, origin: pending, reason: "Weight of the water balance in W; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+
+levels:
+  watch: {value: null, origin: pending, reason: "W threshold to escalate to Watch; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  warning: {value: null, origin: pending, reason: "W threshold to escalate to Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  severe: {value: null, origin: pending, reason: "W threshold to escalate to Severe; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+
+deescalate:
+  watch: {value: null, origin: pending, reason: "W below which a unit leaves Watch; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  warning: {value: null, origin: pending, reason: "W below which a unit leaves Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+  severe: {value: null, origin: pending, reason: "W below which a unit leaves Severe; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+
+severe_confirmations: {value: null, origin: pending, reason: "Consecutive updates needed to confirm Severe; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+stale_after_hours: {value: null, origin: pending, reason: "Age of the newest rain data after which a unit turns Stale; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+waterlogging_days_floor_warning: {value: null, origin: pending, reason: "Waterlogging-days floor rule for Warning; set by data-scientist from the SPEC (class A).", last_changed: 2026-11-14}
+root_depth_cm: {value: null, origin: pending, reason: "Banana root depth for the water balance; set by data-scientist or agronomist from a cited source.", last_changed: 2026-11-14}
+api_k: {value: null, origin: pending, reason: "Antecedent precipitation index decay constant; set by data-scientist from a cited source or calibration.", last_changed: 2026-11-14}
+curve_number_by_cover_soil: {value: null, origin: pending, reason: "SCS curve numbers by cover and soil group; set by data-scientist from a cited source.", last_changed: 2026-11-14}
+travel_lag_hours: {value: null, origin: pending, reason: "Upstream-to-farm travel lag; first estimate (Kirpich) then calibrated on the Feb 2026 event (T-021).", last_changed: 2026-11-14}
+
+sigatoka:
+  t_mean_c: {value: null, origin: pending, reason: "Sigatoka side indicator: mean temperature condition; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  rh_mean: {value: null, origin: pending, reason: "Sigatoka side indicator: mean relative humidity condition (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  rh_unfavourable: {value: null, origin: pending, reason: "Sigatoka side indicator: unfavourable humidity bound (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  days: {value: null, origin: pending, reason: "Sigatoka side indicator: consecutive days rule; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  leaf_wet_rh: {value: null, origin: pending, reason: "Relative humidity counted as leaf wetness (0..1 fraction); set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+
+cold:
+  base_c: {value: null, origin: pending, reason: "Base temperature for banana heat units and cold stress; set by data-scientist from the SPEC.", last_changed: 2026-11-14}
+  weekly_threshold_rule: {value: null, origin: pending, reason: "Weekly cold-stress rule; set by data-scientist from the SPEC.", last_changed: 2026-11-14}

@@ -23,6 +23,7 @@ fractions; a missing value is null and its origin is `pending`.
 
 import datetime as dt
 import math
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import IntEnum, StrEnum
@@ -31,9 +32,11 @@ from typing import Annotated, Any, Literal, Union
 from pydantic import (
     AfterValidator,
     AwareDatetime,
+    BeforeValidator,
     BaseModel,
     ConfigDict,
     Field,
+    Strict,
     StringConstraints,
     create_model,
     model_validator,
@@ -299,7 +302,30 @@ TaskId = Annotated[
 ]
 EmailAddress = Annotated[str, StringConstraints(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")]
 ConfigKey = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_]*$")]
-Fraction = Annotated[float, Field(ge=0, le=1)]
+# Numbers are strict (review 2026-11-14): text such as "45.2" and booleans are rejected instead of being coerced;
+# an integer is still a valid float. Enumerations and dates stay lax, so JSON and YAML text keeps working.
+Number = Annotated[float, Strict()]
+Count = Annotated[int, Strict()]
+Fraction = Annotated[float, Strict(), Field(ge=0, le=1)]
+
+# Text that holds a number ("45.2", "45,2", "1,234.5", "1e-3", "45.2mm"); same rule as scripts/check_provenance.py.
+_NUMBER_TEXT = re.compile(r"^\s*[+-]?(?:\d+(?:[ ,.'_]\d{3})*(?:[.,]\d+)?|[.,]\d+)(?:[eE][+-]?\d+)?(?:\s*[^\d\s]{1,6})?\s*$")
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$")
+
+
+def is_number_text(value: Any) -> bool:
+    """True for a string that holds a number; ISO dates are not numbers."""
+    return isinstance(value, str) and bool(_NUMBER_TEXT.match(value)) and not _ISO_DATE.match(value.strip())
+
+
+def _no_text_or_bool(value: Any) -> Any:
+    """For integer enumerations: lax mode would turn "1" or True into a level; only the number itself is valid."""
+    if isinstance(value, (str, bool)):
+        raise ValueError(f"expected the integer level, not {type(value).__name__}")
+    return value
+
+
+DataLevelValue = Annotated[DataLevel, BeforeValidator(_no_text_or_bool)]
 
 
 def _require_utc(value: dt.datetime) -> dt.datetime:
@@ -325,7 +351,7 @@ def _check_position(value: list[float]) -> list[float]:
 Position = TypeAliasType(
     "Position",
     Annotated[
-        list[float],
+        list[Number],
         Field(min_length=2, max_length=3, description="[longitude, latitude] in EPSG:4326 (optional altitude in m)."),
         AfterValidator(_check_position),
     ],
@@ -390,7 +416,57 @@ class Contract(BaseModel):
                 raise ValueError(f"{target} is null, so {name} must be 'pending'")
             if value is not None and origin == Origin.pending:
                 raise ValueError(f"{name} is 'pending', so {target} must be null")
+        _reject_pending_numbers(self)
         return self
+
+
+def _governs_its_own_origins(model: BaseModel) -> bool:
+    return any(name == "origin" or name.endswith("_origin") for name in type(model).model_fields)
+
+
+def _holds_number(value: Any) -> bool:
+    """True when a value is, or contains, a number (booleans are not numbers)."""
+    if isinstance(value, bool) or value is None:
+        return False
+    if isinstance(value, (int, float)):
+        return True
+    if isinstance(value, (list, tuple)):
+        return any(_holds_number(item) for item in value)
+    if isinstance(value, Mapping):
+        return any(_holds_number(item) for item in value.values())
+    if isinstance(value, BaseModel) and not _governs_its_own_origins(value):
+        return any(_holds_number(getattr(value, name)) for name in type(value).model_fields)
+    return False
+
+
+def _reject_pending_numbers(model: BaseModel) -> None:
+    """A number whose resolved origin is `pending` is invalid, whichever form gives the origin (review MEDIUM 6).
+
+    Resolution order as in CONTRACTS.md §8.1: sibling `<field>_origin`, then `origin[field]`, `origin["*"]`,
+    then a string `origin`. Like the provenance checker, only numbers are tested: identifiers and text in an
+    object whose origin is pending stay valid.
+    """
+    fields = type(model).model_fields
+    spec = getattr(model, "origin", None) if "origin" in fields else None
+    for name in fields:
+        if name == "origin" or name.endswith("_origin"):
+            continue
+        value = getattr(model, name)
+        sibling = getattr(model, f"{name}_origin", None) if f"{name}_origin" in fields else None
+        if isinstance(sibling, list):
+            if isinstance(value, list):
+                for index, (item, item_origin) in enumerate(zip(value, sibling)):
+                    if item_origin == Origin.pending and _holds_number(item):
+                        raise ValueError(f"{name}[{index}] has a value, but its origin is 'pending' (pending values are null)")
+            continue
+        if sibling is not None:
+            resolved = sibling
+        elif isinstance(spec, Mapping):
+            resolved = spec.get(name, spec.get("*"))
+        else:
+            resolved = spec
+        if resolved == Origin.pending and _holds_number(value):
+            raise ValueError(f"{name} has a value, but its origin is 'pending' (pending values are null)")
 
 
 def default_origin(spec: Any) -> str | None:
@@ -561,7 +637,7 @@ class Farm(Contract):
     canton: str | None
     location: Point = Field(description="The farm pin (data level 0).")
     outline: Polygon | None = Field(description="Farm outline (data level 1 and above), else null.")
-    data_level: DataLevel
+    data_level: DataLevelValue
     crop: str
     variety: str | None
     variety_origin: Origin
@@ -594,7 +670,7 @@ class SoilAnalysis(Contract):
     """Last soil analysis of a lot."""
 
     date: dt.date | None
-    ph: float | None = Field(ge=0, le=14)
+    ph: Number | None = Field(ge=0, le=14)
     organic_matter_pct: Fraction | None = Field(
         description="Organic matter stored as a 0..1 fraction (CONTRACTS.md §2), so 3 % is 0.03. Displayed as a percentage."
     )
@@ -620,9 +696,9 @@ class Lot(Contract):
     farm_id: FarmId
     name: str = Field(min_length=1)
     geometry: Polygon
-    area_ha: float | None = Field(gt=0)
+    area_ha: Number | None = Field(gt=0)
     area_ha_origin: Origin
-    plant_age_months: float | None = Field(ge=0)
+    plant_age_months: Number | None = Field(ge=0)
     plant_age_months_origin: Origin
     variety: str | None
     variety_origin: Origin
@@ -639,8 +715,8 @@ class Lot(Contract):
     disease_notes: str | None
     bioinputs: Bioinputs | None
     bioinputs_origin: Origin
-    twi_mean: float | None = Field(description="Mean topographic wetness index of the lot (engine output).")
-    twi_max: float | None = Field(description="Maximum topographic wetness index of the lot (engine output).")
+    twi_mean: Number | None = Field(description="Mean topographic wetness index of the lot (engine output).")
+    twi_max: Number | None = Field(description="Maximum topographic wetness index of the lot (engine output).")
     twi_tercile: Tercile | None = Field(description="Terrain-wetness third of the lot within its farm.")
     defined_by: str = Field(min_length=1, description="Agent or person who defined the lot.")
     to_be_redefined_by: str | None = Field(description="Who must redefine the lot; required while it is synthetic.")
@@ -659,7 +735,7 @@ class ZoneProperties(Contract):
     id: ZoneId
     farm_id: FarmId
     tercile: Tercile
-    twi_range: tuple[float, float] = Field(description="[min, max] topographic wetness index inside the zone.")
+    twi_range: tuple[Number, Number] = Field(description="[min, max] topographic wetness index inside the zone.")
     origin: ZoneOrigin
 
     @model_validator(mode="after")
@@ -696,26 +772,26 @@ class DailyFeature(Contract):
 
     unit_id: UnitId
     date: dt.date
-    rain_local_mm: float | None = Field(ge=0)
-    rain_upstream_24h_mm: float | None = Field(ge=0)
-    rain_upstream_48h_mm: float | None = Field(ge=0)
-    rain_upstream_72h_mm: float | None = Field(ge=0)
-    runoff_upstream_mm: float | None = Field(ge=0)
+    rain_local_mm: Number | None = Field(ge=0)
+    rain_upstream_24h_mm: Number | None = Field(ge=0)
+    rain_upstream_48h_mm: Number | None = Field(ge=0)
+    rain_upstream_72h_mm: Number | None = Field(ge=0)
+    runoff_upstream_mm: Number | None = Field(ge=0)
     soil_moisture: Fraction | None = Field(description="Soil moisture as a 0..1 fraction, as published by its source.")
     soil_moisture_source: SoilMoistureSource | None
-    api_index: float | None = Field(ge=0, description="Antecedent precipitation index.")
-    et0_mm: float | None = Field(description="Reference evapotranspiration.")
-    etc_mm: float | None = Field(description="Crop evapotranspiration.")
-    balance_mm: float | None = Field(description="Daily water balance.")
-    balance_7d_mm: float | None = Field(description="7-day running water balance.")
-    positive_balance_days: int | None = Field(ge=0, description="Consecutive days with a positive balance.")
+    api_index: Number | None = Field(ge=0, description="Antecedent precipitation index.")
+    et0_mm: Number | None = Field(description="Reference evapotranspiration.")
+    etc_mm: Number | None = Field(description="Crop evapotranspiration.")
+    balance_mm: Number | None = Field(description="Daily water balance.")
+    balance_7d_mm: Number | None = Field(description="7-day running water balance.")
+    positive_balance_days: Count | None = Field(ge=0, description="Consecutive days with a positive balance.")
     percentiles: Percentiles
     twi_rank: Fraction | None = Field(description="Terrain-wetness rank within the farm, 0..1.")
-    temp_mean_c: float | None
+    temp_mean_c: Number | None
     rh_mean: Fraction | None = Field(description="Mean relative humidity as a 0..1 fraction.")
-    leaf_wet_hours: float | None = Field(ge=0, le=24)
-    heat_units: float | None
-    ndvi: float | None = Field(ge=-1, le=1)
+    leaf_wet_hours: Number | None = Field(ge=0, le=24)
+    heat_units: Number | None
+    ndvi: Number | None = Field(ge=-1, le=1)
     ndvi_date: dt.date | None = Field(description="Date of the image the NDVI value comes from.")
     provenance_ids: list[ProvenanceId]
     origin: OriginSpec
@@ -755,8 +831,8 @@ class AlertState(Contract):
     since: UtcDatetime = Field(description="When the current level began.")
     updated_at: UtcDatetime
     newest_rain_data_at: UtcDatetime | None
-    confirmations: int = Field(ge=0, le=2, description="Consecutive updates that agree on an escalation to Severe.")
-    confidence: int = Field(ge=0, le=3, description="Confidence badge, tied to the farm's data level.")
+    confirmations: Count = Field(ge=0, le=2, description="Consecutive updates that agree on an escalation to Severe.")
+    confidence: Count = Field(ge=0, le=3, description="Confidence badge, tied to the farm's data level.")
     side: SideIndicators
     origin: OriginSpec
 
@@ -783,7 +859,7 @@ class FloodMemory(Contract):
     farm_id: FarmId
     date_or_month: str = Field(pattern=r"^[0-9]{4}-[0-9]{2}(?:-[0-9]{2})?$", description="YYYY-MM-DD or YYYY-MM.")
     lots_or_zone: list[str] = Field(description="Ids of the lots or of the zone the water reached; empty when unknown.")
-    days_with_water: float | None = Field(ge=0)
+    days_with_water: Number | None = Field(ge=0)
     damage_notes: str | None
     reported_by: str = Field(min_length=1)
     origin: Literal["observed"]
@@ -903,7 +979,7 @@ class DomainValue(DomainMeta):
 class NumericValue(DomainMeta):
     """One numeric value of a domain table with its origin metadata."""
 
-    value: float | None
+    value: Number | None
     unit: str | None = None
 
     def _payload_missing(self) -> bool | None:
@@ -1276,9 +1352,9 @@ class VerificationFile(Contract):
     generated_at: UtcDatetime
     provenance: ProvenanceBlock
     events: list[VerificationEvent]
-    hits: int = Field(ge=0)
-    misses: int = Field(ge=0)
-    false_alarms: int = Field(ge=0)
+    hits: Count = Field(ge=0)
+    misses: Count = Field(ge=0)
+    false_alarms: Count = Field(ge=0)
     pod: Fraction | None
     far: Fraction | None
     csi: Fraction | None
@@ -1333,6 +1409,12 @@ class AlertParam(Contract):
 
     @model_validator(mode="after")
     def _origin_has_its_metadata(self) -> "AlertParam":
+        written_as_text = _number_text_inside(self.value)
+        if written_as_text is not None:
+            raise ValueError(
+                f"number written as text {written_as_text!r}: write it as a YAML number with a decimal point "
+                "(PyYAML reads 1e-3 as text; write 0.001 or 1.0e-3)"
+            )
         if not (_has_text(self.source) or _has_text(self.reason)):
             raise ValueError("a parameter needs a source or a reason")
         if _is_unverified(self.source):
@@ -1350,11 +1432,31 @@ class AlertParam(Contract):
         return self
 
 
+def _number_text_inside(value: Any) -> str | None:
+    """The first string holding a number inside a parameter value (lists and maps included), or None."""
+    if is_number_text(value):
+        return value
+    items = value.values() if isinstance(value, Mapping) else value if isinstance(value, (list, tuple)) else ()
+    for item in items:
+        found = _number_text_inside(item)
+        if found is not None:
+            return found
+    return None
+
+
 def _number(param: AlertParam) -> float | None:
     value = param.value
     if isinstance(value, bool) or not isinstance(value, (int, float)):
         return None
     return float(value)
+
+
+def _require_numbers(model: BaseModel) -> None:
+    """Weights and thresholds are numbers or null (pending); anything else would skip the checks below."""
+    for name in type(model).model_fields:
+        param = getattr(model, name)
+        if param.value is not None and _number(param) is None:
+            raise ValueError(f"{name} must be a number or null, not {type(param.value).__name__}")
 
 
 class AlertWeights(Contract):
@@ -1368,6 +1470,7 @@ class AlertWeights(Contract):
 
     @model_validator(mode="after")
     def _sum_to_one(self) -> "AlertWeights":
+        _require_numbers(self)
         values = [_number(getattr(self, name)) for name in type(self).model_fields]
         if all(value is not None for value in values):
             if any(not 0 <= value <= 1 for value in values):  # type: ignore[operator]
@@ -1386,6 +1489,7 @@ class AlertThresholds(Contract):
 
     @model_validator(mode="after")
     def _ascending(self) -> "AlertThresholds":
+        _require_numbers(self)
         values = [_number(self.watch), _number(self.warning), _number(self.severe)]
         if all(value is not None for value in values) and not values[0] < values[1] < values[2]:  # type: ignore[operator]
             raise ValueError("thresholds must rise from watch to warning to severe")

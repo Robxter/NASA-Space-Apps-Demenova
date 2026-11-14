@@ -5,7 +5,7 @@
 # - Every dependency here is named in CLAUDE.md §4 or is an unavoidable peer listed in ADR-001.
 #   Adding or upgrading anything else is class A: write it to docs/decisions/PENDING.md, do not `uv add` it.
 # - "pysheds or WhiteboxTools" (CLAUDE.md §4) is not chosen yet: data-engineer adds exactly one of them
-#   to the `pipeline` group in task T-070 and records the choice in the run report.
+#   to the `pipeline` group in task T-011 and records the choice in the run report.
 # - Run code from the repository root: `uv run pytest`, `uv run python -m pipeline.ingest ...`,
 #   `uv run uvicorn backend.app.main:app`.
 

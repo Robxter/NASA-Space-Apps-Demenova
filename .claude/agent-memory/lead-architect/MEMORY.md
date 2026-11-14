@@ -1,0 +1,4 @@
+- [ADR index and conventions](project_adr_index.md) — ADR-001..005 one-liners, contract-change workflow, phase 0 PENDING ids
+- [Node version constraint](project_node_version_constraint.md) — PATH Node 22.11.0 caps app at Vite 6 / Vitest 4; upgrades class A
+- [Review fixes workflow](feedback_review_fixes.md) — failing test first, per-finding reply; strict numbers per field, not global
+- [GateGuard hook](feedback_gateguard_hook.md) — state facts before shell commands; keep commands simple; here-string Python

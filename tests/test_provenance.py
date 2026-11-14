@@ -100,14 +100,46 @@ def test_directory_that_does_not_exist_is_skipped(tmp_path):
     assert report.skipped_roots == [tmp_path / "absent"]
 
 
-def test_hidden_entries_zarr_stores_and_other_file_types_are_not_data_files(tmp_path):
+def test_only_gitkeep_is_skipped(tmp_path):
+    """Review MEDIUM 2: dot-folders, dotfiles and other file types are data files too."""
     write(tmp_path / ".gitkeep", "")
+    write(tmp_path / "nested" / ".gitkeep", "")
     write(tmp_path / ".cache" / "listing.json", {"count": 1})
+    write(tmp_path / ".hidden.json", {"count": 1})
+    for name in ("README.md", "table.tsv", "rows.ndjson", "notes.txt"):
+        write(tmp_path / name, "fixture")
+    report = cp.check_paths([tmp_path])
+    found = [message for _, message in report.violations]
+    assert report.data_files == 6
+    assert "$.count: number without an origin" in found
+    for name in ("README.md", "rows.ndjson", "notes.txt"):
+        assert f"no provenance block: '{name}' is not JSON or CSV, so it needs the sidecar '{name}.provenance.json'" in found
+    assert "no provenance block: a CSV needs the sidecar 'table.tsv.provenance.json'" in found
+
+
+def test_other_file_types_pass_with_a_sidecar_and_topojson_is_read_as_json(tmp_path):
+    rows = write(tmp_path / "rows.ndjson", '{"a": 1}\n')
+    sidecar(rows, origin="synthetic")
+    write(tmp_path / "shape.topojson", {"type": "Topology", "bbox": [0, 0, 1, 1]})
+    report = cp.check_paths([tmp_path])
+    assert (report.data_files, report.sidecars) == (2, 1)
+    found = [message for _, message in report.violations]
+    assert any(message.startswith("no provenance block: add a top-level 'provenance'") for message in found)
+    assert "$.bbox[0]: number without an origin" in found
+
+
+def test_zarr_store_is_one_data_file_that_needs_a_sidecar(tmp_path):
     write(tmp_path / "stack.zarr" / "zarr.json", {"zarr_format": 3})
-    write(tmp_path / "README.md", "notes")
+    write(tmp_path / "stack.zarr" / "c" / "0", "chunk")
+    report = cp.check_paths([tmp_path])
+    assert report.data_files == 1
+    assert [message for _, message in report.violations] == [
+        "no provenance block: the Zarr store 'stack.zarr' needs the sidecar 'stack.zarr.provenance.json'"
+    ]
+    sidecar(tmp_path / "stack.zarr", origin="synthetic")
     report = cp.check_paths([tmp_path])
     assert report.ok
-    assert report.data_files == 0
+    assert (report.data_files, report.sidecars) == (1, 1)
 
 
 def test_every_data_file_type_is_checked(tmp_path):
@@ -432,7 +464,7 @@ def test_sidecar_of_a_binary_file_is_validated(tmp_path):
     binary.write_bytes(b"\x00synthetic fixture, not a NetCDF file")
     sidecar(binary, record(url=None))
     report = cp.check_paths([tmp_path])
-    assert (report.data_files, report.sidecars) == (0, 1)
+    assert (report.data_files, report.sidecars) == (1, 1)
     assert [message for _, message in report.violations] == ["dataset-backed provenance needs a non-empty url"]
 
 
@@ -535,3 +567,89 @@ def test_repository_data_passes_with_the_standard_library_only(tmp_path):
     )
     assert result.returncode == 0, result.stdout + result.stderr
     assert "check_provenance: OK" in result.stdout
+
+
+# --------------------------------------------------------------------------------------------------------
+# Regressions from the phase 0 code review (2026-11-14)
+# --------------------------------------------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("delimiter", [";", "\t", "|"], ids=["semicolon", "tab", "pipe"])
+def test_csv_other_delimiters_are_detected(tmp_path, delimiter):
+    """Review HIGH: a semicolon, tab or pipe CSV must not hide numbers inside one wide text cell."""
+    path = write(tmp_path / "series.csv", f"date{delimiter}rain_mm\n2026-11-14{delimiter}1.5\n2026-11-15{delimiter}2\n")
+    sidecar(path)
+    assert messages(tmp_path) == [
+        "line 2, column 'rain_mm': number without an origin",
+        "line 3, column 'rain_mm': number without an origin",
+    ]
+
+
+def test_csv_row_with_more_cells_than_the_header_fails(tmp_path):
+    path = write(tmp_path / "series.csv", "a\nx,1.5\n")
+    sidecar(path, origin="synthetic")
+    assert messages(tmp_path) == ["line 2: 2 cells, but the header names 1 column(s)"]
+
+
+def test_csv_without_a_header_row_fails(tmp_path):
+    path = write(tmp_path / "series.csv", "1.5,2.5\n3,4\n")
+    sidecar(path, origin="synthetic")
+    assert messages(tmp_path) == ["line 1: every cell is a number, so the file has no header row naming the columns"]
+
+
+@pytest.mark.parametrize("cell", ['"45,2"', '"1,234.5"', "45.2mm", "1 234", "12:30", "lot_fixture_1"])
+def test_csv_cell_with_a_digit_needs_an_origin(tmp_path, cell):
+    """Review HIGH: comma decimals, thousands separators and numbers with units are numbers, not text."""
+    path = write(tmp_path / "series.csv", f"a\n{cell}\n")
+    sidecar(path)
+    assert messages(tmp_path) == ["line 2, column 'a': number without an origin"]
+
+
+def test_csv_iso_dates_and_plain_text_need_no_origin(tmp_path):
+    path = write(tmp_path / "series.csv", "date,at,note\n2026-11-14,2026-11-14T06:00:00Z,fixture\n")
+    sidecar(path)
+    assert messages(tmp_path) == []
+
+
+def test_single_file_run_validates_its_sidecar(tmp_path, capsys):
+    """Review MEDIUM 1: naming one data file also checks the sidecar next to it."""
+    path = write(tmp_path / "a.json", {"label": "x"})
+    sidecar(path, record(url=None))
+    report = cp.check_paths([path])
+    assert (report.data_files, report.sidecars) == (1, 1)
+    assert [message for _, message in report.violations] == ["dataset-backed provenance needs a non-empty url"]
+    assert cp.main([str(path)]) == 1
+
+
+def test_file_and_sidecar_named_together_are_checked_once(tmp_path):
+    path = write(tmp_path / "a.json", {"label": "x"})
+    side = sidecar(path, origin="synthetic")
+    report = cp.check_paths([path, side, tmp_path])
+    assert report.ok
+    assert (report.data_files, report.sidecars) == (1, 1)
+
+
+def test_reference_outside_the_scanned_folder_fails(tmp_path):
+    """Review MEDIUM 3: provenance.ref may not reach a manifest outside the folder being scanned."""
+    write(tmp_path / "manifest.json", {"provenance": [record()]})
+    write(tmp_path / "data" / "day.json", {"provenance": reference("prov-fixture-a"), "origin": "synthetic", "w": 0.5})
+    assert messages(tmp_path / "data") == ["provenance.ref '../manifest.json' points outside the scanned folder"]
+    assert messages(tmp_path) == []
+
+
+@pytest.mark.parametrize("text", ["45.2", "-3", "1e-3", "45,2", "1,234.5", "45.2mm", "07"])
+def test_number_written_as_text_needs_an_origin(tmp_path, text):
+    """Review MEDIUM 4: a number inside a JSON string is still a number."""
+    write(tmp_path / "a.json", document(a=text))
+    assert messages(tmp_path) == [f"$.a: number written as text {text!r}: number without an origin"]
+
+
+def test_number_written_as_text_with_pending_origin_fails(tmp_path):
+    write(tmp_path / "a.json", document(a="45.2", a_origin="pending"))
+    assert messages(tmp_path) == ["$.a: number written as text '45.2': has a value, but its origin is 'pending' (pending values are null)"]
+
+
+@pytest.mark.parametrize("text", ["2026-11-14", "2026-11-14T06:00:00Z", "1.0.0", "lot_fixture_1", "prov-fixture-a", "Lote 3"])
+def test_text_that_is_not_a_number_needs_no_origin(tmp_path, text):
+    write(tmp_path / "a.json", document(a=text))
+    assert messages(tmp_path) == []

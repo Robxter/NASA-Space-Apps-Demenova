@@ -799,7 +799,7 @@ export type Theme = (typeof THEME_VALUES)[number];
 
 /** domain/thresholds.yaml: agronomic thresholds by key, each with its origin metadata. */
 export interface ThresholdsFile {
-  thresholds: Record<string, unknown>;
+  thresholds: Record<string, DomainValue>;
 }
 
 /** Display units. Storage is always SI; imperial is a display-only conversion. */

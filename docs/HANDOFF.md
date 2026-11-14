@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-14 19:05 - Main session (Claude Code) to Roster
+State: Phase 0 complete and pushed on block/0-skeleton; review (1 HIGH, 6 MEDIUM) fixed with regression tests.
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: tree + READMEs, openapi.yaml, config stubs (all null/pending), app scaffold (build green),
+ADR-001..005, provenance checker hardened (CSV, sidecars, refs, numeric strings, pending origins); SPEC diagrams
+transcribed from the Claude Doc (P-001 resolved). Checks: pytest 148 passed; checker OK; contracts in sync; app build OK.
+Waiting on Roster: P-002 (Telegram farm code), P-003 (nullable country/province/canton); open the PR to main;
+claude-mem Gemini key; FreeLLMAPI installer; OmniRoute removal.
+Next for the receiver, in order: 1. Phase 1 wave A (data-engineer + agronomist). 2. Wave B. 3. Checkpoint A.
+Do not touch: contracts without lead-architect (CONTRACTS.md §9).
+
 ## 2026-11-14 18:40 - Main session (Claude Code) to Roster
 State: FIX.md applied except the steps only Roster can finish; phase 0 resumes from 3a37c2b after the restart.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova

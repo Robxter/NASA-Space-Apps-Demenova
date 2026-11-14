@@ -24,27 +24,33 @@ Moved: the Render preview link for Tyson's night shift is now day 2 (devops in p
 review queue, the flood candidates and the logo options.
 
 ## Block 0: skeleton
-- [~] T-001 lead-architect: repo tree and folder READMEs (pipeline/ packages exist; READMEs and rest of tree missing)
-- [~] T-002 lead-architect: JSON Schemas, Pydantic models, TS types, OpenAPI sketch from CONTRACTS.md (31 schemas,
-  models.py, contracts.ts done; openapi.yaml missing)
-- [ ] T-003 lead-architect: config stubs (datasets.yaml, alerts.yaml) with null values and origins
+- [x] T-001 lead-architect: repo tree and folder READMEs (10 top-level READMEs, .gitkeep leaves)
+- [x] T-002 lead-architect: JSON Schemas, Pydantic models, TS types, OpenAPI sketch from CONTRACTS.md (31 schemas,
+  models.py, contracts.ts, openapi.yaml; drift test tests/test_contracts.py)
+- [x] T-003 lead-architect: config stubs (datasets.yaml, alerts.yaml) with null values and origins (validated)
 - [x] T-004 lead-architect: scripts/check_provenance.py + tests/test_provenance.py (94 tests pass, commit 3a37c2b)
-- [~] T-005 lead-architect: ADR-001..004, DECISIONS.md, PENDING.md, HANDOFF.md (ADRs missing)
-- [ ] T-005b lead-architect: app/ scaffold (Vite React TS) and `npm --prefix app run build` green
+- [x] T-005 lead-architect: ADR-001..005, DECISIONS.md, PENDING.md (P-001..P-003), HANDOFF.md
+- [x] T-005b lead-architect: app/ scaffold (Vite React TS) and `npm --prefix app run build` green
 - [~] T-007 main session: apply FIX.md (steps 1-3, 8 done; Ponytail and claude-mem installed; open: Roster's
   Gemini key in claude-mem setup, run the unsigned FreeLLMAPI installer or not, OmniRoute removal, restart check)
 - [ ] T-006 Roster: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
 
 ## Block 1: foundations
 - [ ] T-010 data-engineer: verify datasets and fill config/datasets.yaml with URLs and access dates
-- [ ] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation
+- [ ] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation (pick pysheds or WhiteboxTools, add it
+  to the uv `pipeline` group, report the choice)
 - [ ] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI)
 - [ ] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list
 - [ ] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
 - [ ] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying)
 - [ ] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components
+- [ ] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
+  in index.html; without them Android shows no install prompt (Phase 0 review, medium 7)
 - [ ] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots
-- [ ] T-018 Roster: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson
+- [ ] T-018 Roster: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
+  P-001 (state-machine diagram text), P-002 (Telegram farm code), P-003 (nullable country/province/canton)
+- [ ] T-019 data-engineer: `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m
+  EPSG:32717 grid aligned to SRTM (ADR-002), writers whose output passes `scripts/check_provenance.py` (before T-014)
 
 ## Block 2: core
 - [ ] T-020 data-scientist: terrain features, TWI terciles, zones
@@ -56,7 +62,8 @@ review queue, the flood candidates and the logo options.
 - [ ] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber
 - [ ] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles
 - [ ] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests
-- [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate
+- [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate; CI must run
+  `python scripts/check_provenance.py` and `uv run pytest` on every push (not wired anywhere yet; Phase 0 review)
 - [ ] T-030 technical-writer: block 2 report, SI-use log; HANDOFF for Tyson's night shift
 
 ## Block 3: scope completion (day 2)

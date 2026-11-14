@@ -3,16 +3,22 @@
 
 Scans `pipeline/data/**` and `app/public/data/**` and exits non-zero when
 
-  1. a JSON, GeoJSON or CSV data file has no provenance block, or
+  1. a data file has no provenance block, or
   2. a file contains a number whose origin is missing, unknown or `pending`.
+
+Every file under a scanned folder is a data file except `.gitkeep`, including dotfiles and files in
+dot-folders. A Zarr store (`*.zarr/`) is one data file: its contents are not read and it needs a sidecar.
+Naming a single file also checks the sidecar next to it. A file is checked once, however often it is named.
 
 It uses the standard library only, so `python scripts/check_provenance.py` runs anywhere: in CI, before a
 commit, on a machine without the project's virtual environment.
 
 Provenance block (docs/contracts/CONTRACTS.md §8.2)
-  - JSON and GeoJSON: a top-level `provenance` member, or a sidecar file `<file name>.provenance.json`
-    next to the file (for raw downloads that must stay byte-identical).
-  - CSV: always the sidecar.
+  - JSON, GeoJSON and TopoJSON: a top-level `provenance` member, or a sidecar file
+    `<file name>.provenance.json` next to the file (for raw downloads that must stay byte-identical).
+  - CSV and TSV: always the sidecar. Any other file type and Zarr stores: always the sidecar.
+  - A reference may only point at a manifest inside the folder being scanned (for a single named file:
+    the default data folder holding it, else the file's own folder).
   - A block is one record, a non-empty list of records, or a reference
     {"ref": "<path of a manifest JSON>", "ids": ["prov-..."]} to records embedded in that manifest.
   - A record has the fourteen keys of docs/DATA_POLICY.md §3. It cites a dataset completely (dataset,
@@ -28,6 +34,10 @@ Origin of every number (docs/contracts/CONTRACTS.md §8.1)
   In a GeoJSON Feature, `geometry` and `bbox` take their origin from `properties`.
   The keys `origin` and `<name>_origin` are reserved for this purpose.
   A missing value is `null`; NaN and Infinity are rejected.
+  A number written as text ("45.2", "45,2", "1,234.5", "1e-3", "45.2mm") is a number and needs an origin.
+  CSV: the delimiter is detected among , ; tab and |; the first row must be a header (not all numbers);
+  a row may not have more cells than the header; every cell holding a digit is a number unless it is an
+  ISO 8601 date or timestamp.
 
 Usage
     python scripts/check_provenance.py                  scan the two default directories
@@ -39,6 +49,7 @@ Owner: lead-architect. Tests: tests/test_provenance.py.
 
 import argparse
 import csv
+import io
 import json
 import math
 import re
@@ -67,8 +78,17 @@ RECORD_KEYS = (
     "notes",
 )
 MAX_ORIGIN_PROBLEMS_PER_FILE = 20
+JSON_SUFFIXES = (".json", ".geojson", ".topojson")
+CSV_SUFFIXES = (".csv", ".tsv")
+SKIPPED_NAMES = (".gitkeep",)
+CSV_DELIMITERS = ",;\t|"
 
 _ID = re.compile(r"^prov-[A-Za-z0-9][A-Za-z0-9._-]*$")
+# Text that is a number: sign, digits with optional thousands separators, a '.' or ',' decimal part, an
+# exponent, and an optional short unit ("45.2", "45,2", "1,234.5", "1 234", "1e-3", "45.2mm", "3 ha").
+_NUMBER_TEXT = re.compile(r"^\s*[+-]?(?:\d+(?:[ ,.'_]\d{3})*(?:[.,]\d+)?|[.,]\d+)(?:[eE][+-]?\d+)?(?:\s*[^\d\s]{1,6})?\s*$")
+_ISO_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|[+-]\d{2}:?\d{2})?)?$")
+_DIGIT = re.compile(r"[0-9]")
 _ACCESSED = re.compile(r"^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?(?:Z|\+00:00))?$")
 _ORIGIN_LIST = ", ".join(ORIGINS)
 
@@ -200,8 +220,11 @@ def _manifest_records(target: Path) -> dict[str, list[str]] | str:
     return records
 
 
-def block_problems(block: Any, holder: Path, manifests: dict[Path, Any]) -> list[str]:
-    """Problems of the provenance block held by `holder` (a data file or a sidecar)."""
+def block_problems(block: Any, holder: Path, manifests: dict[Path, Any], boundary: Path | None = None) -> list[str]:
+    """Problems of the provenance block held by `holder` (a data file or a sidecar).
+
+    `boundary` is the resolved folder being scanned; a reference may not reach a manifest outside it.
+    """
     if isinstance(block, dict) and "ref" in block:
         ref, ids = block.get("ref"), block.get("ids")
         if not _text(ref):
@@ -209,6 +232,10 @@ def block_problems(block: Any, holder: Path, manifests: dict[Path, Any]) -> list
         if not isinstance(ids, list) or not ids or any(not isinstance(item, str) for item in ids):
             return ["provenance.ids must be a non-empty list of record ids"]
         target = (holder.parent / ref).resolve()
+        if boundary is None:
+            boundary = holder.parent.resolve()
+        if not target.is_relative_to(boundary):
+            return [f"provenance.ref '{ref}' points outside the scanned folder"]
         if target not in manifests:
             manifests[target] = _manifest_records(target)
         records = manifests[target]
@@ -326,12 +353,19 @@ def _walk(node: Any, origin: Any, where: str, problems: list[str], top: bool = F
         problem = number_problem(node, origin)
         if problem:
             problems.append(f"{where}: {problem}")
+    elif isinstance(node, str) and is_number_text(node):
+        problem = origin_problem(origin)
+        if problem:
+            problems.append(f"{where}: number written as text {node!r}: {problem}")
 
 
-def number_problem(value: float, origin: Any) -> str | None:
-    """Why a number is not acceptable with the origin that applies to it, or None when it is."""
-    if isinstance(value, float) and not math.isfinite(value):
-        return "non-finite number: write null for a missing value"
+def is_number_text(text: str) -> bool:
+    """True for text that holds a number ("45.2", "45,2", "1,234.5", "1e-3", "45.2mm"); dates are not numbers."""
+    return bool(_NUMBER_TEXT.match(text)) and not _ISO_DATE.match(text.strip())
+
+
+def origin_problem(origin: Any) -> str | None:
+    """Why a value cannot rest on this origin, or None when it can."""
     if not isinstance(origin, str) or origin == "":
         return "number without an origin"
     if origin not in ORIGINS:
@@ -339,6 +373,13 @@ def number_problem(value: float, origin: Any) -> str | None:
     if origin == "pending":
         return "has a value, but its origin is 'pending' (pending values are null)"
     return None
+
+
+def number_problem(value: float, origin: Any) -> str | None:
+    """Why a number is not acceptable with the origin that applies to it, or None when it is."""
+    if isinstance(value, float) and not math.isfinite(value):
+        return "non-finite number: write null for a missing value"
+    return origin_problem(origin)
 
 
 def origin_problems(data: Any, file_origin: Any = None) -> list[str]:
@@ -383,7 +424,7 @@ def _load_sidecar(path: Path) -> dict[str, Any] | None:
     return content if isinstance(content, dict) else None
 
 
-def check_sidecar(path: Path, report: Report, manifests: dict[Path, Any]) -> None:
+def check_sidecar(path: Path, report: Report, manifests: dict[Path, Any], boundary: Path | None = None) -> None:
     report.sidecars += 1
     companion = path.with_name(path.name[: -len(SIDECAR_SUFFIX)])
     if not companion.exists():
@@ -396,11 +437,11 @@ def check_sidecar(path: Path, report: Report, manifests: dict[Path, Any]) -> Non
     if not isinstance(content, dict) or "provenance" not in content:
         report.add(path, "a sidecar must be an object with a 'provenance' member")
         return
-    for problem in block_problems(content["provenance"], path, manifests):
+    for problem in block_problems(content["provenance"], path, manifests, boundary):
         report.add(path, problem)
 
 
-def check_json(path: Path, report: Report, manifests: dict[Path, Any]) -> None:
+def check_json(path: Path, report: Report, manifests: dict[Path, Any], boundary: Path | None = None) -> None:
     report.data_files += 1
     try:
         data = load_json(path)
@@ -409,7 +450,7 @@ def check_json(path: Path, report: Report, manifests: dict[Path, Any]) -> None:
         return
     has_sidecar = _sidecar_of(path).is_file()
     if isinstance(data, dict) and "provenance" in data:
-        for problem in block_problems(data["provenance"], path, manifests):
+        for problem in block_problems(data["provenance"], path, manifests, boundary):
             report.add(path, problem)
     elif not has_sidecar:
         report.add(path, f"no provenance block: add a top-level 'provenance' member or the sidecar '{path.name}{SIDECAR_SUFFIX}'")
@@ -429,6 +470,26 @@ def _csv_number(cell: str) -> float | None:
         return None
 
 
+def sniff_delimiter(text: str) -> str:
+    """The delimiter of a CSV text, among , ; tab and |. Defaults to ',' for a single-column file."""
+    sample = text[:65536]
+    first_line = sample.split("\n", 1)[0]
+    counts = sorted(((first_line.count(mark), -order, mark) for order, mark in enumerate(CSV_DELIMITERS)), reverse=True)
+    from_header = counts[0][2] if counts[0][0] > 0 else None
+    try:
+        sniffed = csv.Sniffer().sniff(sample, delimiters=CSV_DELIMITERS).delimiter
+    except csv.Error:
+        sniffed = None
+    if sniffed and (sniffed in first_line or from_header is None):
+        return sniffed
+    return from_header or ","
+
+
+def _csv_cell_is_number(text: str) -> bool:
+    """A CSV cell holding a digit is a number unless it is an ISO 8601 date or timestamp."""
+    return bool(_DIGIT.search(text)) and not _ISO_DATE.match(text)
+
+
 def check_csv(path: Path, report: Report) -> None:
     report.data_files += 1
     sidecar = _load_sidecar(path)
@@ -439,27 +500,37 @@ def check_csv(path: Path, report: Report) -> None:
     if spec is not None:
         problems.extend(spec_problems(spec, "sidecar.origin"))
     try:
-        with path.open("r", encoding="utf-8-sig", newline="") as handle:
-            rows = list(csv.reader(handle))
+        text = path.read_text(encoding="utf-8-sig")
+        rows = list(csv.reader(io.StringIO(text, newline=""), delimiter=sniff_delimiter(text)))
     except (OSError, ValueError, csv.Error) as error:
         report.add(path, f"cannot be read as CSV: {error}")
         return
-    if rows:
-        header = [name.strip() for name in rows[0]]
+    header = [name.strip() for name in rows[0]] if rows else []
+    named = [name for name in header if name]
+    if named and all(is_number_text(name) for name in named):
+        problems.append("line 1: every cell is a number, so the file has no header row naming the columns")
+    elif header:
         column = {name: index for index, name in enumerate(header)}
         for line, row in enumerate(rows[1:], start=2):
             if len(problems) >= MAX_ORIGIN_PROBLEMS_PER_FILE:
                 problems.append(f"more origin problems not shown (limit {MAX_ORIGIN_PROBLEMS_PER_FILE} per file)")
                 break
-            for index, cell in enumerate(row[: len(header)]):
+            if len(row) > len(header):
+                problems.append(f"line {line}: {len(row)} cells, but the header names {len(header)} column(s)")
+                continue
+            for index, cell in enumerate(row):
                 name = header[index]
                 where = f"line {line}, column '{name}'"
+                value = cell.strip()
                 if name == "origin" or name.endswith("_origin"):
-                    if cell.strip() and cell.strip() not in ORIGINS:
-                        problems.append(f"{where}: origin '{cell.strip()}' is not one of: {_ORIGIN_LIST}")
+                    if value and value not in ORIGINS:
+                        problems.append(f"{where}: origin '{value}' is not one of: {_ORIGIN_LIST}")
                     continue
-                number = _csv_number(cell)
-                if number is None:
+                number = _csv_number(value)
+                if number is not None and not math.isfinite(number):
+                    problems.append(f"{where}: non-finite number: write null for a missing value")
+                    continue
+                if number is None and not _csv_cell_is_number(value):
                     continue
                 origin: Any = None
                 for origin_column in (f"{name}_origin", "origin"):
@@ -471,43 +542,82 @@ def check_csv(path: Path, report: Report) -> None:
                     origin = spec.get(name, spec.get("*"))
                 elif origin is None and isinstance(spec, str):
                     origin = spec
-                problem = number_problem(number, origin)
+                problem = origin_problem(origin)
                 if problem:
                     problems.append(f"{where}: {problem}")
     for problem in problems:
         report.add(path, problem)
 
 
+def _is_zarr_store(path: Path) -> bool:
+    return path.is_dir() and path.name.lower().endswith(".zarr")
+
+
+def check_other(path: Path, report: Report) -> None:
+    """A data file the checker cannot read (binary, Zarr store, other text formats): it needs a sidecar."""
+    report.data_files += 1
+    if _sidecar_of(path).is_file():
+        return
+    if _is_zarr_store(path):
+        report.add(path, f"no provenance block: the Zarr store '{path.name}' needs the sidecar '{path.name}{SIDECAR_SUFFIX}'")
+    else:
+        report.add(path, f"no provenance block: '{path.name}' is not JSON or CSV, so it needs the sidecar '{path.name}{SIDECAR_SUFFIX}'")
+
+
 def iter_files(root: Path):
-    """Yield the files to look at under `root`, skipping hidden entries and Zarr stores."""
-    if root.is_file():
+    """Yield the data files under `root`: every file except .gitkeep, and each Zarr store as one entry.
+
+    A single named file yields itself and then its sidecar, when there is one.
+    """
+    if root.is_file() or _is_zarr_store(root):
         yield root
+        if not _is_sidecar(root) and _sidecar_of(root).is_file():
+            yield _sidecar_of(root)
         return
     for path in sorted(root.rglob("*")):
-        if not path.is_file() or path.name.startswith("."):
-            continue
         parents = path.relative_to(root).parts[:-1]
-        if any(part.startswith(".") or part == "__pycache__" or part.lower().endswith(".zarr") for part in parents):
-            continue
-        yield path
+        if any(part.lower().endswith(".zarr") for part in parents):
+            continue  # inside a Zarr store, which is checked as one entry
+        if _is_zarr_store(path) or (path.is_file() and path.name not in SKIPPED_NAMES):
+            yield path
+
+
+def _boundary(root: Path) -> Path:
+    """The folder a provenance reference must stay inside when `root` is scanned."""
+    resolved = root.resolve()
+    if root.is_dir() and not _is_zarr_store(root):
+        return resolved
+    for item in DEFAULT_ROOTS:
+        base = (REPO_ROOT / item).resolve()
+        if resolved.is_relative_to(base):
+            return base
+    return resolved.parent
 
 
 def check_paths(roots: list[Path]) -> Report:
-    """Check every data file and sidecar under the given directories or files."""
+    """Check every data file and sidecar under the given directories or files, each file once."""
     report = Report()
     manifests: dict[Path, Any] = {}
+    seen: set[Path] = set()
     for root in roots:
         if not root.exists():
             report.skipped_roots.append(root)
             continue
+        boundary = _boundary(root)
         for path in iter_files(root):
+            key = path.resolve()
+            if key in seen:
+                continue
+            seen.add(key)
             suffix = path.suffix.lower()
             if _is_sidecar(path):
-                check_sidecar(path, report, manifests)
-            elif suffix in (".json", ".geojson"):
-                check_json(path, report, manifests)
-            elif suffix == ".csv":
+                check_sidecar(path, report, manifests, boundary)
+            elif path.is_file() and suffix in JSON_SUFFIXES:
+                check_json(path, report, manifests, boundary)
+            elif path.is_file() and suffix in CSV_SUFFIXES:
                 check_csv(path, report)
+            else:
+                check_other(path, report)
     return report
 
 

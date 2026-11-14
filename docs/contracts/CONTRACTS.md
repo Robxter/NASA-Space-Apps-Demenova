@@ -1,4 +1,4 @@
-# Demenova contracts (draft v0, to be formalised by lead-architect in phase 0)
+# Demenova contracts (v1, formalised in phase 0; source of truth `pipeline/common/models.py`, see §9)
 
 These are the interfaces every agent builds against. lead-architect turns them into JSON Schema
 (`docs/contracts/schemas/`), Pydantic (`pipeline/common/models.py`), TypeScript (`app/src/types/contracts.ts`) and
@@ -139,3 +139,37 @@ Environment: see `.env.example`.
   If sign-in is unavailable, the app runs local-only and says so. No email/password login in v0.
 - Storage modes: Full = status + 90 days history + imagery tiles cache; Data saver = status + 7 days, no imagery cache.
   User-created farms persist in IndexedDB and sync to Supabase when online.
+
+## 8. Provenance and origin (enforced by `scripts/check_provenance.py`)
+
+### 8.1 Origin of every number
+For the value under key K of an object, the origin is the first of: the sibling `K_origin` (a string, or an array
+parallel to an array value); `origin[K]`, then `origin["*"]`, when `origin` is a map; `origin` when it is a string;
+the origin of the enclosing object. In a GeoJSON Feature, `geometry` and `bbox` take their origin from `properties`.
+The keys `origin` and `<name>_origin` are reserved. A missing value is `null`; NaN and Infinity are rejected.
+A committed data file may not contain a number whose origin is missing, unknown or `pending`. A number written as
+text ("45.2", "45,2", "1,234.5", "1e-3", "45.2mm") counts as a number. CSV: delimiter detected among `, ; tab |`;
+the first row is a header (not all numbers); no row has more cells than the header; a cell holding a digit is a
+number unless it is an ISO 8601 date or timestamp. The models agree: numeric fields are strict (no text, no
+booleans), and a non-null number whose resolved origin is `pending` is invalid.
+
+### 8.2 Provenance block
+JSON, GeoJSON and TopoJSON: a top-level `provenance` member, or a sidecar `<file name>.provenance.json` (for
+downloads that must stay byte-identical). CSV, TSV, every other file type and each Zarr store (one unit): always the
+sidecar. Every file under a data folder is checked except `.gitkeep`. A block is one record, a non-empty list of
+records, or a reference `{"ref": "<manifest path>", "ids": ["prov-..."]}` to records embedded in a manifest inside
+the folder being scanned. A record has the fourteen keys
+of `docs/DATA_POLICY.md` §3 and an id `prov-...`; it cites a dataset completely (dataset, version, provider, url,
+accessed) or has `dataset: null` and explains the content in `notes`. UNVERIFIED and unfilled placeholders never pass.
+
+## 9. Machine-checked contracts (ADR-005)
+
+`pipeline/common/models.py` (Pydantic) is the single source. `uv run python scripts/export_contracts.py` generates
+`docs/contracts/schemas/**/*.schema.json` (JSON Schema 2020-12) and `app/src/types/contracts.ts`; never edit those by
+hand. `uv run pytest tests/test_contracts.py` fails on drift and validates every committed data and config file.
+`docs/contracts/openapi.yaml` is hand-written and refers to the generated schemas.
+
+v1 deltas from the v0 field lists above (DECISIONS.md, 2026-11-14): `origin` on Farm, DailyFeature, AlertState and
+AlertEvent; `ndvi_date` on DailyFeature; `events` in `replay/<date>.json`; `origin` and `notes` per dataset in
+`config/datasets.yaml`; UserPrefs keeps both `device_id` (always) and `user_id` (null while local-only); Farm
+`country`, `province` and `canton` nullable (a pin-only farm cannot know them; PENDING.md P-003).

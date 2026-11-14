@@ -1,0 +1,221 @@
+# Demenova backend API sketch (CONTRACTS.md §6). Owner: lead-architect; implemented by api-engineer in backend/.
+# Rule zero: no example values here. Shapes refer to the generated JSON Schemas in ./schemas/ (ADR-005).
+# Nothing a judge opens depends on this service (CLAUDE.md §2): the app reads Supabase and static JSON directly.
+openapi: 3.1.0
+info:
+  title: Demenova backend
+  version: 0.1.0
+  summary: Background work only - protected pipeline re-runs, Severe email via Resend, Telegram bot webhook.
+  description: |
+    FastAPI on Render (ADR-001). Free web services sleep when idle, so no user-facing screen may call this API.
+    Secrets come from the environment only (`.env.example` lists the names): ADMIN_TOKEN, RESEND_API_KEY,
+    ALERT_EMAIL_TO, ALERT_EMAIL_FROM_NAME, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET, SUPABASE_URL,
+    SUPABASE_SERVICE_ROLE_KEY. Never log a secret, a token or a full email address (email_log stores a hash).
+    Times are UTC ISO 8601 (ADR-002).
+servers:
+  - url: /
+    description: Relative; the Render URL is recorded by devops-engineer in HANDOFF.md, not here.
+
+tags:
+  - name: ops
+  - name: alerts
+  - name: telegram
+
+paths:
+  /health:
+    get:
+      tags: [ops]
+      operationId: health
+      summary: Liveness probe for Render.
+      security: []
+      responses:
+        "200":
+          description: The process is up. Says nothing about pipeline freshness.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+
+  /run:
+    post:
+      tags: [ops]
+      operationId: triggerRun
+      summary: Trigger one pipeline + engine cycle for one farm or for all farms.
+      description: |
+        One cycle follows the SPEC "Backend state machine": Idle, Fetching, Processing, Scoring, Publishing, back to
+        Idle; any failure moves the run to Degraded and the app keeps serving the last good files. How the backend
+        starts the cycle (in process or by dispatching the GitHub Actions workflow) is api-engineer's and
+        devops-engineer's choice, recorded in their reports.
+      security:
+        - AdminToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RunRequest"
+      responses:
+        "202":
+          description: Run accepted.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RunAccepted"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "404":
+          description: Unknown farm_id.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          $ref: "#/components/responses/ValidationError"
+
+  /email/test:
+    post:
+      tags: [alerts]
+      operationId: sendTestEmail
+      summary: Send a test Severe email to the configured inbox (ALERT_EMAIL_TO).
+      description: |
+        Uses the same template and Resend call as the real Severe email, marked as a test in the subject and body.
+        It is not a Severe episode, so it is not written to email_log and never consumes the per-unit dedupe.
+        Real Severe emails are sent only by the Publishing step, once per unit per Severe episode (SPEC "Email alerts").
+      security:
+        - AdminToken: []
+      responses:
+        "200":
+          description: Provider call finished; `status` says whether Resend accepted it.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EmailTestResult"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "503":
+          description: Email is not configured (missing environment variable). The body names no secret.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /telegram/webhook:
+    post:
+      tags: [telegram]
+      operationId: telegramWebhook
+      summary: Telegram Bot API webhook (nice-to-have, T-043).
+      description: |
+        Commands: `/start <farm_code>` saves the chat against the farm in Supabase `telegram_subscribers` and confirms
+        in Spanish; `/estado` replies with the farm status in Spanish. Severe alerts mirror the email dedupe per unit and
+        episode. Telegram sends the secret configured in setWebhook in the X-Telegram-Bot-Api-Secret-Token header.
+        What `<farm_code>` is (the farm id or a separate code) is open: docs/decisions/PENDING.md P-002.
+      security:
+        - TelegramSecret: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelegramUpdate"
+      responses:
+        "200":
+          description: Update handled or ignored. Always 200 for a valid secret, so Telegram does not retry.
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+
+components:
+  securitySchemes:
+    AdminToken:
+      type: apiKey
+      in: header
+      name: X-Admin-Token
+      description: Compared in constant time with ADMIN_TOKEN from the environment.
+    TelegramSecret:
+      type: apiKey
+      in: header
+      name: X-Telegram-Bot-Api-Secret-Token
+      description: |
+        Set with setWebhook `secret_token` (Telegram Bot API, https://core.telegram.org/bots/api#setwebhook);
+        compared in constant time with TELEGRAM_WEBHOOK_SECRET.
+
+  responses:
+    Unauthorized:
+      description: Missing or wrong secret header. The body never echoes the header.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    ValidationError:
+      description: Request body does not match the schema.
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+
+  schemas:
+    Health:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          const: ok
+
+    FarmId:
+      $ref: "./schemas/entities/telegram_subscriber.schema.json#/properties/farm_id"
+
+    RunRequest:
+      type: object
+      additionalProperties: false
+      required: [farm_id]
+      properties:
+        farm_id:
+          description: The farm to run; null runs every farm.
+          oneOf:
+            - $ref: "#/components/schemas/FarmId"
+            - type: "null"
+
+    RunAccepted:
+      type: object
+      additionalProperties: false
+      required: [run_id, farm_id, accepted_at]
+      properties:
+        run_id:
+          description: ULID of the run (CONTRACTS.md §2).
+          type: string
+          pattern: "^[0-9A-HJKMNP-TV-Z]{26}$"
+        farm_id:
+          oneOf:
+            - $ref: "#/components/schemas/FarmId"
+            - type: "null"
+        accepted_at:
+          type: string
+          format: date-time
+
+    RunPhase:
+      description: Pipeline run states from the SPEC "Backend state machine" (lower case).
+      type: string
+      enum: [idle, fetching, processing, scoring, publishing, degraded]
+
+    EmailTestResult:
+      type: object
+      additionalProperties: false
+      required: [status, provider_id]
+      properties:
+        status:
+          $ref: "./schemas/entities/email_log.schema.json#/$defs/EmailStatus"
+        provider_id:
+          description: Resend message id, null when the provider rejected the call.
+          type: [string, "null"]
+
+    TelegramUpdate:
+      description: Telegram Update object, defined by Telegram (https://core.telegram.org/bots/api#update); not restated here.
+      type: object
+
+    Error:
+      type: object
+      required: [detail]
+      properties:
+        detail:
+          description: Human-readable reason. Never contains a secret, a token or an email address.
+          type: string

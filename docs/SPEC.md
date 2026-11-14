@@ -339,13 +339,40 @@ Email ships first, a Telegram bot is the second channel, and WhatsApp goes on th
 
 ## System data flow · Updated
 
-&#91;embedded content: system data flow · sources to phone\]
+*Diagram "Satellite data reaches the phone as a scored, explained alert", transcribed to text from the Claude Doc
+widget on 2026-11-14 (the Markdown export drops diagrams).*
+
+- NASA and partner data, global coverage: GPM IMERG (rain, 30 min); SMAP · GLDAS (soil moisture); SRTM (terrain, 30 m);
+  NASA POWER, ECOSTRESS (ET); Landsat · S-2 (NDVI greenness).
+- → Pipeline · GitHub Actions: hourly download, harmonize to one 30 m grid; features per lot per day.
+- → Alert engine: weighted index W from 0 to 1 per lot; Normal, Watch, Warning, Severe; top two contributing factors.
+  Tyson's table (practices, costs and thresholds) feeds the engine its thresholds.
+- Alert engine → Supabase (Postgres): farms, lots, features, alerts, email log.
+- Alert engine → Backend · Render (on Severe): FastAPI emails the agronomist via Resend.
+- Supabase → PWA on Render Static Site (reads Supabase, works offline): Home (farm status, alerts), Risk map (lots and
+  day replay), Lot detail (factors and history), Strategies (3 options compared). Tyson's table → Strategies (strategy options).
+- Foundation: GitHub and local Git, branches per block, secrets kept out of code; every push redeploys Render.
 
 Global satellite layers are harmonized onto one 30 m grid, scored per lot by the alert engine in an hourly GitHub Actions run, stored in Supabase and read directly by the phone app; the Render backend only sends Severe emails, so nothing a judge opens waits on a sleeping server; Tyson's table sets the thresholds and supplies the strategy options. The step-by-step user flow is in the UI section below.
 
 ## Backend state machine
 
-&#91;embedded content: alert state machine per lot · 5 states\]
+*Diagram "A lot escalates one level at a time and emails only on confirmed Severe", transcribed to text from the
+Claude Doc widget on 2026-11-14 (the Markdown export drops diagrams). Alert state per lot, re-evaluated on every data
+update.*
+
+| From | To | Condition (as drawn) | Notification |
+| --- | --- | --- | --- |
+| Normal | Watch | W ≥ 0.40 | Watch: yellow badge |
+| Watch | Warning | W ≥ 0.60 | Warning: orange banner |
+| Warning | Severe | W ≥ 0.80 twice (two consecutive updates) | Severe: red banner + email |
+| Severe | Warning | W < 0.70 | - |
+| Warning | Watch | W < 0.50 | - |
+| Watch | Normal | W < 0.30 | Normal: no notification |
+| any state | Stale | rain data older than 12 h | Stale never sends email |
+| Stale | recomputed level | fresh data recomputes the level | - |
+
+Escalation is one level at a time (no direct jumps such as Normal → Severe), per the diagram's title.
 
 The gap between each escalation and de-escalation threshold (0.10) is the hysteresis that stops a lot flickering between levels; the two-update rule for Severe stops a single noisy rain estimate from emailing anyone.
 
