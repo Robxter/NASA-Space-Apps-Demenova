@@ -61,6 +61,7 @@ review queue, the flood candidates and the logo options.
 - [x] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
   in index.html; without them Android shows no install prompt (Phase 0 review, medium 7). Follow-up for
   frontend-engineer: add `png,svg` to Workbox globPatterns and `theme_color`/`background_color` to the manifest
+  (done in 2ea3983)
 - [~] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots (thresholds,
   practices, strategies, actions, glossary, flood_memories written + review queue Q-01..Q-19 + memory note;
   checks run by the main session 19:45: pytest 154 passed (all 6 domain files validate), provenance checker OK;
@@ -77,8 +78,10 @@ review queue, the flood candidates and the logo options.
 - [ ] T-023 data-scientist: index W, state machine, side indicators, explanations, confidence
 - [ ] T-024 data-scientist: verification counts; replay snapshots; tests
 - [ ] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks
-- [ ] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber
-- [ ] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles
+- [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
+  initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
+- [x] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles (2ea3983; Map = Leaflet + GIBS lazy,
+  Lot charts uPlot lazy; open: run against real snapshots after T-024, map month view, prior-years comparison)
 - [ ] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests
 - [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate; CI must run
   `python scripts/check_provenance.py` and `uv run pytest` on every push (not wired anywhere yet; Phase 0 review)

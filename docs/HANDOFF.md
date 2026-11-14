@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-14 23:55 - frontend-engineer to main session
+State: T-026 and T-027 done on block/2-core (2ea3983); not pushed. Report docs/reports/frontend-engineer/2026-11-14-2355.md.
+Done since last handoff: hash nav, context state, en/es dictionaries, snapshot loader with IndexedDB offline copy,
+lazy Supabase identity, replay scrubber, Home/Map/Lot/Alerts/Settings, units.ts, PWA follow-ups from T-016b.
+Checks: tsc clean; Vitest 36 passed; build OK, initial JS 86.3 kB gzip; provenance OK.
+Waiting on data-scientist: app/public/data/demo/ snapshots (T-024); until then `vite dev` shows a synthetic fixture
+with a "Development fixture" notice, and production shows "snapshot not available" (no invented values).
+For product-designer: origin badge into ui/Value; Segmented, TabBar, Sheet into ui; map colours for wetness/rain.
+Next for the receiver, in order: 1. Load real snapshots and re-check 360 px. 2. T-042. 3. qa e2e (T-044).
+Do not touch: app/src/components/DataValue.tsx semantics (unknown origin renders as missing).
+
 ## 2026-11-14 19:32 - data-engineer to main session
 State: T-010/T-011/T-012/T-019 done, T-014 partial, T-013 blocked on Earthdata credentials; all work uncommitted.
 Done since last handoff: datasets.yaml verified (16 sourced); pysheds added; AOI + 252.7 km² catchment; 8 synthetic lots;
