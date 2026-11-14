@@ -32,7 +32,7 @@ OpenAPI (`docs/contracts/openapi.yaml`). Field lists are complete for v0; values
 │                 screens/{Home,Map,Lot,Strategies,Alerts,Learn,Setup}/  components/  components/ui/  styles/
 ├─ design/        BRIEF.md  tokens.md  logo/  components/  screens/
 ├─ tests/         test_provenance.py  e2e/
-├─ scripts/       check_provenance.py  check_bundle_size.mjs  start-max.ps1  start-energy.ps1
+├─ scripts/       check_provenance.py  check_bundle_size.mjs  start.ps1  start-energy.ps1  split_spec.py
 └─ docs/          SPEC.md  AGENTS.md  WORKFLOW.md  DATA_POLICY.md  HANDOFF.md  SI_USE_LOG.md  CITATIONS.md
                   contracts/  decisions/{DECISIONS.md,PENDING.md}  reports/  briefs/  proposals/  guide/  project-page/
 ```

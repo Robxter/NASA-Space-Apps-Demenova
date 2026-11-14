@@ -146,8 +146,27 @@ No coverage target outside the engine.
 - Owner's tests pass; engine tests always pass.
 - Report written; TASKS.md updated; anything blocking is in PENDING.md.
 
-## 10. Energy mode
+## 10. Normal and energy mode
 
-All custom agents run on Claude Fable 5.2 (`fable`) at `effort: max` by default. Energy mode forces every
-subagent onto Claude Opus 5.5 by starting Claude Code with `scripts/start-energy.ps1`. Do not edit agent files to
-switch modes.
+Normal mode (`scripts/start.ps1`): the main session and every custom agent run on Claude Opus 5.5 (`model: opus`).
+Effort: `xhigh` for lead-architect, data-scientist and scientist-reviewer (where a mistake spreads); `high` for every
+other agent. Energy mode (`scripts/start-energy.ps1`): main session on Opus 5.5, every subagent forced onto Sonnet via
+`CLAUDE_CODE_SUBAGENT_MODEL=sonnet` and `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`; use it near the usage limit and for
+documentation, reports and review sweeps. Do not edit agent files to switch modes. (D-008)
+
+## 11. Token budget rules
+
+- Read only the SPEC sections listed in your agent file (docs/spec/). Use `Grep` to find a passage before reading a file.
+- Reports at most 60 lines. Summarise command output; never paste logs, data or whole files.
+- One review per diff: either ECC `/code-review` or `/ponytail-review`, never both. Engine diffs add scientist-reviewer.
+- At most 2 subagents at a time. Finish and commit a block before starting the next.
+- Start a fresh session per build block; `/save-session` at the end of each block.
+- Watch the Ponytail band (cost per task). If one task passes the equivalent of 15% of the 5-hour window, stop and
+  ask the main session to split it.
+- Near the limit: commit, write HANDOFF.md, `/save-session`, then restart with `scripts/start-energy.ps1`.
+
+## 12. Ponytail precedence
+
+Ponytail runs in LITE mode only (never full or ultra). It may shorten implementation; it may never remove or skip:
+Rule zero checks, provenance blocks, the provenance checker, tests required by §7b, contract fields, error handling at
+trust boundaries, accessibility, or i18n keys. If Ponytail and this file disagree, this file wins.

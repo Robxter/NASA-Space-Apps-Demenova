@@ -43,7 +43,7 @@ git push -u origin block/0-skeleton
 ## Step 2. Start the orchestrator session
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File .\scripts\start-max.ps1
+powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1
 ```
 
 Accept the workspace-trust dialog (needed for project agents' settings). Then paste:
@@ -132,7 +132,7 @@ code-reviewer on the same diff. Turn blockers into TASKS.md items for the owner 
 ```
 
 Tyson works overnight from his doc and the preview (no code). Optional for long unattended reviews: restart with
-`scripts\start-energy.ps1` to save usage; Fable is the default for building.
+`scripts\start-energy.ps1` to save usage; normal mode (Opus 5.5) is the default for building.
 
 ## Day 2, 04:30 to 15:00: complete the scope
 
@@ -177,8 +177,9 @@ data citations; no minors' likeness; press Submit (not just save). Buffer until 
 
 ## Energy mode: when to use it
 
-Use `scripts\start-energy.ps1` (Opus 5.5 for everything) for long review sweeps, documentation passes and overnight
-or repetitive runs. Use MAX mode (Fable 5.2) for phase 0, the engine, scientific review and design work.
+Use `scripts\start-energy.ps1` (Opus 5.5 main session, Sonnet subagents) near the usage limit and for long review
+sweeps, documentation passes and overnight or repetitive runs. Use normal mode (`scripts\start.ps1`, Opus 5.5 for
+everything, per-agent effort) for phase 0, the engine, scientific review and design work. (D-008)
 
 ## If something goes wrong
 

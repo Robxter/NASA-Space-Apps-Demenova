@@ -29,13 +29,14 @@ Custom names never reuse an ECC name.
 
 ## 2. Models and effort
 
-- MAX mode (default, `scripts/start-max.ps1`): every custom agent has `model: fable` (Claude Fable 5.2) and
-  `effort: max`; the main session runs on Fable 5.2.
-- ENERGY mode (`scripts/start-energy.ps1`): sets `CLAUDE_CODE_SUBAGENT_MODEL=opus` and
-  `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`, so every subagent runs on Claude Opus 5.5; main session on Opus 5.5.
-  Agent files are never edited to switch modes.
+- NORMAL mode (default, `scripts/start.ps1`): every custom agent has `model: opus` (Claude Opus 5.5); the main
+  session runs on Opus 5.5. Effort: `xhigh` for lead-architect, data-scientist and scientist-reviewer; `high` for all
+  others. scientist-reviewer, technical-writer, instructor and agent-ops-engineer also have `maxTurns: 40`.
+- ENERGY mode (`scripts/start-energy.ps1`): sets `CLAUDE_CODE_SUBAGENT_MODEL=sonnet` and
+  `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1`, so every subagent runs on Sonnet; main session on Opus 5.5.
+  Agent files are never edited to switch modes. (D-008, replacing D-000)
 - If Claude Code warns that an effort level is unavailable for a model, it falls back for that run; report it to
-  agent-ops-engineer, who proposes `xhigh` for that agent if the warning persists.
+  agent-ops-engineer, who proposes a lower effort for that agent if the warning persists.
 - `/tasks` shows which model and effort each running subagent uses.
 
 ## 3. Orchestration protocol (main session)
@@ -86,7 +87,7 @@ File: `docs/reports/<agent>/<YYYY-MM-DD-HHmm>.md`
 
 ```markdown
 # <agent> report <YYYY-MM-DD HH:mm Spain>
-Model/effort: <fable max | opus ...>   Task IDs: <T-...>   Branch: <...>
+Model/effort: <opus xhigh | opus high | sonnet ...>   Task IDs: <T-...>   Branch: <...>
 ## Done
 - <change> (<files>) (<commit>)
 ## Data and provenance
