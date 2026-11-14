@@ -1,195 +1,226 @@
-# config/datasets.yaml - owner: data-engineer (T-010). Stub written by lead-architect in phase 0.
+# config/datasets.yaml - owner: data-engineer (T-010, verified 2026-11-14 by data-engineer).
 # Contract: docs/contracts/schemas/config/datasets.schema.json (model DatasetsConfig, pipeline/common/models.py).
 #
-# Rule zero (CLAUDE.md §1): nothing below is verified. Every identifier is null and every entry is
-# `origin: pending` until data-engineer opens the official page, fills provider, short_name, version,
-# url_opened, accessed, spatial_res, temporal_res, latency, variables and verified_by, and sets
-# `origin: sourced`. The model rejects a pending entry with a filled identifier.
+# Rule zero (CLAUDE.md §1): an entry is `origin: sourced` only when its identifiers were read on an official page
+# or official metadata record that was actually opened (url_opened). Fields the page did not state stay null.
+# Entries that could not be verified stay `origin: pending` with every identifier null.
 #
+# NASA collections were verified against NASA CMR (Common Metadata Repository) UMM-C records, the official metadata
+# behind Earthdata Search; GES DISC landing pages render only with JavaScript and returned no text.
 # `key` is Demenova's own name for the dataset, never a provider identifier.
 # `use_in_demenova` is quoted from the SPEC "Data architecture" table (docs/spec/10-data-architecture.md),
 # except gibs (docs/spec/11-stack-and-deployment.md). Global datasets only; US-only sources are forbidden.
 
 datasets:
   - key: imerg
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
-    latency: null
+    provider: "NASA GES DISC"
+    short_name: GPM_3IMERGHHE
+    version: "07"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGHHE&version=07"
+    accessed: 2026-11-14
+    spatial_res: "0.1 x 0.1 degree (roughly 10 x 10 km)"
+    temporal_res: "half-hourly"
+    latency: "Early Run, 4-h latency"
     variables: null
     use_in_demenova: "Alert trigger: upstream and local rain"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: GPM IMERG (Early run)."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "IMERG Early Run, half-hourly, V07 (CMR concept C2723758340-GES_DISC, DOI 10.5067/GPM/IMERG/3B-HH-E/07, status ACTIVE). Latency also on https://gpm.nasa.gov/data/imerg ('4 hours'). Variable names to be read from the first downloaded file. Download needs Earthdata login."
+
+  - key: imerg_late_daily
+    provider: "NASA GES DISC"
+    short_name: GPM_3IMERGDL
+    version: "07"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDL&version=07"
+    accessed: 2026-11-14
+    spatial_res: "0.1 degree"
+    temporal_res: "daily (accumulated from half-hourly IMERG)"
+    latency: "Late Run, 14-h latency"
+    variables: null
+    use_in_demenova: "Alert trigger: upstream and local rain"
+    verified_by: data-engineer
+    origin: sourced
+    notes: "CMR concept C2723754859-GES_DISC, DOI 10.5067/GPM/IMERGDL/DAY/07, ACTIVE. Used for 2025-10-01 onward in the history (T-013), because the Final Run V07 ends on 2025-09-30. Download needs Earthdata login."
+
+  - key: imerg_final_daily
+    provider: "NASA GES DISC"
+    short_name: GPM_3IMERGDF
+    version: "07"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDF&version=07"
+    accessed: 2026-11-14
+    spatial_res: "0.1 degree"
+    temporal_res: "daily (accumulated from half-hourly IMERG)"
+    latency: "Final Run, 3.5-month latency"
+    variables: null
+    use_in_demenova: "Alert trigger: upstream and local rain"
+    verified_by: data-engineer
+    origin: sourced
+    notes: "CMR concept C2723754864-GES_DISC, DOI 10.5067/GPM/IMERGDF/DAY/07. CollectionProgress COMPLETE, temporal extent 1998-01-01 to 2025-09-30: it does NOT cover the February 2026 replay. No V08 collection was listed in CMR on 2026-11-14. History and calibration (T-013) for 2015-01-01..2025-09-30. Download needs Earthdata login."
 
   - key: smap
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA NSIDC DAAC"
+    short_name: SPL3SMP_E
+    version: "006"
+    url_opened: "https://nsidc.org/data/spl3smp_e/versions/6"
+    accessed: 2026-11-14
+    spatial_res: "9 km (EASE-Grid 2.0)"
+    temporal_res: "1 day"
     latency: null
     variables: null
     use_in_demenova: "Soil saturation indicator"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: SMAP."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture, Version 6 (CMR version 006, DOI 10.5067/M20OXIZHY3RJ). Coverage 31 March 2015 to present. Latency and variable names not stated on the page read. Download needs Earthdata login."
 
   - key: gldas
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
-    latency: null
+    provider: "NASA GES DISC"
+    short_name: GLDAS_NOAH025_3H
+    version: "2.1"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GLDAS_NOAH025_3H&version=2.1"
+    accessed: 2026-11-14
+    spatial_res: "0.25 degree"
+    temporal_res: "3-hourly"
+    latency: "Early Products about 1.5 month latency; main production stream after GPCP v1.3 (3-4 month latency)"
     variables: null
     use_in_demenova: "Root-zone wetness history, gap filling"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: GLDAS."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "GLDAS-2.1 Noah, CMR concept C1342986035-GES_DISC, DOI 10.5067/E7TYRXPJKWOQ, ACTIVE. Cannot cover the Feb 2026 replay until its main stream reaches that month; check granules before use. Download needs Earthdata login."
 
   - key: srtm
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
-    latency: null
-    variables: null
+    provider: "NASA LP DAAC (archive); OpenTopography (open redistribution, used for download)"
+    short_name: SRTMGL1
+    version: "003"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=SRTMGL1&version=003"
+    accessed: 2026-11-14
+    spatial_res: "1 arc second (~30 meter)"
+    temporal_res: "static (SRTM mission, February 2000)"
+    latency: "static"
+    variables: ["elevation (m, WGS84/EGM96)"]
     use_in_demenova: "TWI, watershed outline, lot-level detail"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010, T-011). SPEC label: SRTM."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "NASA SRTM v3 global 1 arc second, DOI 10.5067/MEASURES/SRTM/SRTMGL1.003 (CMR C2763266360-LPCLOUD). Downloaded without login from OpenTopography 'Shuttle Radar Topography Mission (SRTM GL1) Global 30m' (https://portal.opentopography.org/raster?opentopoID=OTSRTM.082015.4326.1, NASA SRTM Version 3, voids filled), bucket s3://raster/SRTM_GL1/ at https://opentopography.s3.sdsc.edu, anonymous."
 
   - key: power
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
+    provider: "NASA POWER (Langley Research Center)"
+    short_name: "POWER Daily API"
+    version: "v2.10.3"
+    url_opened: "https://power.larc.nasa.gov/docs/services/api/temporal/daily/"
+    accessed: 2026-11-14
     spatial_res: null
-    temporal_res: null
-    latency: null
-    variables: null
+    temporal_res: "daily (time_standard LST); an hourly API also exists"
+    latency: "daily data from 1981/01/01 to Near Real Time (NRT)"
+    variables: ["T2M (C)", "T2M_MAX (C)", "T2M_MIN (C)", "RH2M (%)", "PRECTOTCORR (mm/day)", "WS2M (m/s)", "ALLSKY_SFC_SW_DWN (MJ/m^2/day)"]
     use_in_demenova: "Water balance, cold and heat stress, history"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: NASA POWER."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "Endpoint https://power.larc.nasa.gov/api/temporal/daily/point (community AG). API version, sources (MERRA2, SYN1DEG, POWER), fill_value -999.0 and parameter names/units read from the API response header on 2026-11-14. Grid spacing not stated on the pages read (SPEC says ~0.5 deg, unverified)."
 
   - key: ecostress
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA LP DAAC"
+    short_name: ECO_L2T_LSTE
+    version: "003"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=ECO_L2T_LSTE&version=003"
+    accessed: 2026-11-14
+    spatial_res: "70 m"
+    temporal_res: "Varies (instantaneous overpasses)"
     latency: null
     variables: null
     use_in_demenova: "Field-level heat and water demand"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: ECOSTRESS."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "ECOSTRESS Tiled LST&E Instantaneous L2 Global 70 m V3 (DOI 10.5067/ECOSTRESS/ECO_L2T_LSTE.003). CMR granule count over the farm box 2026-02-10..03-05: 15 (V002: 6). ECO_L3T_JET (ET) V002/V003: 0 granules in that window. Download needs Earthdata login."
 
   - key: landsat
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA LP DAAC"
+    short_name: HLSL30
+    version: "2.0"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=HLSL30&version=2.0"
+    accessed: 2026-11-14
+    spatial_res: "30 m"
+    temporal_res: "1 Day (CMR temporal resolution field)"
     latency: null
     variables: null
     use_in_demenova: "Crop greenness history"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC row: Landsat / Sentinel-2 (NDVI, bare soil)."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "Harmonized Landsat Sentinel-2 (Landsat 8/9 OLI) surface reflectance, DOI 10.5067/HLS/HLSL30.002. Download needs Earthdata login."
 
   - key: sentinel2
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
+    provider: "Copernicus Sentinel-2 (ESA); Cloud-Optimized GeoTIFFs managed by Element 84 on AWS Open Data"
+    short_name: sentinel-2-l2a
+    version: "Earth Search STAC API v1"
+    url_opened: "https://registry.opendata.aws/sentinel-2-l2a-cogs/"
+    accessed: 2026-11-14
     spatial_res: null
     temporal_res: null
-    latency: null
+    latency: "added usually within few hours after availability on Copernicus OpenHub"
     variables: null
     use_in_demenova: "Crop greenness history"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC row: Landsat / Sentinel-2 (NDVI, bare soil); CLAUDE.md lists Sentinel-2 as an ESA partner dataset."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "STAC endpoint https://earth-search.aws.element84.com/v1, collection sentinel-2-l2a; anonymous access, no AWS account. Licence: free, full and open (Copernicus terms). Band resolution and scale/offset are read per item from STAC asset metadata at download time (see provenance of NDVI files)."
 
   - key: modis
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA LP DAAC"
+    short_name: MOD13Q1
+    version: "061"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=MOD13Q1&version=061"
+    accessed: 2026-11-14
+    spatial_res: "250 m (sinusoidal grid)"
+    temporal_res: "16 day"
     latency: null
     variables: null
     use_in_demenova: "Greenness when finer imagery is cloudy"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC row: MODIS / VIIRS (NDVI, vegetation stress)."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "DOI 10.5067/MODIS/MOD13Q1.061, ACTIVE. Download needs Earthdata login."
 
   - key: viirs
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA LP DAAC"
+    short_name: VNP13A1
+    version: "002"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=VNP13A1&version=002"
+    accessed: 2026-11-14
+    spatial_res: "500 m (sinusoidal grid)"
+    temporal_res: "16 day"
     latency: null
     variables: null
     use_in_demenova: "Greenness when finer imagery is cloudy"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC row: MODIS / VIIRS (NDVI, vegetation stress)."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "DOI 10.5067/VIIRS/VNP13A1.002, ACTIVE. Download needs Earthdata login."
 
   - key: grace
-    provider: null
-    short_name: null
-    version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    provider: "NASA JPL PO.DAAC"
+    short_name: TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4
+    version: "RL06.3Mv04"
+    url_opened: "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=TELLUS_GRAC-GRFO_MASCON_CRI_GRID_RL06.3_V4"
+    accessed: 2026-11-14
+    spatial_res: "mascon solution on an equal-area 3-degree grid (4,551 mascons), gridded, Coastal Resolution Improvement filter"
+    temporal_res: "monthly"
     latency: null
     variables: null
     use_in_demenova: "Regional context only, never lot-level"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: GRACE / GRACE-FO."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "JPL GRACE/GRACE-FO mascon water-storage anomalies, DOI 10.5067/TEMSC-3JC634. Download needs Earthdata login."
 
   - key: era5
-    provider: null
-    short_name: null
+    provider: "ECMWF (hosted on the Copernicus Climate Data Store)"
+    short_name: reanalysis-era5-single-levels
     version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
-    latency: null
+    url_opened: "https://cds.climate.copernicus.eu/datasets/reanalysis-era5-single-levels"
+    accessed: 2026-11-14
+    spatial_res: "0.25 x 0.25 degree (atmosphere)"
+    temporal_res: "hourly"
+    latency: "updated daily, about 5 days behind real time"
     variables: null
     use_in_demenova: "Backup for gaps in POWER"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: ERA5 (ESA partner); record the provider exactly as the official page states it."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "'ERA5 hourly data on single levels from 1940 to present', DOI 10.24381/cds.adbb2d47. The page names ECMWF as producer, not ESA (the SPEC calls ERA5 'ESA partner'). Needs a CDS account; not used yet."
 
   - key: gaez
     provider: null
@@ -204,34 +235,34 @@ datasets:
     use_in_demenova: "Sanity check for alternative crops"
     verified_by: null
     origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: FAO GAEZ (non-NASA, cite it)."
+    notes: "Not verified on 2026-11-14: https://gaez.fao.org/ returned only the title 'GAEZ v4 Data Portal' (no provider, resolution or data URL in the readable text). Not needed before block 3."
 
   - key: soilgrids
-    provider: null
-    short_name: null
+    provider: "ISRIC - World Soil Information"
+    short_name: SoilGrids
     version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
+    url_opened: "https://www.isric.org/explore/soilgrids"
+    accessed: 2026-11-14
+    spatial_res: "250 meters"
     temporal_res: null
     latency: null
     variables: null
     use_in_demenova: "Soil properties (global, non-NASA option; cite it if used)"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010). SPEC label: ISRIC SoilGrids. Remove this entry if it is not used."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "Six standard depth intervals, fourteen properties (pH, soil organic carbon, bulk density, clay, ...), CC-BY 4.0. Version not stated on the page read. The page says the REST API is temporarily paused. Not used yet."
 
   - key: gibs
-    provider: null
-    short_name: null
+    provider: "NASA Global Imagery Browse Services (GIBS)"
+    short_name: "GIBS WMTS"
     version: null
-    url_opened: null
-    accessed: null
-    spatial_res: null
-    temporal_res: null
+    url_opened: "https://nasa-gibs.github.io/gibs-api-docs/access-basics/"
+    accessed: 2026-11-14
+    spatial_res: "varies by layer"
+    temporal_res: "varies by layer"
     latency: null
     variables: null
     use_in_demenova: "Map imagery tiles (Leaflet + NASA GIBS)"
-    verified_by: null
-    origin: pending
-    notes: "To verify by data-engineer (T-010) with frontend-engineer: layer names used by the map. SPEC: cite GIBS and the base map provider."
+    verified_by: data-engineer
+    origin: sourced
+    notes: "REST template https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/{LayerIdentifier}/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.{FormatExt}, tile matrix set GoogleMapsCompatible_Level12 (example layer in the docs: Landsat_WELD_CorrectedReflectance_Bands157_Global_Annual). The layer names the map uses are chosen with frontend-engineer and must be checked in GetCapabilities."

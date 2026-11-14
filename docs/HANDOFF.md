@@ -2,6 +2,15 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-14 19:32 - data-engineer to main session
+State: T-010/T-011/T-012/T-019 done, T-014 partial, T-013 blocked on Earthdata credentials; all work uncommitted.
+Done since last handoff: datasets.yaml verified (16 sourced); pysheds added; AOI + 252.7 km² catchment; 8 synthetic lots;
+POWER daily/hourly; S2 NDVI; replay stack (no rain/soil yet). Report docs/reports/data-engineer/2026-11-14-1932.md.
+Waiting on Roster: P-005 (Earthdata keys in .env), P-007 (demo flood date).
+Next for the receiver, in order: 1. Review/commit. 2. After P-005: `uv run python -m pipeline.ingest imerg`, then `replay`.
+3. agronomist merges processed/aoi/demo_lots.geojson into domain/farm.json.
+Do not touch: pipeline/data/raw (git-ignored cache, ~80 MB SRTM tiles).
+
 ## 2026-11-14 19:30 - agronomist to main session
 State: T-017 domain files drafted (all unapproved except Tyson's 2 days / 70 cm); review queue ready for Tyson tonight.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova

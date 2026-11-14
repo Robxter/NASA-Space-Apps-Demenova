@@ -36,23 +36,29 @@ review queue, the flood candidates and the logo options.
 - [ ] T-006 Roster: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
 
 ## Block 1: foundations
-- [ ] T-010 data-engineer: verify datasets and fill config/datasets.yaml with URLs and access dates
-- [ ] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation (pick pysheds or WhiteboxTools, add it
-  to the uv `pipeline` group, report the choice)
-- [ ] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI)
-- [ ] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list
-- [ ] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
+- [x] T-010 data-engineer: verify datasets and fill config/datasets.yaml with URLs and access dates (16 sourced via
+  CMR/official pages, gaez pending; IMERG Final V07 ends 2025-09-30 -> Late daily after)
+- [x] T-011 data-engineer: AOI Pasaje/Buenavista, SRTM catchment delineation (pysheds 0.5; catchment 252.7 km²,
+  processed/aoi/{farm_aoi,catchment}.geojson, processed/terrain/{dem,upslope_area}_farm_30m.tif)
+- [x] T-012 data-engineer: synthetic demo lot geometry (8 lots, 5–7 ha, low and high TWI) ->
+  processed/aoi/demo_lots.geojson (geometry only; agronomist merges into domain/farm.json)
+- [!] T-013 data-engineer: IMERG daily 2015→today for catchment; top-15 72 h events list (code + tests ready,
+  `python -m pipeline.ingest imerg`; blocked on Earthdata credentials, PENDING P-005)
+- [~] T-014 data-engineer: harmonized replay stack 2026-02-15 → 2026-03-05 (IMERG, SMAP/GLDAS, POWER, NDVI)
+  (POWER 7 layers + 3 S2 NDVI scenes + terrain built; IMERG/SMAP/GLDAS blocked P-005; flood date P-007)
 - [ ] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying)
-- [ ] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components
-- [ ] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
-  in index.html; without them Android shows no install prompt (Phase 0 review, medium 7)
+- [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;
+  next pass: Sheet, TabBar, chart frame; wordmark to paths after the pick)
+- [x] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
+  in index.html; without them Android shows no install prompt (Phase 0 review, medium 7). Follow-up for
+  frontend-engineer: add `png,svg` to Workbox globPatterns and `theme_color`/`background_color` to the manifest
 - [~] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots (thresholds,
   practices, strategies, actions, glossary, flood_memories written + review queue Q-01..Q-19 + memory note;
   checks run by the main session 19:45: pytest 154 passed (all 6 domain files validate), provenance checker OK;
   domain/farm.json waits for T-012 lot geometry; P-004 raised)
 - [ ] T-018 Roster: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
   P-001 (state-machine diagram text), P-002 (Telegram farm code), P-003 (nullable country/province/canton)
-- [ ] T-019 data-engineer: `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m
+- [x] T-019 data-engineer (done in wave A, needed by T-014): `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m
   EPSG:32717 grid aligned to SRTM (ADR-002), writers whose output passes `scripts/check_provenance.py` (before T-014)
 
 ## Block 2: core

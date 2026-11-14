@@ -1,0 +1,28 @@
+{
+ "provenance": {
+  "id": "prov-s2-ndvi-composite-2025-11-01-2026-11-13",
+  "dataset": "sentinel-2-l2a",
+  "version": "Earth Search STAC API v1",
+  "provider": "Copernicus Sentinel-2 (ESA); Cloud-Optimized GeoTIFFs managed by Element 84 on AWS Open Data",
+  "url": "https://registry.opendata.aws/sentinel-2-l2a-cogs/",
+  "accessed": "2026-11-14T18:27:23Z",
+  "spatial_resolution": null,
+  "temporal_resolution": null,
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2025-11-01",
+   "2026-11-13"
+  ],
+  "processing": [
+   "Earth Search STAC search sentinel-2-l2a, scene cloud cover < 60 %, 25 scenes found",
+   "per scene: reflectance from DN with the item's raster:bands scale/offset; clear = SCL in {4,5,6}",
+   "NDVI = (NIR - Red) / (NIR + Red) at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear (area-weighted aggregation)",
+   "scenes kept when >= 30% of the farm grid is clear: 16",
+   "composite = per-cell median of the kept scenes (NaN ignored); band 2 = number of clear observations"
+  ],
+  "code_commit": "23660af+uncommitted",
+  "agent": "data-engineer",
+  "notes": "Scenes used (id, date, clear fraction of grid): S2B_17MPS_20251206_1_L2A 2025-12-06 0.466; S2C_17MPS_20251211_0_L2A 2025-12-11 0.317; S2B_17MPS_20251226_1_L2A 2025-12-26 0.862; S2B_17MPS_20260105_1_L2A 2026-01-05 0.512; S2C_17MPS_20260321_0_L2A 2026-03-21 0.548; S2C_17MPS_20260331_0_L2A 2026-03-31 0.974; S2C_17MPS_20260410_0_L2A 2026-04-10 0.934; S2B_17MPS_20260505_0_L2A 2026-05-05 0.973; S2C_17MPS_20260520_0_L2A 2026-05-20 0.452; S2C_17MPS_20260619_0_L2A 2026-06-19 0.978; S2B_17MPS_20260624_0_L2A 2026-06-24 0.86; S2C_17MPS_20260629_0_L2A 2026-06-29 0.761; S2A_17MPS_20260731_0_L2A 2026-07-31 0.6; S2B_17MPS_20260803_0_L2A 2026-08-03 0.51; S2C_17MPS_20260808_0_L2A 2026-08-08 0.987; S2A_17MPS_20260810_0_L2A 2026-08-10 0.644"
+ },
+ "origin": "sourced"
+}

@@ -1,0 +1,2 @@
+- [Verified datasets](reference_verified_datasets.md) — CMR-verified ids, IMERG Final ends 2025-09-30, open SRTM/POWER/S2 access facts
+- [Demo AOI and lots](project_demo_aoi.md) — AOI box, 252.7 km² catchment, synthetic lots, unconfirmed Feb 2026 flood (P-007)
