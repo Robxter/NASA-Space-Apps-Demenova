@@ -1,0 +1,289 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "config/alerts.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "AlertParam": {
+      "additionalProperties": false,
+      "description": "One parameter of config/alerts.yaml: value, origin, source or reason, last_changed.\n\nA parameter that does not exist yet is `value: null, origin: pending`. Changing a weight or a threshold\nis class A (CLAUDE.md §6).",
+      "properties": {
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "origin": {
+          "$ref": "#/$defs/AlertParamOrigin"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Where the value was read, or the calibration note id."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the value is estimated, a design choice, or pending."
+        },
+        "last_changed": {
+          "format": "date",
+          "type": "string"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "estimated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "description": "A task id from TASKS.md.",
+              "pattern": "^T-[0-9]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TASKS.md item that replaces an estimated value."
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "value",
+        "origin",
+        "last_changed"
+      ],
+      "title": "AlertParam",
+      "type": "object"
+    },
+    "AlertParamOrigin": {
+      "description": "Origins allowed for a parameter in config/alerts.yaml (no user-provided or synthetic parameters).",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "estimated",
+        "design",
+        "pending"
+      ],
+      "title": "AlertParamOrigin",
+      "type": "string"
+    },
+    "AlertThresholds": {
+      "additionalProperties": false,
+      "description": "One threshold of W per level above Normal.",
+      "properties": {
+        "watch": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "warning": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "severe": {
+          "$ref": "#/$defs/AlertParam"
+        }
+      },
+      "required": [
+        "watch",
+        "warning",
+        "severe"
+      ],
+      "title": "AlertThresholds",
+      "type": "object"
+    },
+    "AlertWeights": {
+      "additionalProperties": false,
+      "description": "Weights of the five indicators of W. Once all five exist they sum to 1 (SPEC: sum of w_i = 1).",
+      "properties": {
+        "upstream": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "saturation": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "terrain": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "local": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "balance": {
+          "$ref": "#/$defs/AlertParam"
+        }
+      },
+      "required": [
+        "upstream",
+        "saturation",
+        "terrain",
+        "local",
+        "balance"
+      ],
+      "title": "AlertWeights",
+      "type": "object"
+    },
+    "ColdParams": {
+      "additionalProperties": false,
+      "description": "Parameters of the cold-stress side indicator.",
+      "properties": {
+        "base_c": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "weekly_threshold_rule": {
+          "$ref": "#/$defs/AlertParam"
+        }
+      },
+      "required": [
+        "base_c",
+        "weekly_threshold_rule"
+      ],
+      "title": "ColdParams",
+      "type": "object"
+    },
+    "SigatokaParams": {
+      "additionalProperties": false,
+      "description": "Parameters of the Sigatoka side indicator.",
+      "properties": {
+        "t_mean_c": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "rh_mean": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "rh_unfavourable": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "days": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "leaf_wet_rh": {
+          "$ref": "#/$defs/AlertParam"
+        }
+      },
+      "required": [
+        "t_mean_c",
+        "rh_mean",
+        "rh_unfavourable",
+        "days",
+        "leaf_wet_rh"
+      ],
+      "title": "SigatokaParams",
+      "type": "object"
+    }
+  },
+  "additionalProperties": {
+    "anyOf": [
+      {
+        "$ref": "#/$defs/AlertParam"
+      },
+      {
+        "additionalProperties": {
+          "$ref": "#/$defs/AlertParam"
+        },
+        "type": "object"
+      }
+    ]
+  },
+  "description": "config/alerts.yaml: every weight, threshold and engine parameter in one file (owner: data-scientist).\n\nFurther parameters may be added as extra top-level keys holding an AlertParam or a map of AlertParams.",
+  "properties": {
+    "weights": {
+      "$ref": "#/$defs/AlertWeights"
+    },
+    "levels": {
+      "$ref": "#/$defs/AlertThresholds",
+      "description": "W at or above which a unit escalates to each level."
+    },
+    "deescalate": {
+      "$ref": "#/$defs/AlertThresholds",
+      "description": "W below which a unit leaves each level (hysteresis)."
+    },
+    "severe_confirmations": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "stale_after_hours": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "waterlogging_days_floor_warning": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "root_depth_cm": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "api_k": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "curve_number_by_cover_soil": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "travel_lag_hours": {
+      "$ref": "#/$defs/AlertParam"
+    },
+    "sigatoka": {
+      "$ref": "#/$defs/SigatokaParams"
+    },
+    "cold": {
+      "$ref": "#/$defs/ColdParams"
+    }
+  },
+  "required": [
+    "weights",
+    "levels",
+    "deescalate",
+    "severe_confirmations",
+    "stale_after_hours",
+    "waterlogging_days_floor_warning",
+    "root_depth_cm",
+    "api_k",
+    "curve_number_by_cover_soil",
+    "travel_lag_hours",
+    "sigatoka",
+    "cold"
+  ],
+  "title": "AlertsConfig",
+  "type": "object"
+}

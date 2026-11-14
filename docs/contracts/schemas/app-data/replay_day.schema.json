@@ -1,0 +1,930 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-data/replay_day.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "AlertEvent": {
+      "additionalProperties": false,
+      "description": "A level transition of a unit (Supabase `alert_events`). v1 addition to the draft: `origin`.",
+      "properties": {
+        "id": {
+          "description": "ULID (26 characters, Crockford base32).",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+          "type": "string"
+        },
+        "unit_id": {
+          "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+          "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+          "type": "string"
+        },
+        "from_level": {
+          "$ref": "#/$defs/Severity"
+        },
+        "to_level": {
+          "$ref": "#/$defs/Severity"
+        },
+        "w": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "factors": {
+          "items": {
+            "$ref": "#/$defs/Factor"
+          },
+          "type": "array"
+        },
+        "at": {
+          "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "email_sent": {
+          "type": "boolean"
+        },
+        "telegram_sent": {
+          "type": "boolean"
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginSpec"
+        }
+      },
+      "required": [
+        "id",
+        "unit_id",
+        "from_level",
+        "to_level",
+        "w",
+        "factors",
+        "at",
+        "email_sent",
+        "telegram_sent",
+        "origin"
+      ],
+      "title": "AlertEvent",
+      "type": "object"
+    },
+    "AlertState": {
+      "additionalProperties": false,
+      "description": "Current alert state of a unit (Supabase `alert_states`). v1 addition to the draft: `origin`.",
+      "properties": {
+        "unit_id": {
+          "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+          "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+          "type": "string"
+        },
+        "level": {
+          "$ref": "#/$defs/Severity"
+        },
+        "w": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Alert index W, 0..1; null when it cannot be computed."
+        },
+        "factors": {
+          "items": {
+            "$ref": "#/$defs/Factor"
+          },
+          "type": "array"
+        },
+        "since": {
+          "description": "When the current level began.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "updated_at": {
+          "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "newest_rain_data_at": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "confirmations": {
+          "description": "Consecutive updates that agree on an escalation to Severe.",
+          "maximum": 2,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "confidence": {
+          "description": "Confidence badge, tied to the farm's data level.",
+          "maximum": 3,
+          "minimum": 0,
+          "type": "integer"
+        },
+        "side": {
+          "$ref": "#/$defs/SideIndicators"
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginSpec"
+        }
+      },
+      "required": [
+        "unit_id",
+        "level",
+        "w",
+        "factors",
+        "since",
+        "updated_at",
+        "newest_rain_data_at",
+        "confirmations",
+        "confidence",
+        "side",
+        "origin"
+      ],
+      "title": "AlertState",
+      "type": "object"
+    },
+    "DailyFeature": {
+      "additionalProperties": false,
+      "description": "Engine features of one unit on one day (Supabase `daily_features`).\n\nv1 additions to the draft: `ndvi_date` (the draft says 'ndvi (+date of image)') and `origin`. The origin\nusually differs per field: rain read from a dataset is `sourced`, soil moisture filled with the\nantecedent precipitation index is `estimated`. Use the map form of `origin` for that.",
+      "properties": {
+        "unit_id": {
+          "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+          "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+          "type": "string"
+        },
+        "date": {
+          "format": "date",
+          "type": "string"
+        },
+        "rain_local_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rain_upstream_24h_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rain_upstream_48h_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rain_upstream_72h_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "runoff_upstream_mm": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "soil_moisture": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Soil moisture as a 0..1 fraction, as published by its source."
+        },
+        "soil_moisture_source": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SoilMoistureSource"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "api_index": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Antecedent precipitation index."
+        },
+        "et0_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Reference evapotranspiration."
+        },
+        "etc_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Crop evapotranspiration."
+        },
+        "balance_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Daily water balance."
+        },
+        "balance_7d_mm": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "7-day running water balance."
+        },
+        "positive_balance_days": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Consecutive days with a positive balance."
+        },
+        "percentiles": {
+          "$ref": "#/$defs/Percentiles"
+        },
+        "twi_rank": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Terrain-wetness rank within the farm, 0..1."
+        },
+        "temp_mean_c": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rh_mean": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Mean relative humidity as a 0..1 fraction."
+        },
+        "leaf_wet_hours": {
+          "anyOf": [
+            {
+              "maximum": 24,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "heat_units": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ndvi": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": -1,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ndvi_date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date of the image the NDVI value comes from."
+        },
+        "provenance_ids": {
+          "items": {
+            "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+            "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginSpec"
+        }
+      },
+      "required": [
+        "unit_id",
+        "date",
+        "rain_local_mm",
+        "rain_upstream_24h_mm",
+        "rain_upstream_48h_mm",
+        "rain_upstream_72h_mm",
+        "runoff_upstream_mm",
+        "soil_moisture",
+        "soil_moisture_source",
+        "api_index",
+        "et0_mm",
+        "etc_mm",
+        "balance_mm",
+        "balance_7d_mm",
+        "positive_balance_days",
+        "percentiles",
+        "twi_rank",
+        "temp_mean_c",
+        "rh_mean",
+        "leaf_wet_hours",
+        "heat_units",
+        "ndvi",
+        "ndvi_date",
+        "provenance_ids",
+        "origin"
+      ],
+      "title": "DailyFeature",
+      "type": "object"
+    },
+    "Factor": {
+      "additionalProperties": false,
+      "description": "One contributing factor of the alert index with its share of W.",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/FactorName"
+        },
+        "share": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "share"
+      ],
+      "title": "Factor",
+      "type": "object"
+    },
+    "FactorName": {
+      "description": "The five indicators of the alert index W (docs/SPEC.md, Risk engine and weighted alerts).",
+      "enum": [
+        "upstream",
+        "saturation",
+        "terrain",
+        "local",
+        "balance"
+      ],
+      "title": "FactorName",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Percentiles": {
+      "additionalProperties": false,
+      "description": "Indicator percentiles against the unit's own history, as 0..1 fractions.",
+      "properties": {
+        "upstream": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "saturation": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "local": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "balance": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "upstream",
+        "saturation",
+        "local",
+        "balance"
+      ],
+      "title": "Percentiles",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Provenance record attached to every data file (docs/DATA_POLICY.md §3).\n\nAll fourteen keys are always present. A record either cites a dataset completely (dataset, version,\nprovider, url and accessed all filled) or has `dataset: null` and says in `notes` what the content is\ninstead (synthetic demo content, user input, a domain table). No field may hold UNVERIFIED or an\nunfilled <placeholder>.",
+      "properties": {
+        "id": {
+          "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+          "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        "dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, or null when the file is not dataset-backed."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product version."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Data provider, as named on the page that was opened."
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Landing page or DOI that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the source was opened (UTC)."
+        },
+        "spatial_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "temporal_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "aoi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Area-of-interest id the file was cut to."
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "[start, end] covered by the file; null for static data."
+        },
+        "processing": {
+          "description": "Ordered processing steps, including the resampling method.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Git commit of the code that produced the file."
+        },
+        "agent": {
+          "description": "Agent or person who produced the file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dataset",
+        "version",
+        "provider",
+        "url",
+        "accessed",
+        "spatial_resolution",
+        "temporal_resolution",
+        "aoi",
+        "time_range",
+        "processing",
+        "code_commit",
+        "agent",
+        "notes"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProvenanceBlock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "$ref": "#/$defs/ProvenanceRef"
+        }
+      ],
+      "description": "The `provenance` member of a data file: one record, several records, or a manifest reference."
+    },
+    "ProvenanceRef": {
+      "additionalProperties": false,
+      "description": "Reference to provenance records kept in a manifest file, so small snapshot files stay small.",
+      "properties": {
+        "ref": {
+          "description": "Path of the manifest JSON, relative to the referring file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "ids": {
+          "description": "Ids of records embedded in that manifest.",
+          "items": {
+            "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+            "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "ids"
+      ],
+      "title": "ProvenanceRef",
+      "type": "object"
+    },
+    "ReplayUnit": {
+      "additionalProperties": false,
+      "description": "One unit on one replay day.",
+      "properties": {
+        "unit_id": {
+          "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+          "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+          "type": "string"
+        },
+        "alert": {
+          "$ref": "#/$defs/AlertState"
+        },
+        "features": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DailyFeature"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "That day's features, or null when none exist for the unit."
+        }
+      },
+      "required": [
+        "unit_id",
+        "alert",
+        "features"
+      ],
+      "title": "ReplayUnit",
+      "type": "object"
+    },
+    "Severity": {
+      "description": "The five alert states of a unit (CONTRACTS.md §2). `stale` means the newest rain data is too old.",
+      "enum": [
+        "normal",
+        "watch",
+        "warning",
+        "severe",
+        "stale"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SideIndicators": {
+      "additionalProperties": false,
+      "description": "Side indicators shown on Lot detail, never in the email.",
+      "properties": {
+        "sigatoka": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Severity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cold": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Severity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sigatoka",
+        "cold"
+      ],
+      "title": "SideIndicators",
+      "type": "object"
+    },
+    "SoilMoistureSource": {
+      "description": "Where a day's soil-moisture value came from: SMAP, or the antecedent precipitation index gap-fill.",
+      "enum": [
+        "smap",
+        "api"
+      ],
+      "title": "SoilMoistureSource",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "replay/<YYYY-MM-DD>.json: every unit's alert state and features on one day.\n\nv1 addition to the draft: `events`, so the Alerts screen works offline in replay.",
+  "properties": {
+    "date": {
+      "format": "date",
+      "type": "string"
+    },
+    "generated_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceBlock"
+    },
+    "units": {
+      "items": {
+        "$ref": "#/$defs/ReplayUnit"
+      },
+      "type": "array"
+    },
+    "events": {
+      "description": "Level transitions that happened on this day.",
+      "items": {
+        "$ref": "#/$defs/AlertEvent"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "date",
+    "generated_at",
+    "provenance",
+    "units"
+  ],
+  "title": "ReplayDay",
+  "type": "object"
+}

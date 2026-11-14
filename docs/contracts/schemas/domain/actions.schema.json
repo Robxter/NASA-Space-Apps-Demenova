@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "domain/actions.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "ActionEntry": {
+      "additionalProperties": false,
+      "description": "Recommended action for one alert level in one mode (domain/actions.yaml).",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL that was opened, 'Tyson, <date>', or a calibration note id."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date the source URL was opened."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the value is estimated, a design choice, or still pending."
+        },
+        "estimated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "description": "A task id from TASKS.md.",
+              "pattern": "^T-[0-9]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TASKS.md item that replaces an estimated value."
+        },
+        "to_be_redefined_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'Tyson' once he approved it, else null."
+        },
+        "level": {
+          "$ref": "#/$defs/AlertLevel"
+        },
+        "mode": {
+          "$ref": "#/$defs/Mode"
+        },
+        "text": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LocalizedText"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "origin",
+        "level",
+        "mode",
+        "text"
+      ],
+      "title": "ActionEntry",
+      "type": "object"
+    },
+    "AlertLevel": {
+      "description": "The four severity levels that carry a recommended action (Severity without `stale`).",
+      "enum": [
+        "normal",
+        "watch",
+        "warning",
+        "severe"
+      ],
+      "title": "AlertLevel",
+      "type": "string"
+    },
+    "LocalizedText": {
+      "additionalProperties": false,
+      "description": "Bilingual text. A language that is not written yet is null, never machine-filled silently.",
+      "properties": {
+        "es": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "es",
+        "en"
+      ],
+      "title": "LocalizedText",
+      "type": "object"
+    },
+    "Mode": {
+      "description": "Farmer mode (one status, one alert, one action) or agronomist mode (full detail).",
+      "enum": [
+        "farmer",
+        "agronomist"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "domain/actions.yaml.",
+  "properties": {
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/ActionEntry"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "actions"
+  ],
+  "title": "ActionsFile",
+  "type": "object"
+}

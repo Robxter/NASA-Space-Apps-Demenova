@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/alert_state.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Factor": {
+      "additionalProperties": false,
+      "description": "One contributing factor of the alert index with its share of W.",
+      "properties": {
+        "name": {
+          "$ref": "#/$defs/FactorName"
+        },
+        "share": {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        }
+      },
+      "required": [
+        "name",
+        "share"
+      ],
+      "title": "Factor",
+      "type": "object"
+    },
+    "FactorName": {
+      "description": "The five indicators of the alert index W (docs/SPEC.md, Risk engine and weighted alerts).",
+      "enum": [
+        "upstream",
+        "saturation",
+        "terrain",
+        "local",
+        "balance"
+      ],
+      "title": "FactorName",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Severity": {
+      "description": "The five alert states of a unit (CONTRACTS.md §2). `stale` means the newest rain data is too old.",
+      "enum": [
+        "normal",
+        "watch",
+        "warning",
+        "severe",
+        "stale"
+      ],
+      "title": "Severity",
+      "type": "string"
+    },
+    "SideIndicators": {
+      "additionalProperties": false,
+      "description": "Side indicators shown on Lot detail, never in the email.",
+      "properties": {
+        "sigatoka": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Severity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cold": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Severity"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "sigatoka",
+        "cold"
+      ],
+      "title": "SideIndicators",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Current alert state of a unit (Supabase `alert_states`). v1 addition to the draft: `origin`.",
+  "properties": {
+    "unit_id": {
+      "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+      "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+      "type": "string"
+    },
+    "level": {
+      "$ref": "#/$defs/Severity"
+    },
+    "w": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Alert index W, 0..1; null when it cannot be computed."
+    },
+    "factors": {
+      "items": {
+        "$ref": "#/$defs/Factor"
+      },
+      "type": "array"
+    },
+    "since": {
+      "description": "When the current level began.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "updated_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "newest_rain_data_at": {
+      "anyOf": [
+        {
+          "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "confirmations": {
+      "description": "Consecutive updates that agree on an escalation to Severe.",
+      "maximum": 2,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "confidence": {
+      "description": "Confidence badge, tied to the farm's data level.",
+      "maximum": 3,
+      "minimum": 0,
+      "type": "integer"
+    },
+    "side": {
+      "$ref": "#/$defs/SideIndicators"
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginSpec"
+    }
+  },
+  "required": [
+    "unit_id",
+    "level",
+    "w",
+    "factors",
+    "since",
+    "updated_at",
+    "newest_rain_data_at",
+    "confirmations",
+    "confidence",
+    "side",
+    "origin"
+  ],
+  "title": "AlertState",
+  "type": "object"
+}

@@ -1,0 +1,941 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-data/farm.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Bioinputs": {
+      "additionalProperties": false,
+      "description": "Dates of the last bio-input applications on a lot.",
+      "properties": {
+        "mycorrhizae_last": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date of the last mycorrhizae application."
+        },
+        "mm_last": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date of the last mountain-microorganism (MM) drench."
+        }
+      },
+      "required": [
+        "mycorrhizae_last",
+        "mm_last"
+      ],
+      "title": "Bioinputs",
+      "type": "object"
+    },
+    "CoverCrop": {
+      "description": "Living cover on a lot. `mani_forrajero` is Arachis pintoi.",
+      "enum": [
+        "none",
+        "mani_forrajero",
+        "other"
+      ],
+      "title": "CoverCrop",
+      "type": "string"
+    },
+    "DataLevel": {
+      "description": "How much the farm has told Demenova: 0 pin, 1 outline + zones, 2 lots, 3 field notes.",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "title": "DataLevel",
+      "type": "integer"
+    },
+    "DrainageClass": {
+      "description": "Drainage class of a lot.",
+      "enum": [
+        "good",
+        "moderate",
+        "poor"
+      ],
+      "title": "DrainageClass",
+      "type": "string"
+    },
+    "DrainageWorks": {
+      "description": "Drainage works present on a lot.",
+      "enum": [
+        "none",
+        "ditches",
+        "other"
+      ],
+      "title": "DrainageWorks",
+      "type": "string"
+    },
+    "Farm": {
+      "additionalProperties": false,
+      "description": "A farm. Same fields in Supabase `farms`, in domain/farm.json and in the demo snapshot.\n\nv1 additions to the draft: `origin` (CONTRACTS.md §2 asks for origin metadata on every numeric field;\nit covers location, outline and data_level) and nullable country, province and canton (a farm that is\nonly a pin has no way to know them).",
+      "properties": {
+        "id": {
+          "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+          "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "owner_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Supabase auth user id from anonymous sign-in (ADR-003). null for the demo farm and for local-only farms."
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "province": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "canton": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "location": {
+          "$ref": "#/$defs/Point",
+          "description": "The farm pin (data level 0)."
+        },
+        "outline": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Polygon"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Farm outline (data level 1 and above), else null."
+        },
+        "data_level": {
+          "$ref": "#/$defs/DataLevel"
+        },
+        "crop": {
+          "type": "string"
+        },
+        "variety": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "variety_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "catchment_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Id of the upstream catchment that drains to the farm."
+        },
+        "alert_email": {
+          "anyOf": [
+            {
+              "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Recipient of Severe emails. Personal data: always null on the demo farm, whose recipient is the backend environment variable ALERT_EMAIL_TO."
+        },
+        "language": {
+          "$ref": "#/$defs/Language"
+        },
+        "units": {
+          "$ref": "#/$defs/UnitSystem"
+        },
+        "mode": {
+          "$ref": "#/$defs/Mode"
+        },
+        "storage_mode": {
+          "$ref": "#/$defs/StorageMode"
+        },
+        "is_demo": {
+          "description": "True only for the synthetic demo farm, which the UI labels 'Demo'.",
+          "type": "boolean"
+        },
+        "created_at": {
+          "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "updated_at": {
+          "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+          "format": "date-time",
+          "type": "string"
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginSpec"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "owner_id",
+        "country",
+        "province",
+        "canton",
+        "location",
+        "outline",
+        "data_level",
+        "crop",
+        "variety",
+        "variety_origin",
+        "catchment_id",
+        "alert_email",
+        "language",
+        "units",
+        "mode",
+        "storage_mode",
+        "is_demo",
+        "created_at",
+        "updated_at",
+        "origin"
+      ],
+      "title": "Farm",
+      "type": "object"
+    },
+    "Incidence": {
+      "description": "Qualitative incidence level.",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "Incidence",
+      "type": "string"
+    },
+    "Language": {
+      "description": "Interface language.",
+      "enum": [
+        "en",
+        "es"
+      ],
+      "title": "Language",
+      "type": "string"
+    },
+    "LinearRing": {
+      "description": "Closed ring of positions (GeoJSON, RFC 7946).",
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
+      "minItems": 4,
+      "type": "array"
+    },
+    "Lot": {
+      "additionalProperties": false,
+      "description": "A lot (data level 2). Same fields in Supabase `lots`, in domain/farm.json and in the demo snapshot.\n\nEvery attribute the draft marks '(+origin)' has a required sibling `<field>_origin`. `origin` is the\norigin of everything else in the record (geometry, name, TWI values); use the map form when they\ndiffer, for example {\"*\": \"synthetic\", \"twi_mean\": \"sourced\"} for a demo lot drawn by an agent whose\nTWI comes from SRTM.",
+      "properties": {
+        "id": {
+          "description": "lot_<farm slug>_<n>.",
+          "pattern": "^lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+$",
+          "type": "string"
+        },
+        "farm_id": {
+          "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+          "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "type": "string"
+        },
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "geometry": {
+          "$ref": "#/$defs/Polygon"
+        },
+        "area_ha": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "area_ha_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "plant_age_months": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plant_age_months_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "variety": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "variety_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "drainage_class": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DrainageClass"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "drainage_class_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "drainage_works": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DrainageWorks"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "drainage_works_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "cover_crop": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/CoverCrop"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cover_crop_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "last_soil_analysis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SoilAnalysis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "last_soil_analysis_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "nematode_incidence": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Incidence"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "nematode_incidence_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "disease_notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bioinputs": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Bioinputs"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "bioinputs_origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "twi_mean": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Mean topographic wetness index of the lot (engine output)."
+        },
+        "twi_max": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Maximum topographic wetness index of the lot (engine output)."
+        },
+        "twi_tercile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Tercile"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Terrain-wetness third of the lot within its farm."
+        },
+        "defined_by": {
+          "description": "Agent or person who defined the lot.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "to_be_redefined_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Who must redefine the lot; required while it is synthetic."
+        },
+        "origin": {
+          "$ref": "#/$defs/OriginSpec"
+        }
+      },
+      "required": [
+        "id",
+        "farm_id",
+        "name",
+        "geometry",
+        "area_ha",
+        "area_ha_origin",
+        "plant_age_months",
+        "plant_age_months_origin",
+        "variety",
+        "variety_origin",
+        "drainage_class",
+        "drainage_class_origin",
+        "drainage_works",
+        "drainage_works_origin",
+        "cover_crop",
+        "cover_crop_origin",
+        "last_soil_analysis",
+        "last_soil_analysis_origin",
+        "nematode_incidence",
+        "nematode_incidence_origin",
+        "disease_notes",
+        "bioinputs",
+        "bioinputs_origin",
+        "twi_mean",
+        "twi_max",
+        "twi_tercile",
+        "defined_by",
+        "to_be_redefined_by",
+        "origin"
+      ],
+      "title": "Lot",
+      "type": "object"
+    },
+    "Mode": {
+      "description": "Farmer mode (one status, one alert, one action) or agronomist mode (full detail).",
+      "enum": [
+        "farmer",
+        "agronomist"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Point": {
+      "additionalProperties": false,
+      "description": "GeoJSON Point.",
+      "properties": {
+        "type": {
+          "const": "Point",
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/Position"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Polygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON Polygon.",
+      "properties": {
+        "type": {
+          "const": "Polygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "$ref": "#/$defs/LinearRing"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Polygon",
+      "type": "object"
+    },
+    "Position": {
+      "description": "[longitude, latitude] in EPSG:4326 (optional altitude in m).",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 2,
+      "type": "array"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Provenance record attached to every data file (docs/DATA_POLICY.md §3).\n\nAll fourteen keys are always present. A record either cites a dataset completely (dataset, version,\nprovider, url and accessed all filled) or has `dataset: null` and says in `notes` what the content is\ninstead (synthetic demo content, user input, a domain table). No field may hold UNVERIFIED or an\nunfilled <placeholder>.",
+      "properties": {
+        "id": {
+          "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+          "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        "dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, or null when the file is not dataset-backed."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product version."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Data provider, as named on the page that was opened."
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Landing page or DOI that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the source was opened (UTC)."
+        },
+        "spatial_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "temporal_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "aoi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Area-of-interest id the file was cut to."
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "[start, end] covered by the file; null for static data."
+        },
+        "processing": {
+          "description": "Ordered processing steps, including the resampling method.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Git commit of the code that produced the file."
+        },
+        "agent": {
+          "description": "Agent or person who produced the file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dataset",
+        "version",
+        "provider",
+        "url",
+        "accessed",
+        "spatial_resolution",
+        "temporal_resolution",
+        "aoi",
+        "time_range",
+        "processing",
+        "code_commit",
+        "agent",
+        "notes"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProvenanceBlock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "$ref": "#/$defs/ProvenanceRef"
+        }
+      ],
+      "description": "The `provenance` member of a data file: one record, several records, or a manifest reference."
+    },
+    "ProvenanceRef": {
+      "additionalProperties": false,
+      "description": "Reference to provenance records kept in a manifest file, so small snapshot files stay small.",
+      "properties": {
+        "ref": {
+          "description": "Path of the manifest JSON, relative to the referring file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "ids": {
+          "description": "Ids of records embedded in that manifest.",
+          "items": {
+            "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+            "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "ids"
+      ],
+      "title": "ProvenanceRef",
+      "type": "object"
+    },
+    "SoilAnalysis": {
+      "additionalProperties": false,
+      "description": "Last soil analysis of a lot.",
+      "properties": {
+        "date": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "ph": {
+          "anyOf": [
+            {
+              "maximum": 14,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organic_matter_pct": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Organic matter stored as a 0..1 fraction (CONTRACTS.md §2), so 3 % is 0.03. Displayed as a percentage."
+        }
+      },
+      "required": [
+        "date",
+        "ph",
+        "organic_matter_pct"
+      ],
+      "title": "SoilAnalysis",
+      "type": "object"
+    },
+    "StorageMode": {
+      "description": "Offline storage mode (ADR-004): full = status + 90 days + imagery cache; saver = status + 7 days.",
+      "enum": [
+        "full",
+        "saver"
+      ],
+      "title": "StorageMode",
+      "type": "string"
+    },
+    "Tercile": {
+      "description": "Terrain-wetness third of a farm (TWI ranked within the farm).",
+      "enum": [
+        "low",
+        "mid",
+        "high"
+      ],
+      "title": "Tercile",
+      "type": "string"
+    },
+    "UnitSystem": {
+      "description": "Display units. Storage is always SI; imperial is a display-only conversion.",
+      "enum": [
+        "metric",
+        "imperial"
+      ],
+      "title": "UnitSystem",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "farm.json: a farm with its lots (domain/farm.json and the demo snapshot).",
+  "properties": {
+    "farm": {
+      "$ref": "#/$defs/Farm"
+    },
+    "lots": {
+      "items": {
+        "$ref": "#/$defs/Lot"
+      },
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceBlock"
+    }
+  },
+  "required": [
+    "farm",
+    "lots",
+    "provenance"
+  ],
+  "title": "FarmFile",
+  "type": "object"
+}

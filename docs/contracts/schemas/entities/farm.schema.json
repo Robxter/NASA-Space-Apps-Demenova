@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/farm.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "DataLevel": {
+      "description": "How much the farm has told Demenova: 0 pin, 1 outline + zones, 2 lots, 3 field notes.",
+      "enum": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "title": "DataLevel",
+      "type": "integer"
+    },
+    "Language": {
+      "description": "Interface language.",
+      "enum": [
+        "en",
+        "es"
+      ],
+      "title": "Language",
+      "type": "string"
+    },
+    "LinearRing": {
+      "description": "Closed ring of positions (GeoJSON, RFC 7946).",
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
+      "minItems": 4,
+      "type": "array"
+    },
+    "Mode": {
+      "description": "Farmer mode (one status, one alert, one action) or agronomist mode (full detail).",
+      "enum": [
+        "farmer",
+        "agronomist"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Point": {
+      "additionalProperties": false,
+      "description": "GeoJSON Point.",
+      "properties": {
+        "type": {
+          "const": "Point",
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/$defs/Position"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Point",
+      "type": "object"
+    },
+    "Polygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON Polygon.",
+      "properties": {
+        "type": {
+          "const": "Polygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "$ref": "#/$defs/LinearRing"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Polygon",
+      "type": "object"
+    },
+    "Position": {
+      "description": "[longitude, latitude] in EPSG:4326 (optional altitude in m).",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 2,
+      "type": "array"
+    },
+    "StorageMode": {
+      "description": "Offline storage mode (ADR-004): full = status + 90 days + imagery cache; saver = status + 7 days.",
+      "enum": [
+        "full",
+        "saver"
+      ],
+      "title": "StorageMode",
+      "type": "string"
+    },
+    "UnitSystem": {
+      "description": "Display units. Storage is always SI; imperial is a display-only conversion.",
+      "enum": [
+        "metric",
+        "imperial"
+      ],
+      "title": "UnitSystem",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A farm. Same fields in Supabase `farms`, in domain/farm.json and in the demo snapshot.\n\nv1 additions to the draft: `origin` (CONTRACTS.md §2 asks for origin metadata on every numeric field;\nit covers location, outline and data_level) and nullable country, province and canton (a farm that is\nonly a pin has no way to know them).",
+  "properties": {
+    "id": {
+      "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+      "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "owner_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Supabase auth user id from anonymous sign-in (ADR-003). null for the demo farm and for local-only farms."
+    },
+    "country": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "province": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "canton": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "location": {
+      "$ref": "#/$defs/Point",
+      "description": "The farm pin (data level 0)."
+    },
+    "outline": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Polygon"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Farm outline (data level 1 and above), else null."
+    },
+    "data_level": {
+      "$ref": "#/$defs/DataLevel"
+    },
+    "crop": {
+      "type": "string"
+    },
+    "variety": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "variety_origin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "catchment_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Id of the upstream catchment that drains to the farm."
+    },
+    "alert_email": {
+      "anyOf": [
+        {
+          "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Recipient of Severe emails. Personal data: always null on the demo farm, whose recipient is the backend environment variable ALERT_EMAIL_TO."
+    },
+    "language": {
+      "$ref": "#/$defs/Language"
+    },
+    "units": {
+      "$ref": "#/$defs/UnitSystem"
+    },
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "storage_mode": {
+      "$ref": "#/$defs/StorageMode"
+    },
+    "is_demo": {
+      "description": "True only for the synthetic demo farm, which the UI labels 'Demo'.",
+      "type": "boolean"
+    },
+    "created_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "updated_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginSpec"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "owner_id",
+    "country",
+    "province",
+    "canton",
+    "location",
+    "outline",
+    "data_level",
+    "crop",
+    "variety",
+    "variety_origin",
+    "catchment_id",
+    "alert_email",
+    "language",
+    "units",
+    "mode",
+    "storage_mode",
+    "is_demo",
+    "created_at",
+    "updated_at",
+    "origin"
+  ],
+  "title": "Farm",
+  "type": "object"
+}

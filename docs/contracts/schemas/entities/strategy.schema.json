@@ -1,0 +1,326 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/strategy.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "LocalizedText": {
+      "additionalProperties": false,
+      "description": "Bilingual text. A language that is not written yet is null, never machine-filled silently.",
+      "properties": {
+        "es": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "en": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "es",
+        "en"
+      ],
+      "title": "LocalizedText",
+      "type": "object"
+    },
+    "NumericValue": {
+      "additionalProperties": false,
+      "description": "One numeric value of a domain table with its origin metadata.",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL that was opened, 'Tyson, <date>', or a calibration note id."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date the source URL was opened."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the value is estimated, a design choice, or still pending."
+        },
+        "estimated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "description": "A task id from TASKS.md.",
+              "pattern": "^T-[0-9]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TASKS.md item that replaces an estimated value."
+        },
+        "to_be_redefined_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'Tyson' once he approved it, else null."
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "origin",
+        "value"
+      ],
+      "title": "NumericValue",
+      "type": "object"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened.",
+      "properties": {
+        "citation": {
+          "description": "Readable citation, for example 'Tyson, 14 Nov 2026' or an article title.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "URL that was opened, or null for a personal communication."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date the URL was opened."
+        }
+      },
+      "required": [
+        "citation",
+        "url",
+        "accessed"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "StrategyLabel": {
+      "description": "A = current management, B and C = the two alternatives.",
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ],
+      "title": "StrategyLabel",
+      "type": "string"
+    },
+    "StrategyScores": {
+      "additionalProperties": false,
+      "description": "Criterion scores of a strategy; each keeps its own origin and approval.",
+      "properties": {
+        "soil": {
+          "$ref": "#/$defs/NumericValue"
+        },
+        "water": {
+          "$ref": "#/$defs/NumericValue"
+        },
+        "cost": {
+          "$ref": "#/$defs/NumericValue"
+        },
+        "labour": {
+          "$ref": "#/$defs/NumericValue"
+        }
+      },
+      "required": [
+        "soil",
+        "water",
+        "cost",
+        "labour"
+      ],
+      "title": "StrategyScores",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One soil-management strategy (domain/strategies.yaml and the app's strategies.json).",
+  "properties": {
+    "strategy_id": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "type": "string"
+    },
+    "lot_scope": {
+      "description": "Unit ids (lot, zone or farm) the strategy applies to; [\"*\"] marks a regional default for every unit.",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "label": {
+      "$ref": "#/$defs/StrategyLabel"
+    },
+    "what": {
+      "$ref": "#/$defs/LocalizedText"
+    },
+    "why": {
+      "$ref": "#/$defs/LocalizedText"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/SourceRef"
+      },
+      "type": "array"
+    },
+    "benefits": {
+      "$ref": "#/$defs/LocalizedText"
+    },
+    "gaps": {
+      "$ref": "#/$defs/LocalizedText"
+    },
+    "risks": {
+      "$ref": "#/$defs/LocalizedText"
+    },
+    "scores": {
+      "$ref": "#/$defs/StrategyScores"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "'Tyson' once he approved the strategy, else null."
+    },
+    "origin": {
+      "$ref": "#/$defs/Origin"
+    }
+  },
+  "required": [
+    "strategy_id",
+    "lot_scope",
+    "label",
+    "what",
+    "why",
+    "evidence",
+    "benefits",
+    "gaps",
+    "risks",
+    "scores",
+    "approved_by",
+    "origin"
+  ],
+  "title": "Strategy",
+  "type": "object"
+}

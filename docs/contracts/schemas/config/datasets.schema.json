@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "config/datasets.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "DatasetEntry": {
+      "additionalProperties": false,
+      "description": "One dataset in config/datasets.yaml. Every identifier stays null until data-engineer verified it.\n\nv1 additions to the draft: `origin` (pending until verified, then sourced) and `notes`.",
+      "properties": {
+        "key": {
+          "description": "Demenova's own key for the dataset; not a provider identifier.",
+          "pattern": "^[a-z][a-z0-9_]*$",
+          "type": "string"
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "short_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, as read on the official page."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "url_opened": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Official page that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "spatial_res": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published."
+        },
+        "temporal_res": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published."
+        },
+        "latency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published."
+        },
+        "variables": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "use_in_demenova": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verified_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "origin": {
+          "$ref": "#/$defs/DatasetOrigin"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "key",
+        "provider",
+        "short_name",
+        "version",
+        "url_opened",
+        "accessed",
+        "spatial_res",
+        "temporal_res",
+        "latency",
+        "variables",
+        "use_in_demenova",
+        "verified_by",
+        "origin"
+      ],
+      "title": "DatasetEntry",
+      "type": "object"
+    },
+    "DatasetOrigin": {
+      "description": "A dataset entry is either verified against its official page (sourced) or not yet (pending).",
+      "enum": [
+        "sourced",
+        "pending"
+      ],
+      "title": "DatasetOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "config/datasets.yaml (owner: data-engineer).",
+  "properties": {
+    "datasets": {
+      "items": {
+        "$ref": "#/$defs/DatasetEntry"
+      },
+      "type": "array"
+    }
+  },
+  "required": [
+    "datasets"
+  ],
+  "title": "DatasetsConfig",
+  "type": "object"
+}

@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/flood_memory.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "additionalProperties": false,
+  "description": "A past flood remembered by the farmer (Supabase `flood_memories`, domain/flood_memories.yaml).",
+  "properties": {
+    "id": {
+      "description": "ULID when created by the app.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "farm_id": {
+      "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+      "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "date_or_month": {
+      "description": "YYYY-MM-DD or YYYY-MM.",
+      "pattern": "^[0-9]{4}-[0-9]{2}(?:-[0-9]{2})?$",
+      "type": "string"
+    },
+    "lots_or_zone": {
+      "description": "Ids of the lots or of the zone the water reached; empty when unknown.",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "days_with_water": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "damage_notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "reported_by": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "origin": {
+      "const": "observed",
+      "type": "string"
+    },
+    "matched_event_id": {
+      "anyOf": [
+        {
+          "description": "ULID (26 characters, Crockford base32).",
+          "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Engine alert event matched to this memory, else null."
+    },
+    "created_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "farm_id",
+    "date_or_month",
+    "lots_or_zone",
+    "days_with_water",
+    "damage_notes",
+    "reported_by",
+    "origin",
+    "matched_event_id",
+    "created_at"
+  ],
+  "title": "FloodMemory",
+  "type": "object"
+}

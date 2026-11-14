@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/user_prefs.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Language": {
+      "description": "Interface language.",
+      "enum": [
+        "en",
+        "es"
+      ],
+      "title": "Language",
+      "type": "string"
+    },
+    "Mode": {
+      "description": "Farmer mode (one status, one alert, one action) or agronomist mode (full detail).",
+      "enum": [
+        "farmer",
+        "agronomist"
+      ],
+      "title": "Mode",
+      "type": "string"
+    },
+    "StorageMode": {
+      "description": "Offline storage mode (ADR-004): full = status + 90 days + imagery cache; saver = status + 7 days.",
+      "enum": [
+        "full",
+        "saver"
+      ],
+      "title": "StorageMode",
+      "type": "string"
+    },
+    "Theme": {
+      "description": "Colour theme preference.",
+      "enum": [
+        "system",
+        "light",
+        "dark"
+      ],
+      "title": "Theme",
+      "type": "string"
+    },
+    "UnitSystem": {
+      "description": "Display units. Storage is always SI; imperial is a display-only conversion.",
+      "enum": [
+        "metric",
+        "imperial"
+      ],
+      "title": "UnitSystem",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Preferences of one device (Supabase `user_prefs` and local storage).\n\nThe draft says 'user_id/device_id'; v1 keeps both: `device_id` always exists, `user_id` is null while\nthe app runs local-only because anonymous sign-in was unavailable (ADR-003).",
+  "properties": {
+    "user_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Supabase auth user id, or null in local-only mode."
+    },
+    "device_id": {
+      "description": "Random id generated on the device at first launch.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "language": {
+      "$ref": "#/$defs/Language"
+    },
+    "units": {
+      "$ref": "#/$defs/UnitSystem"
+    },
+    "mode": {
+      "$ref": "#/$defs/Mode"
+    },
+    "storage_mode": {
+      "$ref": "#/$defs/StorageMode"
+    },
+    "theme": {
+      "$ref": "#/$defs/Theme"
+    }
+  },
+  "required": [
+    "user_id",
+    "device_id",
+    "language",
+    "units",
+    "mode",
+    "storage_mode",
+    "theme"
+  ],
+  "title": "UserPrefs",
+  "type": "object"
+}

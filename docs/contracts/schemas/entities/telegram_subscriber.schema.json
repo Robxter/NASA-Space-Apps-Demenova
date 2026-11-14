@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/telegram_subscriber.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "additionalProperties": false,
+  "description": "A Telegram chat subscribed to a farm (Supabase `telegram_subscribers`).",
+  "properties": {
+    "chat_id": {
+      "description": "Telegram chat id, encrypted or hashed where possible.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "farm_id": {
+      "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+      "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "started_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "active": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "chat_id",
+    "farm_id",
+    "started_at",
+    "active"
+  ],
+  "title": "TelegramSubscriber",
+  "type": "object"
+}

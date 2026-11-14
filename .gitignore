@@ -3,3 +3,59 @@
 !.env.example
 .claude/worktrees/
 
+# Local Claude Code settings (personal, never shared)
+.claude/settings.local.json
+
+# Credential files that tools may drop in the working tree
+.netrc
+_netrc
+*.pem
+
+# --- Python (uv) ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+.ipynb_checkpoints/
+
+# --- Node (npm) ---
+node_modules/
+app/dist/
+app/dev-dist/
+*.tsbuildinfo
+npm-debug.log*
+
+# --- Playwright (tests/e2e) ---
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# --- Data caches: raw downloads are never committed (docs/contracts/CONTRACTS.md §4) ---
+pipeline/data/raw/*
+!pipeline/data/raw/.gitkeep
+pipeline/data/tmp/
+
+# --- Supabase CLI local state ---
+supabase/.temp/
+supabase/.branches/
+
+# --- Graphify output (optional; `git add -f` the graph if it is wanted on the project page) ---
+graphify-out/
+
+# --- OS and editors ---
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+
+# --- Logs ---
+*.log

@@ -1,0 +1,428 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-data/zones.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "LinearRing": {
+      "description": "Closed ring of positions (GeoJSON, RFC 7946).",
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
+      "minItems": 4,
+      "type": "array"
+    },
+    "MultiPolygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON MultiPolygon.",
+      "properties": {
+        "type": {
+          "const": "MultiPolygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/LinearRing"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "MultiPolygon",
+      "type": "object"
+    },
+    "Polygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON Polygon.",
+      "properties": {
+        "type": {
+          "const": "Polygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "$ref": "#/$defs/LinearRing"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Polygon",
+      "type": "object"
+    },
+    "Position": {
+      "description": "[longitude, latitude] in EPSG:4326 (optional altitude in m).",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 2,
+      "type": "array"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Provenance record attached to every data file (docs/DATA_POLICY.md §3).\n\nAll fourteen keys are always present. A record either cites a dataset completely (dataset, version,\nprovider, url and accessed all filled) or has `dataset: null` and says in `notes` what the content is\ninstead (synthetic demo content, user input, a domain table). No field may hold UNVERIFIED or an\nunfilled <placeholder>.",
+      "properties": {
+        "id": {
+          "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+          "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        "dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, or null when the file is not dataset-backed."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product version."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Data provider, as named on the page that was opened."
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Landing page or DOI that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the source was opened (UTC)."
+        },
+        "spatial_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "temporal_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "aoi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Area-of-interest id the file was cut to."
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "[start, end] covered by the file; null for static data."
+        },
+        "processing": {
+          "description": "Ordered processing steps, including the resampling method.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Git commit of the code that produced the file."
+        },
+        "agent": {
+          "description": "Agent or person who produced the file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dataset",
+        "version",
+        "provider",
+        "url",
+        "accessed",
+        "spatial_resolution",
+        "temporal_resolution",
+        "aoi",
+        "time_range",
+        "processing",
+        "code_commit",
+        "agent",
+        "notes"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProvenanceBlock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "$ref": "#/$defs/ProvenanceRef"
+        }
+      ],
+      "description": "The `provenance` member of a data file: one record, several records, or a manifest reference."
+    },
+    "ProvenanceRef": {
+      "additionalProperties": false,
+      "description": "Reference to provenance records kept in a manifest file, so small snapshot files stay small.",
+      "properties": {
+        "ref": {
+          "description": "Path of the manifest JSON, relative to the referring file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "ids": {
+          "description": "Ids of records embedded in that manifest.",
+          "items": {
+            "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+            "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "ids"
+      ],
+      "title": "ProvenanceRef",
+      "type": "object"
+    },
+    "Tercile": {
+      "description": "Terrain-wetness third of a farm (TWI ranked within the farm).",
+      "enum": [
+        "low",
+        "mid",
+        "high"
+      ],
+      "title": "Tercile",
+      "type": "string"
+    },
+    "ZoneFeature": {
+      "additionalProperties": false,
+      "description": "GeoJSON Feature of a terrain zone.",
+      "properties": {
+        "type": {
+          "const": "Feature",
+          "type": "string"
+        },
+        "geometry": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Polygon"
+            },
+            {
+              "$ref": "#/$defs/MultiPolygon"
+            }
+          ]
+        },
+        "properties": {
+          "$ref": "#/$defs/ZoneProperties"
+        }
+      },
+      "required": [
+        "type",
+        "geometry",
+        "properties"
+      ],
+      "title": "ZoneFeature",
+      "type": "object"
+    },
+    "ZoneOrigin": {
+      "description": "Origins allowed for an automatic terrain zone (CONTRACTS.md §3).",
+      "enum": [
+        "calibrated",
+        "sourced"
+      ],
+      "title": "ZoneOrigin",
+      "type": "string"
+    },
+    "ZoneProperties": {
+      "additionalProperties": false,
+      "description": "Attributes of an automatic terrain zone (data level 1): the `properties` of a zone feature.",
+      "properties": {
+        "id": {
+          "description": "zone_<farm slug>_<low|mid|high>.",
+          "pattern": "^zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)$",
+          "type": "string"
+        },
+        "farm_id": {
+          "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+          "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+          "type": "string"
+        },
+        "tercile": {
+          "$ref": "#/$defs/Tercile"
+        },
+        "twi_range": {
+          "description": "[min, max] topographic wetness index inside the zone.",
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "type": "array"
+        },
+        "origin": {
+          "$ref": "#/$defs/ZoneOrigin"
+        }
+      },
+      "required": [
+        "id",
+        "farm_id",
+        "tercile",
+        "twi_range",
+        "origin"
+      ],
+      "title": "ZoneProperties",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "zones.geojson: the TWI terciles of the farm as a GeoJSON FeatureCollection.",
+  "properties": {
+    "type": {
+      "const": "FeatureCollection",
+      "type": "string"
+    },
+    "features": {
+      "items": {
+        "$ref": "#/$defs/ZoneFeature"
+      },
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceBlock"
+    }
+  },
+  "required": [
+    "type",
+    "features",
+    "provenance"
+  ],
+  "title": "ZonesFile",
+  "type": "object"
+}

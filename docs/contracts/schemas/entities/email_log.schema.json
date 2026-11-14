@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/email_log.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "EmailStatus": {
+      "description": "Delivery status of an alert email.",
+      "enum": [
+        "queued",
+        "sent",
+        "failed"
+      ],
+      "title": "EmailStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One alert email, used to send once per unit and Severe episode (Supabase `email_log`).",
+  "properties": {
+    "id": {
+      "description": "ULID (26 characters, Crockford base32).",
+      "pattern": "^[0-9A-HJKMNP-TV-Z]{26}$",
+      "type": "string"
+    },
+    "unit_id": {
+      "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+      "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+      "type": "string"
+    },
+    "episode_start": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "to_hash": {
+      "description": "Hash of the recipient address; the address itself is never stored here.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "provider_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "status": {
+      "$ref": "#/$defs/EmailStatus"
+    },
+    "created_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "unit_id",
+    "episode_start",
+    "to_hash",
+    "provider_id",
+    "status",
+    "created_at"
+  ],
+  "title": "EmailLog",
+  "type": "object"
+}

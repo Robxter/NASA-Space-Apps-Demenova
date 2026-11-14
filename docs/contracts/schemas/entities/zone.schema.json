@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/zone.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "LinearRing": {
+      "description": "Closed ring of positions (GeoJSON, RFC 7946).",
+      "items": {
+        "$ref": "#/$defs/Position"
+      },
+      "minItems": 4,
+      "type": "array"
+    },
+    "MultiPolygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON MultiPolygon.",
+      "properties": {
+        "type": {
+          "const": "MultiPolygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "items": {
+              "$ref": "#/$defs/LinearRing"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "MultiPolygon",
+      "type": "object"
+    },
+    "Polygon": {
+      "additionalProperties": false,
+      "description": "GeoJSON Polygon.",
+      "properties": {
+        "type": {
+          "const": "Polygon",
+          "type": "string"
+        },
+        "coordinates": {
+          "items": {
+            "$ref": "#/$defs/LinearRing"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "title": "Polygon",
+      "type": "object"
+    },
+    "Position": {
+      "description": "[longitude, latitude] in EPSG:4326 (optional altitude in m).",
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 2,
+      "type": "array"
+    },
+    "Tercile": {
+      "description": "Terrain-wetness third of a farm (TWI ranked within the farm).",
+      "enum": [
+        "low",
+        "mid",
+        "high"
+      ],
+      "title": "Tercile",
+      "type": "string"
+    },
+    "ZoneOrigin": {
+      "description": "Origins allowed for an automatic terrain zone (CONTRACTS.md §3).",
+      "enum": [
+        "calibrated",
+        "sourced"
+      ],
+      "title": "ZoneOrigin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A terrain zone as a flat record (Supabase `zones`).",
+  "properties": {
+    "id": {
+      "description": "zone_<farm slug>_<low|mid|high>.",
+      "pattern": "^zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)$",
+      "type": "string"
+    },
+    "farm_id": {
+      "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+      "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "tercile": {
+      "$ref": "#/$defs/Tercile"
+    },
+    "twi_range": {
+      "description": "[min, max] topographic wetness index inside the zone.",
+      "maxItems": 2,
+      "minItems": 2,
+      "prefixItems": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "number"
+        }
+      ],
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/ZoneOrigin"
+    },
+    "geometry": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Polygon"
+        },
+        {
+          "$ref": "#/$defs/MultiPolygon"
+        }
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "farm_id",
+    "tercile",
+    "twi_range",
+    "origin",
+    "geometry"
+  ],
+  "title": "Zone",
+  "type": "object"
+}

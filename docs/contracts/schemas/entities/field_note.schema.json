@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/field_note.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "FieldNoteKind": {
+      "description": "Kind of a data-level-3 field note.",
+      "enum": [
+        "soil_analysis",
+        "water_table",
+        "management",
+        "other"
+      ],
+      "title": "FieldNoteKind",
+      "type": "string"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A data-level-3 field note (Supabase `field_notes`). `origin` covers every value in `value_json`.",
+  "properties": {
+    "id": {
+      "description": "ULID when created by the app.",
+      "minLength": 1,
+      "type": "string"
+    },
+    "lot_id": {
+      "description": "lot_<farm slug>_<n>.",
+      "pattern": "^lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+$",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/FieldNoteKind"
+    },
+    "date": {
+      "format": "date",
+      "type": "string"
+    },
+    "value_json": {
+      "additionalProperties": true,
+      "type": "object"
+    },
+    "origin": {
+      "$ref": "#/$defs/Origin"
+    },
+    "created_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "lot_id",
+    "kind",
+    "date",
+    "value_json",
+    "origin",
+    "created_at"
+  ],
+  "title": "FieldNote",
+  "type": "object"
+}

@@ -1,0 +1,52 @@
+# Demenova Python workspace (pipeline, engine, backend, repo-level tests). Managed with uv.
+#
+# Rules (CLAUDE.md §4 and §6, ADR-001 in docs/decisions/DECISIONS.md):
+# - One manifest and one lockfile (uv.lock) for all Python code. Exact versions are pinned in uv.lock.
+# - Every dependency here is named in CLAUDE.md §4 or is an unavoidable peer listed in ADR-001.
+#   Adding or upgrading anything else is class A: write it to docs/decisions/PENDING.md, do not `uv add` it.
+# - "pysheds or WhiteboxTools" (CLAUDE.md §4) is not chosen yet: data-engineer adds exactly one of them
+#   to the `pipeline` group in task T-070 and records the choice in the run report.
+# - Run code from the repository root: `uv run pytest`, `uv run python -m pipeline.ingest ...`,
+#   `uv run uvicorn backend.app.main:app`.
+
+[project]
+name = "demenova"
+version = "0.0.0"
+description = "Demenova: NASA Earth observations turned into waterlogging and flood alerts for banana farms (pipeline, engine, backend)."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+    "httpx>=0.28.1",
+    "pydantic>=2.14.3",
+    "pyyaml>=6.0.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+]
+pipeline = [
+    "earthaccess>=0.17.0",
+    "numpy>=2.4.6",
+    "pandas>=3.1.1",
+    "rasterio>=1.4.4",
+    "rioxarray>=0.19.0",
+    "xarray>=2026.9.0",
+]
+backend = [
+    "fastapi>=0.162.7",
+    "uvicorn>=0.54.0",
+]
+
+[tool.uv]
+# Not an installable package: modules are imported from the repository root (see pytest pythonpath below).
+package = false
+# `uv sync` and `uv run` install all three groups, so every agent works in the same environment.
+# A slim backend install for Render: `uv sync --locked --no-default-groups --group backend`.
+default-groups = ["dev", "pipeline", "backend"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests", "pipeline", "backend"]
+pythonpath = ["."]
+addopts = "-ra --import-mode=importlib"
+norecursedirs = [".*", "node_modules", "dist", "build", "*.egg", "data", "e2e"]

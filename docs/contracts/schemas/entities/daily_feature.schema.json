@@ -1,0 +1,392 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/daily_feature.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Percentiles": {
+      "additionalProperties": false,
+      "description": "Indicator percentiles against the unit's own history, as 0..1 fractions.",
+      "properties": {
+        "upstream": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "saturation": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "local": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "balance": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "upstream",
+        "saturation",
+        "local",
+        "balance"
+      ],
+      "title": "Percentiles",
+      "type": "object"
+    },
+    "SoilMoistureSource": {
+      "description": "Where a day's soil-moisture value came from: SMAP, or the antecedent precipitation index gap-fill.",
+      "enum": [
+        "smap",
+        "api"
+      ],
+      "title": "SoilMoistureSource",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Engine features of one unit on one day (Supabase `daily_features`).\n\nv1 additions to the draft: `ndvi_date` (the draft says 'ndvi (+date of image)') and `origin`. The origin\nusually differs per field: rain read from a dataset is `sourced`, soil moisture filled with the\nantecedent precipitation index is `estimated`. Use the map form of `origin` for that.",
+  "properties": {
+    "unit_id": {
+      "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+      "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+      "type": "string"
+    },
+    "date": {
+      "format": "date",
+      "type": "string"
+    },
+    "rain_local_mm": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rain_upstream_24h_mm": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rain_upstream_48h_mm": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rain_upstream_72h_mm": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "runoff_upstream_mm": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "soil_moisture": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Soil moisture as a 0..1 fraction, as published by its source."
+    },
+    "soil_moisture_source": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SoilMoistureSource"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "api_index": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Antecedent precipitation index."
+    },
+    "et0_mm": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Reference evapotranspiration."
+    },
+    "etc_mm": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Crop evapotranspiration."
+    },
+    "balance_mm": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Daily water balance."
+    },
+    "balance_7d_mm": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "7-day running water balance."
+    },
+    "positive_balance_days": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Consecutive days with a positive balance."
+    },
+    "percentiles": {
+      "$ref": "#/$defs/Percentiles"
+    },
+    "twi_rank": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Terrain-wetness rank within the farm, 0..1."
+    },
+    "temp_mean_c": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "rh_mean": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Mean relative humidity as a 0..1 fraction."
+    },
+    "leaf_wet_hours": {
+      "anyOf": [
+        {
+          "maximum": 24,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "heat_units": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ndvi": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": -1,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ndvi_date": {
+      "anyOf": [
+        {
+          "format": "date",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Date of the image the NDVI value comes from."
+    },
+    "provenance_ids": {
+      "items": {
+        "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+        "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginSpec"
+    }
+  },
+  "required": [
+    "unit_id",
+    "date",
+    "rain_local_mm",
+    "rain_upstream_24h_mm",
+    "rain_upstream_48h_mm",
+    "rain_upstream_72h_mm",
+    "runoff_upstream_mm",
+    "soil_moisture",
+    "soil_moisture_source",
+    "api_index",
+    "et0_mm",
+    "etc_mm",
+    "balance_mm",
+    "balance_7d_mm",
+    "positive_balance_days",
+    "percentiles",
+    "twi_rank",
+    "temp_mean_c",
+    "rh_mean",
+    "leaf_wet_hours",
+    "heat_units",
+    "ndvi",
+    "ndvi_date",
+    "provenance_ids",
+    "origin"
+  ],
+  "title": "DailyFeature",
+  "type": "object"
+}

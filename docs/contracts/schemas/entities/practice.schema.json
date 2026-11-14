@@ -1,0 +1,371 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "entities/practice.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "DomainValue": {
+      "additionalProperties": false,
+      "description": "One value of a domain table with its origin metadata.",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL that was opened, 'Tyson, <date>', or a calibration note id."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date the source URL was opened."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the value is estimated, a design choice, or still pending."
+        },
+        "estimated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "description": "A task id from TASKS.md.",
+              "pattern": "^T-[0-9]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TASKS.md item that replaces an estimated value."
+        },
+        "to_be_redefined_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'Tyson' once he approved it, else null."
+        },
+        "value": {
+          "anyOf": [
+            {},
+            {
+              "type": "null"
+            }
+          ],
+          "description": "The value, or null while it is pending."
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Unit of the value when it is a quantity."
+        }
+      },
+      "required": [
+        "origin",
+        "value"
+      ],
+      "title": "DomainValue",
+      "type": "object"
+    },
+    "NumericValue": {
+      "additionalProperties": false,
+      "description": "One numeric value of a domain table with its origin metadata.",
+      "properties": {
+        "origin": {
+          "$ref": "#/$defs/Origin"
+        },
+        "source": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "URL that was opened, 'Tyson, <date>', or a calibration note id."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Date the source URL was opened."
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why the value is estimated, a design choice, or still pending."
+        },
+        "estimated_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "task_id": {
+          "anyOf": [
+            {
+              "description": "A task id from TASKS.md.",
+              "pattern": "^T-[0-9]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "TASKS.md item that replaces an estimated value."
+        },
+        "to_be_redefined_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "approved_by": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "'Tyson' once he approved it, else null."
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "origin",
+        "value"
+      ],
+      "title": "NumericValue",
+      "type": "object"
+    },
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened.",
+      "properties": {
+        "citation": {
+          "description": "Readable citation, for example 'Tyson, 14 Nov 2026' or an article title.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "URL that was opened, or null for a personal communication."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date the URL was opened."
+        }
+      },
+      "required": [
+        "citation",
+        "url",
+        "accessed"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One row of the practice table (domain/practices.yaml).",
+  "properties": {
+    "practice_id": {
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "type": "string"
+    },
+    "name_es": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "name_en": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "waterlogging_tolerance_days": {
+      "$ref": "#/$defs/NumericValue"
+    },
+    "root_depth_cm": {
+      "$ref": "#/$defs/NumericValue"
+    },
+    "soil_benefits": {
+      "$ref": "#/$defs/DomainValue"
+    },
+    "cost_usd_ha": {
+      "$ref": "#/$defs/NumericValue"
+    },
+    "labour": {
+      "$ref": "#/$defs/DomainValue"
+    },
+    "risks": {
+      "$ref": "#/$defs/DomainValue"
+    },
+    "sources": {
+      "items": {
+        "$ref": "#/$defs/SourceRef"
+      },
+      "type": "array"
+    },
+    "approved_by": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "practice_id",
+    "name_es",
+    "name_en",
+    "waterlogging_tolerance_days",
+    "root_depth_cm",
+    "soil_benefits",
+    "cost_usd_ha",
+    "labour",
+    "risks",
+    "sources",
+    "approved_by"
+  ],
+  "title": "Practice",
+  "type": "object"
+}

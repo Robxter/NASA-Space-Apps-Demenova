@@ -1,0 +1,268 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-data/manifest.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Provenance record attached to every data file (docs/DATA_POLICY.md §3).\n\nAll fourteen keys are always present. A record either cites a dataset completely (dataset, version,\nprovider, url and accessed all filled) or has `dataset: null` and says in `notes` what the content is\ninstead (synthetic demo content, user input, a domain table). No field may hold UNVERIFIED or an\nunfilled <placeholder>.",
+      "properties": {
+        "id": {
+          "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+          "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        "dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, or null when the file is not dataset-backed."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product version."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Data provider, as named on the page that was opened."
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Landing page or DOI that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the source was opened (UTC)."
+        },
+        "spatial_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "temporal_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "aoi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Area-of-interest id the file was cut to."
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "[start, end] covered by the file; null for static data."
+        },
+        "processing": {
+          "description": "Ordered processing steps, including the resampling method.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Git commit of the code that produced the file."
+        },
+        "agent": {
+          "description": "Agent or person who produced the file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dataset",
+        "version",
+        "provider",
+        "url",
+        "accessed",
+        "spatial_resolution",
+        "temporal_resolution",
+        "aoi",
+        "time_range",
+        "processing",
+        "code_commit",
+        "agent",
+        "notes"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ReplayWindow": {
+      "additionalProperties": false,
+      "description": "First and last day of the replay.",
+      "properties": {
+        "start": {
+          "format": "date",
+          "type": "string"
+        },
+        "end": {
+          "format": "date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "ReplayWindow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "manifest.json: what the snapshot set was built from. Holds the full provenance records by id.",
+  "properties": {
+    "schema_version": {
+      "description": "Contract version the files follow.",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "type": "string"
+    },
+    "farm_id": {
+      "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
+      "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "generated_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "engine_commit": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Git commit of the engine that wrote the snapshots."
+    },
+    "replay_window": {
+      "$ref": "#/$defs/ReplayWindow"
+    },
+    "provenance": {
+      "items": {
+        "$ref": "#/$defs/Provenance"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "farm_id",
+    "generated_at",
+    "engine_commit",
+    "replay_window",
+    "provenance"
+  ],
+  "title": "AppManifest",
+  "type": "object"
+}

@@ -1,0 +1,492 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "app-data/verification.schema.json",
+  "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
+  "x-contract-version": "1.0.0",
+  "$defs": {
+    "Origin": {
+      "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
+      "enum": [
+        "sourced",
+        "calibrated",
+        "provided",
+        "observed",
+        "estimated",
+        "synthetic",
+        "design",
+        "pending"
+      ],
+      "title": "Origin",
+      "type": "string"
+    },
+    "OriginSpec": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Origin"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/Origin"
+          },
+          "type": "object"
+        }
+      ],
+      "description": "Origin of the values in the same object: either one origin for all of them, or a map from field name to origin where the key '*' is the default for fields not listed. A sibling '<field>_origin' always wins over this."
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Provenance record attached to every data file (docs/DATA_POLICY.md §3).\n\nAll fourteen keys are always present. A record either cites a dataset completely (dataset, version,\nprovider, url and accessed all filled) or has `dataset: null` and says in `notes` what the content is\ninstead (synthetic demo content, user input, a domain table). No field may hold UNVERIFIED or an\nunfilled <placeholder>.",
+      "properties": {
+        "id": {
+          "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+          "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+          "type": "string"
+        },
+        "dataset": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product short name, or null when the file is not dataset-backed."
+        },
+        "version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Exact product version."
+        },
+        "provider": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Data provider, as named on the page that was opened."
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Landing page or DOI that was actually opened."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "When the source was opened (UTC)."
+        },
+        "spatial_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "temporal_resolution": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "As published by the provider."
+        },
+        "aoi": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Area-of-interest id the file was cut to."
+        },
+        "time_range": {
+          "anyOf": [
+            {
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                },
+                {
+                  "anyOf": [
+                    {
+                      "format": "date",
+                      "type": "string"
+                    },
+                    {
+                      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+                      "format": "date-time",
+                      "type": "string"
+                    }
+                  ]
+                }
+              ],
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "[start, end] covered by the file; null for static data."
+        },
+        "processing": {
+          "description": "Ordered processing steps, including the resampling method.",
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "code_commit": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Git commit of the code that produced the file."
+        },
+        "agent": {
+          "description": "Agent or person who produced the file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "dataset",
+        "version",
+        "provider",
+        "url",
+        "accessed",
+        "spatial_resolution",
+        "temporal_resolution",
+        "aoi",
+        "time_range",
+        "processing",
+        "code_commit",
+        "agent",
+        "notes"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ProvenanceBlock": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Provenance"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/Provenance"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        {
+          "$ref": "#/$defs/ProvenanceRef"
+        }
+      ],
+      "description": "The `provenance` member of a data file: one record, several records, or a manifest reference."
+    },
+    "ProvenanceRef": {
+      "additionalProperties": false,
+      "description": "Reference to provenance records kept in a manifest file, so small snapshot files stay small.",
+      "properties": {
+        "ref": {
+          "description": "Path of the manifest JSON, relative to the referring file.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "ids": {
+          "description": "Ids of records embedded in that manifest.",
+          "items": {
+            "description": "Identifier of a provenance record, for example prov-<dataset>-<period>.",
+            "pattern": "^prov-[A-Za-z0-9][A-Za-z0-9._-]*$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "ref",
+        "ids"
+      ],
+      "title": "ProvenanceRef",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened.",
+      "properties": {
+        "citation": {
+          "description": "Readable citation, for example 'Tyson, 14 Nov 2026' or an article title.",
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "URL that was opened, or null for a personal communication."
+        },
+        "accessed": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Date the URL was opened."
+        }
+      },
+      "required": [
+        "citation",
+        "url",
+        "accessed"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "VerificationEvent": {
+      "additionalProperties": false,
+      "description": "One row of the verification table.",
+      "properties": {
+        "id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/VerificationEventKind"
+        },
+        "start": {
+          "format": "date",
+          "type": "string"
+        },
+        "end": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "outcome": {
+          "$ref": "#/$defs/VerificationOutcome"
+        },
+        "unit_ids": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "description": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "start",
+        "end",
+        "outcome",
+        "unit_ids",
+        "description",
+        "sources"
+      ],
+      "title": "VerificationEvent",
+      "type": "object"
+    },
+    "VerificationEventKind": {
+      "description": "What an entry in the verification table is.",
+      "enum": [
+        "documented_flood",
+        "flood_memory",
+        "alert_without_flood"
+      ],
+      "title": "VerificationEventKind",
+      "type": "string"
+    },
+    "VerificationOutcome": {
+      "description": "Forecast-verification outcome of one event (docs/SPEC.md, Prediction science, method 14).",
+      "enum": [
+        "hit",
+        "miss",
+        "false_alarm"
+      ],
+      "title": "VerificationOutcome",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "verification.json: counts first, then the ratios those counts give (SPEC, Prediction science, method 14).\n\nPOD = hits / (hits + misses); FAR = false alarms / (hits + false alarms);\nCSI = hits / (hits + misses + false alarms). A ratio whose denominator is zero is null.",
+  "properties": {
+    "generated_at": {
+      "description": "UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset.",
+      "format": "date-time",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProvenanceBlock"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/VerificationEvent"
+      },
+      "type": "array"
+    },
+    "hits": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "misses": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "false_alarms": {
+      "minimum": 0,
+      "type": "integer"
+    },
+    "pod": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "far": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "csi": {
+      "anyOf": [
+        {
+          "maximum": 1,
+          "minimum": 0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "origin": {
+      "$ref": "#/$defs/OriginSpec"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  },
+  "required": [
+    "generated_at",
+    "provenance",
+    "events",
+    "hits",
+    "misses",
+    "false_alarms",
+    "pod",
+    "far",
+    "csi",
+    "origin",
+    "notes"
+  ],
+  "title": "VerificationFile",
+  "type": "object"
+}
