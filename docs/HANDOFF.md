@@ -22,6 +22,20 @@ Next for the receiver, in order: 1. Run checks. 2. Send queue to Tyson. 3. After
 domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by Tyson).
 Do not touch: domain/ approvals (only Tyson's answers, via tyson-answers.md, set approved_by).
 
+## 2026-11-14 23:45 - Main session (Claude Code) to Roster (morning) and next session
+State: Phase 1 complete on block/1-foundations (stacked on block/0-skeleton); all reviews' findings fixed.
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: rain history rebuilt on one product (IMERG Early); SMAP recommended-only (0 days); outlet on
+OSM river; schema approved (D-018) and 79/79 RLS checks pass on local Postgres 18.7 (supabase/tests/run_local.ps1);
+telegram_code in contracts 1.1.0 (D-020); D-014..D-019 recorded; block 0+1 report docs/reports/blocks/block-0-1.md.
+Checks: pytest 183 passed; contracts in sync; provenance OK.
+Waiting on Roster: apply schema to Supabase (supabase/README.md) and report the RLS test line; open PR(s) to main.
+Waiting on Tyson: P-007 real flood date; review queue Q-01..Q-19 (Q-01, Q-06 first).
+Next for the receiver, in order: 1. Phase 2 (block/2-core): data-scientist engine T-020..T-024 + frontend-engineer
+shell T-026/T-027, then api-engineer T-028 and devops T-029 (max 2 agents at a time). 2. Do not calibrate on rain until
+P-007 answers; SMAP not used (D-019). 3. Engine review: scientist-reviewer + one code review.
+Do not touch: contracts without lead-architect; .env and api keys.txt (git-ignored, never read into reports).
+
 ## 2026-11-14 23:00 - Main session (Claude Code) to Tyson (turno de noche)
 Estado: fase 1 casi completa en la rama block/1-foundations (commit d22c638). Sin enlace de la app todavía (domingo).
 Para revisar esta noche, en orden:

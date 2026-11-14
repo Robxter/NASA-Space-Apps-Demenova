@@ -4,7 +4,7 @@
 // Regenerate:      uv run python scripts/export_contracts.py
 // Drift check:     uv run pytest tests/test_contracts.py
 
-export const CONTRACT_VERSION = "1.0.0";
+export const CONTRACT_VERSION = "1.1.0";
 
 /** Recommended action for one alert level in one mode (domain/actions.yaml). */
 export interface ActionEntry {
@@ -341,6 +341,8 @@ export interface Farm {
   catchment_id: string | null;
   /** Recipient of Severe emails. Personal data: always null on the demo farm, whose recipient is the backend environment variable ALERT_EMAIL_TO. */
   alert_email: string | null;
+  /** Contract 1.1.0 (D-020). Server-generated, never client-writable: clients omit the key when they write a farm (sending it, even as null, is rejected by the column grants). Present on farm rows read from Supabase by the owner, or by anyone for the demo farm; absent or null on local-only farms and in payloads that did not select it. */
+  telegram_code?: string | null;
   language: Language;
   units: UnitSystem;
   mode: Mode;
@@ -784,6 +786,8 @@ export interface TelegramSubscriber {
   chat_id: string;
   /** farm_<slug>; the slug is lowercase letters, digits and single hyphens. */
   farm_id: string;
+  /** Contract 1.1.0 (D-020). The farm's code the chat subscribed with; must equal the farm's current telegram_code (composite foreign key, no ON UPDATE), so the backend deletes or re-confirms a farm's subscriptions before rotating its code. Backend only. */
+  telegram_code: string;
   /** UTC timestamp, ISO 8601, with a 'Z' or '+00:00' offset. */
   started_at: string;
   active: boolean;

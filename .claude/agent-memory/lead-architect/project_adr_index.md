@@ -17,7 +17,11 @@ D-table). Class-B log rows go in the D-table (D-013 was the first lead-architect
 - ADR-005: pipeline/common/models.py is the only contract source; export_contracts.py generates schemas + contracts.ts;
   tests/test_contracts.py catches drift and validates committed data/config files.
 
+Contract versioning (set by D-020, 2026-11-14): CONTRACT_VERSION in models.py; additive change = minor bump
+(1.0.0 -> 1.1.0 for telegram_code). Server-generated columns are optional + nullable (default None) in client-facing
+models, required in backend-only models; string patterns copy the SQL check, never stricter. List each version's
+deltas in CONTRACTS.md §9 (§3 keeps the v0 field lists).
+
 **Why:** AGENTS.md §8 asks lead-architect memory to hold conventions and the ADR index.
 **How to apply:** before any contract change, edit models.py, run export, run tests/test_contracts.py, log in DECISIONS.
-Open questions raised in phase 0: PENDING P-001 (state-machine diagram placeholder), P-002 (Telegram farm code),
-P-003 (nullable Farm country/province/canton). Verify their status in PENDING.md before relying on this.
+Phase 0 questions P-001, P-002 (resolved D-017), P-003 (resolved D-016): verify in PENDING.md before relying on this.

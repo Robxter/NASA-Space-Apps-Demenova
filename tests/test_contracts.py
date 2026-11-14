@@ -168,3 +168,41 @@ def test_weights_and_thresholds_must_be_numbers():
 
 def test_text_parameters_stay_allowed():
     models.AlertParam.model_validate(_param("a written rule, not a number"))
+
+
+# --------------------------------------------------------------------------------------------------------
+# T-015b: telegram_code (D-017, P-002 b; mirrors supabase/migrations 200 and 400). Codes below are shapes, not data.
+# --------------------------------------------------------------------------------------------------------
+
+
+def _subscriber(**changes) -> dict:
+    base = {
+        "chat_id": "chat-fixture",
+        "farm_id": "farm_fixture",
+        "telegram_code": "0123456789abcdef" * 2,
+        "started_at": "2026-11-14T00:00:00Z",
+        "active": True,
+    }
+    base.update(changes)
+    return base
+
+
+def test_farm_telegram_code_is_optional_because_the_server_generates_it():
+    field = models.Farm.model_fields["telegram_code"]
+    assert not field.is_required()
+    assert field.default is None
+
+
+def test_telegram_subscriber_needs_the_code_it_subscribed_with():
+    models.TelegramSubscriber.model_validate(_subscriber())
+    without_code = {key: value for key, value in _subscriber().items() if key != "telegram_code"}
+    with pytest.raises(ValidationError):
+        models.TelegramSubscriber.model_validate(without_code)
+
+
+@pytest.mark.parametrize("code", ["a" * 15, "a" * 65, "a" * 31 + "."], ids=["too-short", "too-long", "bad-character"])
+def test_telegram_code_follows_the_database_check(code):
+    with pytest.raises(ValidationError):
+        TypeAdapter(models.TelegramCode).validate_python(code)
+    with pytest.raises(ValidationError):
+        models.TelegramSubscriber.model_validate(_subscriber(telegram_code=code))

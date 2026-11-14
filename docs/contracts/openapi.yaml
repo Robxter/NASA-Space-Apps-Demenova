@@ -108,7 +108,8 @@ paths:
         Commands: `/start <farm_code>` saves the chat against the farm in Supabase `telegram_subscribers` and confirms
         in Spanish; `/estado` replies with the farm status in Spanish. Severe alerts mirror the email dedupe per unit and
         episode. Telegram sends the secret configured in setWebhook in the X-Telegram-Bot-Api-Secret-Token header.
-        What `<farm_code>` is (the farm id or a separate code) is open: docs/decisions/PENDING.md P-002.
+        `<farm_code>` is the farm's random `telegram_code` (Farm schema), never the farm id (D-017, P-002 b); the
+        subscriber row stores it (TelegramSubscriber schema). An unknown code changes nothing.
       security:
         - TelegramSecret: []
       requestBody:

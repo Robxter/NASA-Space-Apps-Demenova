@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "entities/telegram_subscriber.schema.json",
   "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
-  "x-contract-version": "1.0.0",
+  "x-contract-version": "1.1.0",
   "additionalProperties": false,
   "description": "A Telegram chat subscribed to a farm (Supabase `telegram_subscribers`).",
   "properties": {
@@ -14,6 +14,11 @@
     "farm_id": {
       "description": "farm_<slug>; the slug is lowercase letters, digits and single hyphens.",
       "pattern": "^farm_[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "type": "string"
+    },
+    "telegram_code": {
+      "description": "Contract 1.1.0 (D-020). The farm's code the chat subscribed with; must equal the farm's current telegram_code (composite foreign key, no ON UPDATE), so the backend deletes or re-confirms a farm's subscriptions before rotating its code. Backend only.",
+      "pattern": "^[A-Za-z0-9_-]{16,64}$",
       "type": "string"
     },
     "started_at": {
@@ -28,6 +33,7 @@
   "required": [
     "chat_id",
     "farm_id",
+    "telegram_code",
     "started_at",
     "active"
   ],

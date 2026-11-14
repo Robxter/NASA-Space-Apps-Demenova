@@ -53,8 +53,9 @@ review queue, the flood candidates and the logo options.
   P-009 approved (D-018). Local PostgreSQL 18.7 run (supabase/tests/run_local.ps1): migrations apply in one
   transaction and re-run cleanly; 79/79 checks pass; 6/7 mutants caught (7th blocked by the policy layer).
   Remaining: Roster runs README steps 1–6 on Supabase (hosted-only items in the report)
-- [ ] T-015b lead-architect: contract addition (class B) — Farm and TelegramSubscriber gain `telegram_code`
+- [x] T-015b lead-architect: contract addition (class B) — Farm and TelegramSubscriber gain `telegram_code`
   (random, server-generated) per P-002 (b) / database review; update schemas, models.py, contracts.ts, drift test
+  (contract 1.1.0, D-020; Farm optional, subscriber required; 5 new tests; pytest 183 passed, export --check OK)
 - [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;
   next pass: Sheet, TabBar, chart frame; wordmark to paths after the pick)
 - [x] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
