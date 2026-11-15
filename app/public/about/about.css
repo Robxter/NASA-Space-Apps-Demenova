@@ -1,0 +1,31 @@
+/*
+ * About Demenova: page CSS (product-designer, D-033 stretch). The :root palette is `start.mjs brand` with Demenova's
+ * own colours (Mist, Orbit, Leaf; design/BRIEF.md). The Google Fonts lines it printed are deleted: the site CSP is
+ * font-src 'self', so the faces are the app's system stack. A file, never inline (style-src 'self').
+ */
+:root {
+  --p-bg: #eef2ef; --p-surface: #ffffff; --p-ink: #0e2135; --p-muted: #44566a;
+  --p-accent: #2a6343; --p-accent-ink: #eef2ef; --p-action: #2a6343; --p-action-ink: #eef2ef;
+  --p-inv-bg: #0e2135; --p-inv-surface: #1b2d41; --p-inv-ink: #eef2ef; --p-inv-muted: #919ca4;
+  --p-inv-accent: #eef2ef; --p-inv-accent-ink: #0e2135; --p-inv-action: #eef2ef; --p-inv-action-ink: #0e2135;
+  --font-display: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-text: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --display-weight: 500;
+  --display-tracking: -0.035em;
+  --display-tracking-xl: -0.04em;
+}
+
+/* Section heights (the kit's style="--h: 2" moved here: no inline style attributes under the CSP). */
+#how { --h: 2; }
+
+/* The logo is Demenova's own SVG (option 1 "Core", D-015): the soil core is the page's only motif. */
+.nav__logo img, .footer__logo img { display: block; height: 32px; width: auto; }
+
+/* The hero window holds a real screenshot of the app (Home, demo farm, "Demo" label visible). */
+.hero__shot { display: block; width: 100%; height: auto; border-radius: var(--r-lg, 14px); }
+
+/* Limits: plain facts, one per row. */
+.limits { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--s-5, 24px); }
+.limits li { padding-top: var(--s-4, 16px); border-top: 1px solid color-mix(in srgb, var(--p-ink) 14%, transparent); font-size: var(--t-body, 1.0625rem); max-width: 62ch; }
+@media (min-width: 1024px) { .limits { grid-template-columns: 1fr 1fr; column-gap: var(--s-8, 48px); } }
