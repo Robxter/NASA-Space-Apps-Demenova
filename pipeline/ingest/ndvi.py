@@ -39,8 +39,35 @@ def search(bbox: tuple[float, float, float, float], start: str, end: str, max_cl
 
 
 def _band_scaling(item: dict, key: str) -> tuple[float, float]:
+    """(scale, offset) that turn the COG's DN into surface reflectance for this item.
+
+    T-049: Earth Search `sentinel-2-l2a` items with `earthsearch:boa_offset_applied: true` already carry the
+    PB>=04.00 BOA_ADD_OFFSET in their pixel values, yet still list `offset: -0.1` in raster:bands. For them only the
+    scale applies (Element 84, github.com/Element84/earth-search/issues/41, 2025-05-15; config/datasets.yaml key
+    sentinel2). Applying the offset again made red reflectance negative over vegetation and NDVI > 1.
+    """
     band = item["assets"][key]["raster:bands"][0]
-    return float(band.get("scale", 1.0)), float(band.get("offset", 0.0))
+    scale, offset = float(band.get("scale", 1.0)), float(band.get("offset", 0.0))
+    if item["properties"].get("earthsearch:boa_offset_applied") is True:
+        offset = 0.0
+    return scale, offset
+
+
+def ndvi_from_dn(red_dn: np.ndarray, nir_dn: np.ndarray, scl: np.ndarray, red_sc: tuple[float, float],
+                 nir_sc: tuple[float, float]) -> np.ndarray:
+    """10 m NDVI from DN. Missing (NaN) where SCL is not clear, DN is nodata (0) or a reflectance is <= 0.
+
+    A non-positive surface reflectance has no physical NDVI; it stays missing rather than being clipped.
+    With both reflectances > 0, NDVI lies strictly inside (-1, 1); the assertion guards against scaling bugs.
+    """
+    red, nir = red_dn * red_sc[0] + red_sc[1], nir_dn * nir_sc[0] + nir_sc[1]
+    ok = np.isin(scl, CLEAR_SCL) & (red_dn > 0) & (nir_dn > 0) & (red > 0) & (nir > 0)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = np.where(ok, (nir - red) / (nir + red), np.nan)
+    finite = out[np.isfinite(out)]
+    if finite.size and (finite.min() < -1 or finite.max() > 1):
+        raise ValueError("NDVI outside [-1, 1]: reflectance scaling is wrong")
+    return out
 
 
 def _read_on(url: str, grid: Grid, resampling: Resampling) -> np.ndarray:
@@ -72,7 +99,7 @@ def raw_scene(item: dict, grid10: Grid) -> Path:
         f"prov-s2-raw-{item['id'].lower()}", "sentinel2", aoi="farm_grid_10m", time_range=(date, date),
         processing=[f"STAC item {item['id']} ({COLLECTION}); assets red, nir, scl read via HTTP (COG)",
                     "warped to the farm grid at 10 m in EPSG:32717, nearest (10 m lattice nests in the 30 m lattice)"],
-        notes=f"Digital numbers as published; reflectance = DN x {rs} + ({ro}) per the item's raster:bands. Item cloud cover {item['properties'].get('eo:cloud_cover')} % (scene)."),
+        notes=f"Digital numbers as published; reflectance = DN x {rs} + ({ro}) (raster:bands, offset dropped when earthsearch:boa_offset_applied is true, T-049). Item cloud cover {item['properties'].get('eo:cloud_cover')} % (scene)."),
         origin="sourced")
     return path
 
@@ -83,14 +110,16 @@ def ndvi_30m(item: dict, grid: Grid) -> tuple[np.ndarray, float]:
     path = raw_scene(item, grid10)
     with rasterio.open(path) as src:
         red_dn, nir_dn, scl = src.read().astype("float64")
-    rs, ro = _band_scaling(item, "red")
-    ns, no = _band_scaling(item, "nir")
-    clear = np.isin(scl, CLEAR_SCL) & (red_dn > 0) & (nir_dn > 0)
-    red, nir = red_dn * rs + ro, nir_dn * ns + no
-    with np.errstate(invalid="ignore", divide="ignore"):
-        ndvi10 = np.where(clear & ((nir + red) > 0), (nir - red) / (nir + red), np.nan)
+    ndvi10 = ndvi_from_dn(red_dn, nir_dn, scl, _band_scaling(item, "red"), _band_scaling(item, "nir"))
     ndvi = aggregate_3x3(ndvi10)
     return ndvi.astype("float32"), float(np.mean(~np.isnan(ndvi)))
+
+
+def scaling_note(item: dict) -> str:
+    rs, ro = _band_scaling(item, "red")
+    flag = item["properties"].get("earthsearch:boa_offset_applied")
+    return (f"reflectance = DN x {rs} + ({ro}); earthsearch:boa_offset_applied = {flag}, processing baseline "
+            f"{item['properties'].get('s2:processing_baseline')} (T-049 scaling rule, config/datasets.yaml sentinel2)")
 
 
 def aggregate_3x3(fine: np.ndarray, min_valid: int = MIN_CLEAR_OF_9) -> np.ndarray:
@@ -122,29 +151,35 @@ def composite(bbox, grid: Grid, start: str, end: str, aoi: str, out: Path, min_c
     prov = dataset_record(
         "prov-s2-ndvi-composite-" + start + "-" + end, "sentinel2", aoi=aoi, time_range=(start, end),
         processing=["Earth Search STAC search " + COLLECTION + f", scene cloud cover < 60 %, {len(items)} scenes found",
-                    "per scene: reflectance from DN with the item's raster:bands scale/offset; clear = SCL in {4,5,6}",
+                    "per scene: reflectance = DN x scale (+ raster:bands offset only when earthsearch:boa_offset_applied is not true; T-049); clear = SCL in {4,5,6} and both reflectances > 0",
                     "NDVI = (NIR - Red) / (NIR + Red) at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear (area-weighted aggregation)",
                     f"scenes kept when >= {min_clear:.0%} of the farm grid is clear: {len(used)}",
                     "composite = per-cell median of the kept scenes (NaN ignored); band 2 = number of clear observations"],
-        accessed=utc_now(), notes="Scenes used (id, date, clear fraction of grid): " + "; ".join(f"{a} {b} {c}" for a, b, c in used))
+        accessed=utc_now(), notes="Regenerated for T-049 (earlier file applied the BOA offset twice; NDVI was > 1). Scenes used (id, date, clear fraction of grid): "
+        + "; ".join(f"{a} {b} {c}" for a, b, c in used))
     write_geotiff(out, np.stack([median, count]), grid, prov, band_names=["ndvi_median", "n_clear_obs"])
     return {"scenes_found": len(items), "scenes_used": used}
 
 
-def scenes_in_window(bbox, grid: Grid, start: str, end: str, aoi: str, out_dir: Path) -> list[dict]:
-    """One NDVI GeoTIFF per scene in [start, end] (any clear fraction, missing stays NaN)."""
-    rows = []
+def scenes_in_window(bbox, grid: Grid, start: str, end: str, aoi: str, out_dir: Path, min_clear: float = 0.3) -> tuple[list[dict], list[dict]]:
+    """One NDVI GeoTIFF per scene in [start, end] whose clear fraction of the farm grid is >= min_clear (same rule as
+    the composite). Cloudy pixels of a kept scene stay NaN; scenes below the threshold are listed, not written."""
+    rows, skipped = [], []
     for item in search(bbox, start, end, max_cloud=100.0):
         date = item["properties"]["datetime"][:10]
         ndvi, clear = ndvi_30m(item, grid)
+        if clear < min_clear:
+            skipped.append({"item": item["id"], "date": date, "clear_fraction": round(clear, 3)})
+            continue
         out = out_dir / f"ndvi_{date}_{item['id']}.tif"
         prov = dataset_record(f"prov-s2-ndvi-{item['id'].lower()}", "sentinel2", aoi=aoi, time_range=(date, date),
-                              processing=["per scene: reflectance from DN with the item's raster:bands scale/offset; clear = SCL in {4,5,6}",
-                                          "NDVI at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear, else missing"],
+                              processing=[f"per scene: {scaling_note(item)}; clear = SCL in {{4,5,6}} and both reflectances > 0",
+                                          "NDVI at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear, else missing",
+                                          f"scene kept because >= {min_clear:.0%} of the farm grid is clear"],
                               accessed=utc_now(), notes=f"STAC item {item['id']}; clear fraction of the farm grid {clear:.3f}.")
         write_geotiff(out, ndvi, grid, prov, band_names=["ndvi"])
         rows.append({"item": item["id"], "date": date, "clear_fraction": round(clear, 3), "file": out.name})
-    return rows
+    return rows, skipped
 
 
 def today() -> str:

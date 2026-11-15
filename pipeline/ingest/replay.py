@@ -1,8 +1,10 @@
-"""T-014: harmonized replay stack on the farm's 30 m EPSG:32717 grid for a frozen window (default 2026-02-15:2026-03-05).
+"""T-014: harmonized replay stack on the farm's 30 m EPSG:32717 grid for a frozen window (default 2026-01-20:2026-03-05, D-029;
+the window is the `--replay START:END` argument, nothing else is hard-coded).
 
 Layers and resampling (recorded per layer in stack.json and in each file's provenance):
 - POWER daily: nearest (one POWER source cell covers the AOI, checked in power.py): coarse value kept coarse.
-- Sentinel-2 NDVI: 10 m -> 30 m mean of clear pixels (area-weighted aggregation), one file per scene; no compositing.
+- Sentinel-2 NDVI: 10 m -> 30 m mean of clear pixels (area-weighted aggregation), one file per scene with >= 30 % of the
+  farm grid clear; no compositing (T-049 scaling fix in ndvi.py).
 - SRTM DEM / upslope area: see pipeline/ingest/aoi.py (bilinear DEM).
 - IMERG, SMAP, GLDAS: need Earthdata login; listed as pending until credentials exist (PENDING.md). Nothing filled.
 """
@@ -82,8 +84,8 @@ def build(start: dt.date, end: dt.date) -> dict:
         layers.append({"layer": f"power_{column}", "file": name, "dataset": "power", "resampling": "nearest (single source cell)", "status": "available",
                        "day_definition": DAY_DEF["power"], "native_resolution": native("power")})
 
-    # Sentinel-2 NDVI scenes inside the window (any cloud cover; cloudy pixels stay missing).
-    scenes = ndvi_mod.scenes_in_window(FARM_BOX, grid, start.isoformat(), end.isoformat(), AOI_ID, out)
+    # Sentinel-2 NDVI scenes inside the window with >= 30 % of the farm grid clear; cloudy pixels stay missing.
+    scenes, ndvi_skipped = ndvi_mod.scenes_in_window(FARM_BOX, grid, start.isoformat(), end.isoformat(), AOI_ID, out)
     for s in scenes:
         layers.append({"layer": "ndvi", "file": s["file"], "date": s["date"], "dataset": "sentinel2",
                        "resampling": "mean of clear 10 m pixels (>= 5 of 9)", "clear_fraction": s["clear_fraction"], "status": "available",
@@ -144,6 +146,7 @@ def build(start: dt.date, end: dt.date) -> dict:
     manifest = {
         "window": [start.isoformat(), end.isoformat()], "dates": dates, "grid": grid.as_dict(), "aoi": AOI_ID,
         "layers": layers,
+        "ndvi_scenes_skipped": {"rule": "farm-grid clear fraction < 0.3 (SCL 4/5/6 and reflectance > 0); not written", "scenes": ndvi_skipped},
         "origin": {"*": "design", "layers": "sourced"},
     }
     prov = [record(f"prov-replay-stack-{start}-{end}", aoi=AOI_ID, time_range=(start.isoformat(), end.isoformat()),

@@ -12,6 +12,9 @@ Placement rules (design choices by data-engineer, not science):
 
 from __future__ import annotations
 
+import json
+import re
+
 import numpy as np
 import rasterio
 from scipy import ndimage
@@ -21,7 +24,9 @@ from pipeline.common.io import write_json
 from pipeline.common.provenance import dataset_record, record, utc_now
 from pipeline.ingest.aoi import AOI_DIR, AOI_ID, PROCESSED, TERRAIN_DIR
 
-FARM_ID = "farm_demo_el_oro"
+FARM_SLUG = "demo-el-oro"
+FARM_ID = f"farm_{FARM_SLUG}"  # contract: farm_<slug>, lot_<slug>_<n> (pipeline/common/models.py)
+REDEFINED_BY = "future-local-agronomist"  # D-022 (was Tyson)
 SIZES = [(8, 8), (9, 8), (8, 7), (8, 8), (9, 8), (8, 7), (8, 8), (9, 8)]
 NDVI_MIN = 0.6
 CHANNEL_M2 = 1.0e6
@@ -109,10 +114,10 @@ def lot_feature(index: int, r: int, c: int, h: int, w: int, label: str, transfor
         "type": "Feature",
         "geometry": {"type": "Polygon", "coordinates": [ring]},
         "properties": {
-            "id": f"lot_demo_el_oro_{index}", "farm_id": FARM_ID, "name": f"Lote {index} (demo)",
+            "id": f"lot_{FARM_SLUG}_{index}", "farm_id": FARM_ID, "name": f"Lote {index} (demo)",
             "area_ha": round(h * w * 900 / 10000, 2), "area_ha_origin": "synthetic",
             "placement_wetness_class": label,
-            "defined_by": "data-engineer", "to_be_redefined_by": "Tyson", "origin": "synthetic",
+            "defined_by": "data-engineer", "to_be_redefined_by": REDEFINED_BY, "origin": "synthetic",
         },
     }
 
@@ -131,7 +136,7 @@ def run() -> list[dict]:
                            f"rules: NDVI >= {NDVI_MIN} in every cell, no channel cell (upslope > 1 km2), within {MAX_RIVER_M:.0f} m of the main DEM channel, "
                            f">= {GAP_CELLS} cells apart, inside the {BLOCK_M:.0f} m block with most low/high wetness candidates",
                            "4 lots from the lowest and 4 from the highest third of placement wetness ln(a/tan b); area_ha = cells x 900 m2"],
-               notes="Synthetic demo lots (D-005): imaginary lot layout drawn by data-engineer on real terrain and imagery; Tyson redefines them (T-064). "
+               notes="Synthetic demo lots (D-005): imaginary lot layout drawn by data-engineer on real terrain and imagery; a future local agronomist redefines them (D-022). "
                      "Not real farm boundaries; crop type not verified."),
         dataset_record("prov-demo-lots-ndvi-input", "sentinel2", aoi=AOI_ID, time_range=("2025-11-01", "2026-11-13"), accessed=utc_now(),
                        processing=["input: pipeline/data/processed/ndvi/ndvi_composite_2025-11-01_2026-11-13.tif"], notes="Vegetation screen for lot placement."),
@@ -140,3 +145,33 @@ def run() -> list[dict]:
     ]
     write_json(AOI_DIR / "demo_lots.geojson", {"type": "FeatureCollection", "features": feats}, prov)
     return feats
+
+
+LEGACY_ID = re.compile(r"^lot_demo_el_oro_(\d+)$")  # ids written before T-049 (underscores in the slug break the contract)
+
+
+def relabel(path=None) -> dict[str, str]:
+    """T-049: rewrite ids, farm_id and to_be_redefined_by of the committed lots WITHOUT moving them (the engine and the
+    app key on lot numbers). Lot n keeps number n. Idempotent. Returns the old -> new id map."""
+    path = path or AOI_DIR / "demo_lots.geojson"
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    mapping = {}
+    for f in doc["features"]:
+        props = f["properties"]
+        m = LEGACY_ID.match(props["id"])
+        new = f"lot_{FARM_SLUG}_{m.group(1)}" if m else props["id"]
+        mapping[props["id"]] = new
+        props.update(id=new, farm_id=FARM_ID, to_be_redefined_by=REDEFINED_BY)
+    prov = doc.pop("provenance")
+    for rec in prov:
+        if rec["id"] == "prov-demo-lots-synthetic":
+            rec["notes"] = rec["notes"].replace("Tyson redefines them (T-064)", "a future local agronomist redefines them (D-022)")
+            step = "T-049: ids renamed to the contract pattern lot_demo-el-oro_<n> (number kept), farm_id farm_demo-el-oro; geometry unchanged"
+            if step not in rec["processing"]:
+                rec["processing"].append(step)
+        if rec["id"] == "prov-demo-lots-ndvi-input" and "T-049" not in rec["notes"]:
+            rec["notes"] += (" T-049: placement used the composite built before the scaling fix (BOA offset applied twice, NDVI > 1). "
+                             "Lots kept in place; against the corrected composite 7 of 528 lot cells (lots 1, 3, 5, 8) are below NDVI 0.6, "
+                             "every lot median is >= 0.79.")
+    write_json(path, doc, prov)
+    return mapping

@@ -1,6 +1,6 @@
 """Unit tests for the risky parts of pipeline/ingest: download caching, resampling, aggregation, event ranking.
 
-Arrays here are small hand-made test inputs (not data); no file under pipeline/data is touched.
+Arrays here are small hand-made test inputs (not data); committed files under pipeline/data are only read (range and id checks).
 """
 
 from __future__ import annotations
@@ -245,3 +245,69 @@ def test_dataset_record_refuses_pending_entry():
         dataset_record("prov-x", "gaez", processing=[], aoi=None, time_range=None)
     rec = dataset_record("prov-y", "srtm", processing=[], aoi=None, time_range=None)
     assert rec["dataset"] == "SRTMGL1" and rec["version"] == "003"
+
+
+# --- T-049: Sentinel-2 reflectance scaling and NDVI range ---------------------------------------------------
+
+
+def _item(flag):
+    band = [{"scale": 0.0001, "offset": -0.1}]
+    props = {"s2:processing_baseline": "05.12"} | ({} if flag is None else {"earthsearch:boa_offset_applied": flag})
+    return {"properties": props, "assets": {"red": {"raster:bands": band}, "nir": {"raster:bands": band}}}
+
+
+def test_boa_offset_dropped_only_when_already_applied():
+    assert ndvi._band_scaling(_item(True), "red") == (0.0001, 0.0)
+    assert ndvi._band_scaling(_item(False), "red") == (0.0001, -0.1)
+    assert ndvi._band_scaling(_item(None), "red") == (0.0001, -0.1)
+
+
+def test_ndvi_from_dn_stays_in_range_and_masks_nonphysical():
+    rng = np.random.default_rng(0)
+    red, nir = rng.integers(1, 12000, (50, 50)).astype(float), rng.integers(1, 12000, (50, 50)).astype(float)
+    scl = np.full(red.shape, 4.0)
+    for flag in (True, False):
+        sc = ndvi._band_scaling(_item(flag), "red")
+        out = ndvi.ndvi_from_dn(red, nir, scl, sc, sc)
+        finite = out[np.isfinite(out)]
+        assert finite.size and finite.min() >= -1 and finite.max() <= 1
+    # Dense-vegetation DN like the 19 Feb 2026 scene (red 445, nir 4175): offset already applied -> NDVI about 0.81.
+    one = np.array([[445.0]]), np.array([[4175.0]]), np.array([[4.0]])
+    good = ndvi.ndvi_from_dn(*one, ndvi._band_scaling(_item(True), "red"), ndvi._band_scaling(_item(True), "nir"))
+    assert good[0, 0] == pytest.approx((0.4175 - 0.0445) / (0.4175 + 0.0445))
+    # Applying the -0.1 offset again gives a negative red reflectance: missing, never an NDVI > 1.
+    assert np.isnan(ndvi.ndvi_from_dn(*one, (0.0001, -0.1), (0.0001, -0.1))[0, 0])
+    # Cloud (SCL 9) and nodata stay missing.
+    assert np.isnan(ndvi.ndvi_from_dn(np.array([[445.0]]), np.array([[4175.0]]), np.array([[9.0]]), (1e-4, 0), (1e-4, 0))[0, 0])
+
+
+def test_committed_ndvi_files_lie_in_minus1_plus1():
+    from pipeline.common.provenance import REPO_ROOT
+
+    files = [p for p in (REPO_ROOT / "pipeline" / "data" / "processed").rglob("ndvi*.tif") if "2026-02-15_2026-03-05" not in p.parts]
+    for path in files:
+        with rasterio.open(path) as src:
+            band = src.read(1).astype("float64")
+        finite = band[np.isfinite(band)]
+        assert finite.size == 0 or (finite.min() >= -1 and finite.max() <= 1), path.name
+
+
+def test_demo_lot_ids_follow_the_contract(tmp_path):
+    from pydantic import TypeAdapter
+
+    from pipeline.common.models import FarmId, LotId
+    from pipeline.common.provenance import REPO_ROOT
+    from pipeline.ingest import lots
+
+    doc = json.loads((REPO_ROOT / "pipeline/data/processed/aoi/demo_lots.geojson").read_text(encoding="utf-8"))
+    for f in doc["features"]:
+        TypeAdapter(LotId).validate_python(f["properties"]["id"])
+        TypeAdapter(FarmId).validate_python(f["properties"]["farm_id"])
+        assert f["properties"]["to_be_redefined_by"] == "future-local-agronomist" and f["properties"]["origin"] == "synthetic"
+    # relabel keeps the lot number and is idempotent
+    legacy = {"type": "FeatureCollection", "provenance": [{"id": "prov-demo-lots-synthetic", "notes": "", "processing": []}],
+              "features": [{"type": "Feature", "geometry": None, "properties": {"id": "lot_demo_el_oro_7", "to_be_redefined_by": "Tyson"}}]}
+    path = tmp_path / "lots.geojson"
+    path.write_text(json.dumps(legacy), encoding="utf-8")
+    assert lots.relabel(path) == {"lot_demo_el_oro_7": "lot_demo-el-oro_7"}
+    assert lots.relabel(path) == {"lot_demo-el-oro_7": "lot_demo-el-oro_7"}

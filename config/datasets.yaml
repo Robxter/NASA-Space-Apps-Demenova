@@ -175,7 +175,7 @@ datasets:
     use_in_demenova: "Crop greenness history"
     verified_by: data-engineer
     origin: sourced
-    notes: "STAC endpoint https://earth-search.aws.element84.com/v1, collection sentinel-2-l2a; anonymous access, no AWS account. Licence: free, full and open (Copernicus terms). Band resolution and scale/offset are read per item from STAC asset metadata at download time (see provenance of NDVI files)."
+    notes: "STAC endpoint https://earth-search.aws.element84.com/v1, collection sentinel-2-l2a; anonymous access, no AWS account. Licence: free, full and open (Copernicus terms). Band resolution and scale/offset are read per item from STAC asset metadata at download time (see provenance of NDVI files). SCALING (T-049, verified 2026-11-15): items with property earthsearch:boa_offset_applied = true already have the PB>=04.00 BOA_ADD_OFFSET (-1000 DN) applied to the COG values, so reflectance = DN x scale only, even though raster:bands still lists offset -0.1; apply the offset only when the property is absent/false. Source: Element 84 maintainer answer, https://github.com/Element84/earth-search/issues/41 (comment 2025-05-15, 'if a scene in sentinel-2-l2a has the property earthsearch:boa_offset_applied set to true, just apply the scale factor'), read 2026-11-15. Cross-check: AOI scene S2C_17MPS_20260219_0_L2A (PB 05.12, flag true) has clear-pixel red DN median 445, which the -0.1 offset would turn into negative reflectance."
 
   - key: modis
     provider: "NASA LP DAAC"
