@@ -176,6 +176,8 @@ review queue, the flood candidates and the logo options.
   Landsat WELD as the default Satellite and OpenStreetMap for Streets)
 - [ ] T-073 owner of docs/site (non-blocking, D-036): docs/site/Instructions.md:57 and the built Instructions.pdf say
   "Imagery: Relief or True colour"; Satellite (default), Streets and Relief since 649d287; rebuild the PDF
+- [x] T-074 qa-demo-engineer: block 5 (D-038) C6 gate GREEN at app c8406e4 (e2e 365 passed twice at d771d69, 0 app
+  flips; one test race fixed fb37fe8; @perf 2 alone; new motion.spec.ts; report docs/reports/qa/2026-11-15-1607.md)
 - [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
   guidance stated as general and not reviewed by a local agronomist (5 guides done 2026-11-15; learn-cards.md
   skipped, optional; <app URL> placeholder for Roberto; report docs/reports/instructor/2026-11-15-1400.md)
