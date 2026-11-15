@@ -81,8 +81,24 @@ def test_replay_snapshots_are_reproducible_from_committed_files(tmp_path, monkey
     committed = Path(R.REPO_ROOT) / "app/public/data/demo"
     names = ["farm.json", "zones.geojson", "verification.json"] + [f"replay/{p.name}" for p in (committed / "replay").glob("*.json")] \
         + [f"history/{p.name}" for p in (committed / "history").glob("*.json")]
-    assert len(names) == 3 + 19 + 11
+    n_days = (R.REPLAY[1] - R.REPLAY[0]).days + 1
+    assert len(names) == 3 + n_days + 11
     for name in names:
         new = json.loads((tmp_path / name).read_text(encoding="utf-8"))
         old = json.loads((committed / name).read_text(encoding="utf-8"))
         assert _strip(new) == _strip(old), name
+
+
+@pytest.mark.skipif(not (R.DEMO / "manifest.json").exists(), reason="no committed snapshots yet")
+def test_snapshot_update_time_includes_latency_and_no_cold_level():
+    # review T-025 M1 (4 h IMERG Early latency) and M4 (no cold-stress level without a sourced threshold)
+    iso = lambda t: dt.datetime.fromisoformat(t.replace("Z", "+00:00"))  # noqa: E731
+    for path in sorted((R.DEMO / "replay").glob("*.json")):
+        day = json.loads(path.read_text(encoding="utf-8"))
+        for unit in day["units"]:
+            alert = unit["alert"]
+            assert alert["side"]["cold"] is None
+            if alert["newest_rain_data_at"]:
+                assert iso(alert["updated_at"]) - iso(alert["newest_rain_data_at"]) == dt.timedelta(hours=4)
+        for event in day["events"]:
+            assert iso(event["at"]).hour == 4

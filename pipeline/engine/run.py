@@ -38,23 +38,24 @@ from pipeline.engine import state as st
 from pipeline.engine import terrain as tr
 from pipeline.engine.index import FACTORS, alert_index, confidence_for_data_level, factor_shares, percentile_against_history, top_factors
 from pipeline.engine.sensitivity import compare, severe_days, variants
-from pipeline.engine.verification import Flood, scores, verify
+from pipeline.engine.verification import Flood, alert_days, coincident_floods, episodes, scores, verify_episodes
 
 AGENT = "data-scientist"
-REPLAY = (dt.date(2026, 2, 15), dt.date(2026, 3, 5))
+REPLAY = (dt.date(2026, 1, 20), dt.date(2026, 3, 5))  # D-029: start about 20 Jan so the escalation is visible
 FARM_ID = "farm_demo-el-oro"
 FARM_SLUG = "demo-el-oro"
 AOI_ID = "aoi_pasaje_buenavista"
 CATCHMENT_ID = "catchment_buenavista_pasaje"
 PROCESSED = REPO_ROOT / "pipeline" / "data" / "processed"
 ENGINE_DATA = PROCESSED / "engine"
-STACK = PROCESSED / "replay" / "2026-02-15_2026-03-05"
+STACK = PROCESSED / "replay" / f"{REPLAY[0].isoformat()}_{REPLAY[1].isoformat()}"
 DEMO = REPO_ROOT / "app" / "public" / "data" / "demo"
 FARM_RAIN_CSV = ENGINE_DATA / "imerg_farm_cell_daily.csv"
 HISTORY_DAYS = 90
 LOT_DATA_LEVEL = 2
 ZONE_DATA_LEVEL = 1
 SENSITIVITY_DELTA = 0.10
+LEVEL_RANK = {"normal": 0, "watch": 1, "warning": 2, "severe": 3}
 
 # Press-documented floods used for calibration and verification (D-024), opened by data-scientist. Local dates.
 DOCUMENTED_FLOODS = (
@@ -70,18 +71,18 @@ DOCUMENTED_FLOODS = (
                        "Caluguro (Caluguro, Santa Rosa) overflowed. Outside the demo farm's catchment (regional event)."),
           sources=({"citation": "Teleamazonas, 12 Oct 2026, 'Seis rios y esteros desbordados en tres provincias' (SNGR table)",
                     "url": "https://www.teleamazonas.com/actualidad/noticias/ecuador/seis-rios-esteros-desbordados-tres-provincias-lunes-12-octubre-130196/",
-                    "accessed": "2026-11-15"},)),
+                    "accessed": "2026-11-15"},), in_catchment=False),
     Flood("flood-2026-10-19-chaguana", dt.date(2026, 10, 19), dt.date(2026, 10, 19),
           description="Rio Chaguana overflow on Monday 19 Oct 2026 (Tendales, El Guabo). Outside the demo farm's catchment (regional event).",
           sources=({"citation": "Extra, 26 Oct 2026, 'El Oro: Tendales se inunda por segunda vez tras el desbordamiento del rio Chaguana'",
                     "url": "https://www.extra.ec/noticia/ecuador/oro-tendales-inunda-segunda-vez-desbordamiento-rio-chaguana-166024.html",
-                    "accessed": "2026-11-15"},)),
+                    "accessed": "2026-11-15"},), in_catchment=False),
     Flood("flood-2026-10-26-chaguana", dt.date(2026, 10, 26), dt.date(2026, 10, 26),
-          description=("Second Rio Chaguana overflow from about 02:00 local on Monday 26 Oct 2026 (Tendales, El Guabo). FIX2 lists "
-                       "24 Oct; the opened source gives Monday 26 Oct. Outside the demo farm's catchment (regional event)."),
+          description=("Second Rio Chaguana overflow from about 02:00 local on Monday 26 Oct 2026 (Tendales, El Guabo); the opened "
+                       "source gives Monday 26 Oct (D-024 text says 24 Oct). Outside the demo farm's catchment (regional event)."),
           sources=({"citation": "Extra, 26 Oct 2026, 'El Oro: Tendales se inunda por segunda vez tras el desbordamiento del rio Chaguana'",
                     "url": "https://www.extra.ec/noticia/ecuador/oro-tendales-inunda-segunda-vez-desbordamiento-rio-chaguana-166024.html",
-                    "accessed": "2026-11-15"},)),
+                    "accessed": "2026-11-15"},), in_catchment=False),
 )
 VERIFICATION_PERIOD = (dt.date(2026, 1, 1), None)  # to the last day with data
 
@@ -318,6 +319,11 @@ def _end_of_day(d: dt.date) -> dt.datetime:
     return dt.datetime.combine(d + dt.timedelta(days=1), dt.time(0), tzinfo=dt.timezone.utc)
 
 
+def latency(cfg: dict) -> dt.timedelta:
+    """IMERG Early latency: a UTC day's rain reaches W no sooner than the end of that day plus this (review T-025 M1)."""
+    return dt.timedelta(hours=float(cfgmod.value(cfg, "engine.imerg_early_latency_hours")))
+
+
 @dataclass
 class UnitRun:
     w: np.ndarray
@@ -346,7 +352,7 @@ def run_units(units: list[Unit], series: Series, x: dict[str, np.ndarray], weigh
         ind = {**{k: v[sl] for k, v in x.items()}, "terrain": np.full(len(days), np.nan if u.rank is None else u.rank)}
         w = alert_index(ind, weights)
         floors = list(hy.floor_warning(series.data["positive_days"][sl], u.tercile, floor_days))
-        times = [_end_of_day(d) for d in days]
+        times = [_end_of_day(d) + latency(cfg) for d in days]
         ws = [None if not np.isfinite(v) else float(v) for v in w]
         states, events = st.run(ws, times, newest, p, floors, st.initial_state(times[0]))
         out[u.id] = UnitRun(w, states, events, floors)
@@ -401,7 +407,7 @@ def feature_record(u: Unit, i: int, series: Series, x: dict[str, np.ndarray], pr
 
 
 def alert_record(u: Unit, j: int, i: int, run: dict[str, UnitRun], series: Series, x: dict[str, np.ndarray], weights: dict,
-                 side: dict[str, list], newest_at: dt.datetime | None) -> dict:
+                 side: dict[str, list], newest_at: dt.datetime | None, lag: dt.timedelta) -> dict:
     ur = run[u.id]
     state = ur.states[j]
     w = ur.w[j]
@@ -410,7 +416,7 @@ def alert_record(u: Unit, j: int, i: int, run: dict[str, UnitRun], series: Serie
     return {
         "unit_id": u.id, "level": state.level, "w": _r(w, 4) if state.level != "stale" else None,
         "factors": [{"name": f["name"], "share": round(f["share"], 4)} for f in top_factors(shares)] if state.level != "stale" else [],
-        "since": _iso(state.since), "updated_at": _iso(_end_of_day(series.dates[i])), "newest_rain_data_at": _iso(newest_at),
+        "since": _iso(state.since), "updated_at": _iso(_end_of_day(series.dates[i]) + lag), "newest_rain_data_at": _iso(newest_at),
         "confirmations": state.confirmations,
         "confidence": confidence_for_data_level(LOT_DATA_LEVEL if u.kind == "lot" else ZONE_DATA_LEVEL),
         "side": {"sigatoka": side["sigatoka"][i], "cold": side["cold"][i]}, "origin": ALERT_ORIGIN,
@@ -431,7 +437,9 @@ def side_levels(series: Series, cfg: dict) -> dict[str, list]:
                                  float(cfgmod.value(cfg, "sigatoka.rh_mean")))
     return {
         "sigatoka": sd.sigatoka_level(fav, int(cfgmod.value(cfg, "sigatoka.days"))),
-        "cold": sd.cold_level(series.dates, d["heat7"], int(cfgmod.value(cfg, "engine.cold_climatology_min_years"))),
+        # review T-025 M4: the below-climatology rule fired on about half of all days; no level until a threshold is sourced
+        "cold": (sd.cold_level(series.dates, d["heat7"], int(cfgmod.value(cfg, "engine.cold_climatology_min_years")))
+                 if cfgmod.value_or_none(cfg, "cold.weekly_threshold_rule") is not None else [None] * len(series.dates)),
     }
 
 
@@ -478,17 +486,20 @@ def run_replay(generated_at: str | None = None) -> dict:
     lots = [u for u in units if u.kind == "lot"]
     level_series = {u.id: [s.level for s in runs[u.id].states] for u in units}
 
-    # --- verification (lots are the alert units at data level 2) ---
+    # --- verification (lots are the alert units at data level 2), one counting unit: the alert episode (T-025 M2) ---
     v_lo = VERIFICATION_PERIOD[0]
     v_dates = [d for d in run_dates if d >= v_lo]
     k0 = run_dates.index(v_lo)
     v_levels = {u.id: level_series[u.id][k0:] for u in lots}
-    alert_level = cfgmod.value(cfg, "verification.alert_level")
-    outcomes, counts = verify(DOCUMENTED_FLOODS, v_levels, v_dates, frozenset({alert_level}),
-                              int(cfgmod.value(cfg, "verification.days_before")), int(cfgmod.value(cfg, "verification.days_after")))
-    replay_outcomes, replay_counts = verify(DOCUMENTED_FLOODS, {u: s[v_dates.index(REPLAY[0]): v_dates.index(REPLAY[1]) + 1] for u, s in v_levels.items()},
-                                            [d for d in run_dates if REPLAY[0] <= d <= REPLAY[1]], frozenset({alert_level}),
-                                            int(cfgmod.value(cfg, "verification.days_before")), int(cfgmod.value(cfg, "verification.days_after")))
+    alert_set = frozenset({cfgmod.value(cfg, "verification.alert_level")})
+    db, da = int(cfgmod.value(cfg, "verification.days_before")), int(cfgmod.value(cfg, "verification.days_after"))
+    local_floods = [f for f in DOCUMENTED_FLOODS if f.in_catchment]
+    regional = [f for f in DOCUMENTED_FLOODS if not f.in_catchment]
+    outcomes, counts, eps = verify_episodes(local_floods, v_levels, v_dates, alert_set, db, da)
+    q0, q1 = v_dates.index(REPLAY[0]), v_dates.index(REPLAY[1])
+    _, replay_counts, _ = verify_episodes(local_floods, {u: lv[q0: q1 + 1] for u, lv in v_levels.items()}, v_dates[q0: q1 + 1], alert_set, db, da)
+    regional_hits = coincident_floods(regional, eps, db, da)
+    severe_any_days = len(alert_days(v_levels, v_dates, alert_set))
 
     # --- sensitivity on the replay window (T-024b) ---
     r_dates = [d for d in run_dates if REPLAY[0] <= d <= REPLAY[1]]
@@ -506,15 +517,34 @@ def run_replay(generated_at: str | None = None) -> dict:
         sens.append({"factor": name, "delta": delta, "weights": {k: round(v, 4) for k, v in wv.items()}, "severe": vs, **compare(base_severe, vs),
                      "flood_lots": flood_lots(vs)})
 
+    lag = latency(cfg)
+    escalations = {}
+    for u in lots:
+        rows = []
+        for ev in runs[u.id].events:
+            day = (ev.at - lag - dt.timedelta(days=1)).date()
+            if REPLAY[0] <= day <= REPLAY[1] and LEVEL_RANK.get(ev.to_level, -1) > LEVEL_RANK.get(ev.from_level, -1):
+                rows.append((day.isoformat(), ev.to_level))
+        escalations[u.id] = {"start_level": level_series[u.id][r0 - 1], "up": rows}
+    feb_rain_day = dt.date(2026, 2, 23)
+    flood_episode = next(((a, b) for a, b in eps if not (b < f_lo or a > f_hi)), None)
+    facts = {
+        "counts": counts, "replay_counts": replay_counts, "episodes": eps, "severe_any_days": severe_any_days, "n_days": len(v_dates),
+        "regional_hits": regional_hits, "regional_n": len(regional), "escalations": escalations, "flood_episode": flood_episode,
+        "earliest_w_with_flood_rain": _iso(_end_of_day(feb_rain_day) + lag), "flood_window": (f_lo, f_hi),
+        "severe_threshold": float(cfgmod.value(cfg, "levels.severe")),
+    }
+
     # --- write snapshots ---
     in_recs, ids = input_provenance(farm)
     engine_id = f"prov-engine-demo-replay-{REPLAY[0]}-{REPLAY[1]}"
     engine_rec = _mine(record(
         engine_id, aoi=AOI_ID, time_range=(REPLAY[0].isoformat(), REPLAY[1].isoformat()),
         processing=["pipeline/engine (data-scientist): TWI terciles and ranks, IMERG Early catchment 72 h rain, API (k from config), FAO-56 ETo x Kc, 7-day rain minus ETc, mid-rank percentiles against earlier days",
-                    "W = sum of design weights x indicators; state machine per docs/spec/16 run daily from engine.state_start; parameters config/alerts.yaml",
+                    "W = sum of design weights x indicators; state machine per docs/spec/16 run daily from engine.state_start; an update happens at the end of the UTC day plus the 4 h IMERG Early latency; parameters config/alerts.yaml",
+                    "day definitions are mixed: IMERG UTC days for rain, POWER local-solar-time days for ETc, temperature and humidity",
                     "verification against press-documented floods (D-024); weight sensitivity +/-0.10 renormalised (T-024b)"],
-        notes="Engine outputs for the synthetic demo farm (Finca Demo El Oro, labelled Demo). Inputs are the other records of this manifest. Side indicators (Sigatoka, cold) are experimental (D-024). " + (f"NDVI scenes not used (no clear pixel, or values outside [-1, 1]): {len(farm['ndvi_rejected'])} of {len(farm['ndvi_rejected']) + len(farm['ndvi_files'])} (NDVI stays missing)." if farm["ndvi_rejected"] else "")))
+        notes="Engine outputs for the synthetic demo farm (Finca Demo El Oro, labelled Demo). Inputs are the other records of this manifest. Sigatoka side indicator is experimental (D-024); no cold-stress level is produced (no sourced threshold), daily heat units only. " + (f"NDVI scenes not used (no clear pixel, or values outside [-1, 1]): {len(farm['ndvi_rejected'])} of {len(farm['ndvi_rejected']) + len(farm['ndvi_files'])} (NDVI stays missing)." if farm["ndvi_rejected"] else "")))
     feature_ids = [engine_id, ids["rain_up"], ids["rain_local"], ids["power_daily"], ids["upslope"]]
     ref = {"ref": "../manifest.json", "ids": [engine_id] + sorted(set(ids.values()))}
     DEMO.mkdir(parents=True, exist_ok=True)
@@ -531,10 +561,10 @@ def run_replay(generated_at: str | None = None) -> dict:
         newest_at = _end_of_day(d) if np.isfinite(series.data["rain_up"][i]) and np.isfinite(series.data["rain_local"][i]) else None
         day_units, day_events = [], []
         for u in units:
-            alert = alert_record(u, j, i, runs, series, x, weights, sides, newest_at)
+            alert = alert_record(u, j, i, runs, series, x, weights, sides, newest_at, latency(cfg))
             day_units.append({"unit_id": u.id, "alert": alert, "features": feature_record(u, i, series, x, feature_ids)})
             for ev in runs[u.id].events:
-                if ev.at == _end_of_day(d):
+                if ev.at == _end_of_day(d) + latency(cfg):
                     day_events.append(event_record(u.id, ev, alert["w"], alert["factors"]))
         write_json(DEMO / "replay" / f"{d.isoformat()}.json",
                    {"date": d.isoformat(), "generated_at": generated_at, "units": day_units, "events": day_events}, {"ref": ref["ref"], "ids": ref["ids"]})
@@ -568,13 +598,15 @@ def run_replay(generated_at: str | None = None) -> dict:
     catch = json.loads((PROCESSED / "aoi" / "catchment.geojson").read_text(encoding="utf-8"))
     write_json(DEMO / "catchment.geojson", {"type": "FeatureCollection", "features": catch["features"]}, catch["provenance"])
     write_farm(units, farm, generated_at, in_recs, ids, zone_rec)
-    verification = write_verification(outcomes, counts, replay_counts, sens, base_severe, base_flood_lots, (f_lo, f_hi), generated_at, engine_rec, in_recs, v_dates)
+    verification = write_verification(outcomes, facts, sens, base_severe, base_flood_lots, generated_at, engine_rec, v_dates)
 
     return {
         "units": [{"id": u.id, "twi_mean": _r(u.twi_mean, 3), "rank": _r(u.rank, 3), "tercile": u.tercile, "cells": u.n_cells, "undefined": u.n_undefined} for u in units],
         "breaks": farm["breaks"], "levels_replay": {u.id: level_series[u.id][r0: r1 + 1] for u in units},
         "w_replay": {u.id: [_r(v, 3) for v in runs[u.id].w[r0: r1 + 1]] for u in units},
-        "counts": counts, "replay_counts": replay_counts, "outcomes": [(o.flood_or_episode_id, o.outcome, o.unit_ids) for o in outcomes],
+        "counts": counts, "replay_counts": replay_counts, "outcomes": [(o.flood_or_episode_id, o.outcome, o.start.isoformat(), o.end.isoformat()) for o in outcomes],
+        "regional_coincident": regional_hits, "severe_any_days_2026": [severe_any_days, len(v_dates)], "escalations": escalations,
+        "flood_episode": [d.isoformat() for d in flood_episode] if flood_episode else None,
         "base_severe": {k: [d.isoformat() for d in v] for k, v in base_severe.items()}, "sensitivity_stable": all(s["same_days"] for s in sens),
         "sensitivity": [(s["factor"], s["delta"], s["same_units"], s["same_days"], s["units_gained"], s["units_lost"], s["units_with_shifted_days"]) for s in sens],
         "floors_replay": {u.id: sum(runs[u.id].floors[r0: r1 + 1]) for u in units},
@@ -629,46 +661,66 @@ def _ranges(days: list[dt.date]) -> str:
     return ", ".join(a.isoformat()[5:] if a == b else f"{a.isoformat()[5:]}..{b.isoformat()[5:]}" for a, b in episodes(days))
 
 
-def write_verification(outcomes, counts, replay_counts, sens, base_severe, base_flood_lots, flood_window, generated_at, engine_rec, in_recs, v_dates) -> int:
+def write_verification(outcomes, facts, sens, base_severe, base_flood_lots, generated_at, engine_rec, v_dates) -> int:
     events = [{"id": o.flood_or_episode_id, "kind": o.kind, "start": o.start.isoformat(), "end": o.end.isoformat(), "outcome": o.outcome,
                "unit_ids": o.unit_ids, "description": o.description, "sources": o.sources} for o in outcomes]
+    counts, rc = facts["counts"], facts["replay_counts"]
     stable = all(s["same_days"] for s in sens)
     base_txt = "; ".join(f"{u.rsplit('_', 1)[1]}: {_ranges(days)}" for u, days in base_severe.items()) or "none"
     flood_same = sum(s["flood_lots"] == base_flood_lots for s in sens)
     always = sorted(set(base_flood_lots).intersection(*[set(s["flood_lots"]) for s in sens]))
     ever = sorted(set(base_flood_lots).union(*[set(s["flood_lots"]) for s in sens]))
+    lot = lambda u: u.rsplit("_", 1)[1]  # noqa: E731
     lines = []
     for s in sens:
         if s["same_days"]:
             continue
         diff = []
         if s["units_gained"]:
-            diff.append("gains lot " + ", ".join(u.rsplit("_", 1)[1] for u in s["units_gained"]))
+            diff.append("gains lot " + ", ".join(lot(u) for u in s["units_gained"]))
         if s["units_lost"]:
-            diff.append("loses lot " + ", ".join(u.rsplit("_", 1)[1] for u in s["units_lost"]))
+            diff.append("loses lot " + ", ".join(lot(u) for u in s["units_lost"]))
         if s["units_with_shifted_days"]:
-            diff.append("days shift for lot " + ", ".join(u.rsplit("_", 1)[1] for u in s["units_with_shifted_days"]))
+            diff.append("days shift for lot " + ", ".join(lot(u) for u in s["units_with_shifted_days"]))
         lines.append(f"{s['factor']} {s['delta']:+.2f}: {'; '.join(diff)}")
+    eps = facts["episodes"]
+    ep_txt = ", ".join(f"{a.isoformat()[5:]} ({(b - a).days + 1} d)" for a, b in eps) or "none"
+    fe = facts["flood_episode"]
+    esc = "; ".join(f"{lot(u)}: {v['start_level']} before {REPLAY[0].isoformat()[5:]}" + (", " + ", ".join(f"{t} {d[5:]}" for d, t in v["up"]) if v["up"] else "")
+                    for u, v in facts["escalations"].items())
     notes = (
-        f"Counts, not skill: {len(DOCUMENTED_FLOODS)} press-documented floods (D-024; 1 in the farm's catchment, 3 regional), "
-        f"period {v_dates[0].isoformat()}..{v_dates[-1].isoformat()}, alert = a demo lot at Severe; a hit needs Severe from 1 UTC day before "
-        f"to 1 day after the local flood dates. False alarm = Severe episode with no documented flood in this list, not proof that no flood "
-        f"happened. Replay window {REPLAY[0].isoformat()}..{REPLAY[1].isoformat()}: hits {replay_counts['hits']}, misses {replay_counts['misses']}, "
-        f"false alarms {replay_counts['false_alarms']}. Weights are design (no expert AHP). "
-        f"SENSITIVITY (T-024b): each weight moved by +/-0.10 and the rest renormalised, 10 variants, replay re-run. "
-        f"Baseline demo lots at Severe (UTC days): {base_txt}. Strict result (same lots, same days): "
+        f"COUNTS ONLY, NOT SKILL (SPEC method 14): show hits, misses and false alarms; POD/FAR/CSI are in the file only because the contract "
+        f"requires them. Alert = any demo lot at Severe (W >= {facts['severe_threshold']:.2f}, D-029). Counting unit for hits and false alarms: "
+        f"the alert episode (consecutive UTC days with any lot at Severe); a flood with no episode inside its window (1 day before to 1 day "
+        f"after the local dates) is a miss. (a) FARM'S OWN CATCHMENT (Rio Buenavista), {v_dates[0].isoformat()}..{v_dates[-1].isoformat()}: "
+        f"{counts['hits']} hit, {counts['misses']} misses, {counts['false_alarms']} false alarms; episodes (start, length): {ep_txt}; "
+        f"days with any lot at Severe: {facts['severe_any_days']} of {facts['n_days']}. Replay window {REPLAY[0].isoformat()}..{REPLAY[1].isoformat()}: "
+        f"{rc['hits']} hit, {rc['misses']} misses, {rc['false_alarms']} false alarms. False alarm = no flood in this press list, not proof of no flood. "
+        f"(b) REGIONAL CONTEXT, NOT VERIFICATION: {len(facts['regional_hits'])} of {facts['regional_n']} documented El Oro floods on other rivers "
+        f"(Rio Chico/Caluguro 11-12 Oct; Chaguana 19 and 26 Oct 2026) fell inside a Severe episode of the demo lots. October 2026 IMERG Early rain is "
+        f"far above 2015-2025 and its independence from the V07C/GPROF v08 change (March 2026) is unverified. "
+        f"LEAD TIME: the 23 Feb flood rain (UTC 23 Feb) can reach W at the earliest at {facts['earliest_w_with_flood_rain']} (end of the UTC day + 4 h "
+        f"IMERG Early latency); El Universo reported the overflow at 09:54 local on 23 Feb. The demo lots were already at Severe from earlier storms "
+        f"(episode {fe[0].isoformat() if fe else 'n/a'}..{fe[1].isoformat() if fe else 'n/a'}): the engine gave no flood-specific lead time. "
+        f"Escalations in the replay: {esc}. "
+        f"KNOWN LIMITS: W uses percentiles against the whole-year history, so wet-season days stay high for weeks (seasonal percentiles are a "
+        f"post-hackathon class A item, T-048). Travel time: Kirpich used far outside its calibration range (basins of 1-112 acres; this one is "
+        f"254 km2); lag 0 d is in-sample (same event). Day definitions are mixed (IMERG UTC days, POWER local-solar days). A missing W (POWER gap) "
+        f"holds the level. SENSITIVITY (T-024b): each weight +/-0.10, rest renormalised, 10 variants, replay re-run. Baseline lots at Severe "
+        f"(UTC days): {base_txt}. Strict result (same lots, same days): "
         f"{'STABLE in all 10 variants' if stable else 'NOT STABLE in ' + str(len(lines)) + ' of 10 variants: ' + ' | '.join(lines)}. "
-        f"Flood days {flood_window[0].isoformat()[5:]}..{flood_window[1].isoformat()[5:]}: lots at Severe in the baseline: "
-        f"{', '.join(u.rsplit('_', 1)[1] for u in base_flood_lots) or 'none'}; the same set in {flood_same} of 10 variants; Severe on those days in every variant: lots "
-        f"{', '.join(u.rsplit('_', 1)[1] for u in always) or 'none'}; in at least one variant: lots {', '.join(u.rsplit('_', 1)[1] for u in ever)}."
+        f"Flood days {facts['flood_window'][0].isoformat()[5:]}..{facts['flood_window'][1].isoformat()[5:]}: baseline lots at Severe "
+        f"{', '.join(lot(u) for u in base_flood_lots) or 'none'}; same set in {flood_same} of 10 variants; Severe in every variant: lots "
+        f"{', '.join(lot(u) for u in always) or 'none'}; in at least one: lots {', '.join(lot(u) for u in ever) or 'none'}."
     )
     ver_rec = _mine(record(
         f"prov-engine-demo-verification-{v_dates[0].isoformat()}-{v_dates[-1].isoformat()}", aoi=AOI_ID,
         time_range=(v_dates[0].isoformat(), v_dates[-1].isoformat()),
         processing=["pipeline/engine/verification.py: documented floods vs daily lot levels (config/alerts.yaml verification.*)",
-                    "pipeline/engine/sensitivity.py: weights +/-0.10 renormalised, replay re-run, Severe lots and days compared"],
+                    "pipeline/engine/sensitivity.py: weights +/-0.10 renormalised, replay re-run, Severe lots and days compared",
+                    "events list: floods in the farm's catchment and false-alarm episodes; regional floods are summarised in notes only"],
         notes="Flood events: press reports opened by data-scientist (sources per event), origin observed with the press URL as observer (D-024)."))
-    sc = scores(counts["hits"], counts["misses"], counts["false_alarms"])
+    sc = scores(counts["hits"], counts["misses"], counts["false_alarms"])  # contract field; not shown by the app
     write_json(DEMO / "verification.json", {
         "generated_at": generated_at, "events": events, **counts, **sc,
         "origin": {"*": "estimated", "events": "observed"}, "notes": notes,

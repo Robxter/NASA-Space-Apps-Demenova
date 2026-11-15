@@ -86,3 +86,25 @@ def test_params_validation():
         s.StateParams(0.4, 0.6, 0.8, 0.45, 0.5, 0.7, 2, 12)
     with pytest.raises(ValueError):
         s.StateParams(0.6, 0.4, 0.8, 0.3, 0.3, 0.7, 2, 12)
+
+
+def test_rerun_on_the_same_rain_data_does_not_confirm_severe():
+    # review T-025 M5: hourly re-runs re-score the same daily rain value; only new rain data counts
+    rain_at = T0
+    hours = [T0 + dt.timedelta(hours=h) for h in range(1, 5)]
+    state = s.UnitState("warning", T0)
+    for now in hours:
+        state, _ = s.step(state, 0.95, now, rain_at, P)
+    assert state.level == "warning" and state.confirmations == 1
+    newer = rain_at + dt.timedelta(days=1)
+    state, ev = s.step(state, 0.95, newer + dt.timedelta(hours=4), newer, P)
+    assert state.level == "severe" and ev.email
+
+
+def test_confirmations_reset_below_threshold_and_restart_on_new_data():
+    state = s.UnitState("warning", T0)
+    state, _ = s.step(state, 0.95, T0 + dt.timedelta(hours=4), T0, P)
+    state, _ = s.step(state, 0.50, T0 + dt.timedelta(hours=5), T0, P)
+    assert state.confirmations == 0 and state.confirmed_rain_at is None
+    state, _ = s.step(state, 0.95, T0 + dt.timedelta(hours=6), T0, P)
+    assert state.confirmations == 1

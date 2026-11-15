@@ -15,7 +15,9 @@ Transitions, one evaluation per data update:
 Interpretation choices (design, recorded in config/alerts.yaml and the run report):
 - One level per update in both directions (the diagram draws only adjacent arrows).
 - `confirmations` counts consecutive updates with W >= up.severe, whatever the level, capped at the rule's count;
-  it resets when W falls below up.severe or the data go stale.
+  an update counts only when its newest rain data is newer than the data behind the previous confirmation, so an
+  hourly re-run that re-scores the same daily rain estimate cannot confirm Severe on its own (review T-025 M5);
+  it resets when W falls below up.severe, W is missing, or the data go stale.
 - An update whose W is missing (an indicator has no data) leaves the level unchanged and resets confirmations.
 - The agronomic floor (2-day rule) lifts the level to at least Warning after the W step; it may skip levels because
   it is a separate rule on top of W (docs/spec/12), and the event records it.
@@ -57,6 +59,7 @@ class UnitState:
     level: str
     since: dt.datetime
     confirmations: int = 0
+    confirmed_rain_at: dt.datetime | None = None  # newest rain data behind the last counted confirmation
 
 
 @dataclass(frozen=True)
@@ -115,14 +118,19 @@ def step(
     """One update of one unit. Returns the new state and the transition, if the level changed."""
     if is_stale(now, newest_rain_at, p):
         if state.level == STALE:
-            return replace(state, confirmations=0), None
+            return replace(state, confirmations=0, confirmed_rain_at=None), None
         new = UnitState(level=STALE, since=now, confirmations=0)
         return new, Transition(state.level, STALE, now, "stale", email=False)
 
     if w is None or w != w:  # missing W: hold the level
-        return replace(state, confirmations=0), None
+        return replace(state, confirmations=0, confirmed_rain_at=None), None
 
-    confirmations = min(state.confirmations + 1, p.severe_confirmations) if w >= p.up_severe else 0
+    if w >= p.up_severe:
+        advanced = state.confirmed_rain_at is None or newest_rain_at > state.confirmed_rain_at
+        confirmations = min(state.confirmations + 1, p.severe_confirmations) if advanced else state.confirmations
+        confirmed_at = newest_rain_at if advanced else state.confirmed_rain_at
+    else:
+        confirmations, confirmed_at = 0, None
     if state.level == STALE:
         level, reason = _recomputed_level(w, confirmations, p), "fresh"
     else:
@@ -130,8 +138,8 @@ def step(
     if floor_warning and LEVELS.index(level) < LEVELS.index("warning"):
         level, reason = "warning", "floor"
     if level == state.level:
-        return replace(state, confirmations=confirmations), None
-    new = UnitState(level=level, since=now, confirmations=confirmations)
+        return replace(state, confirmations=confirmations, confirmed_rain_at=confirmed_at), None
+    new = UnitState(level=level, since=now, confirmations=confirmations, confirmed_rain_at=confirmed_at)
     email = level == "severe"
     return new, Transition(state.level, level, now, reason, email=email)
 

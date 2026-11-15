@@ -72,3 +72,20 @@ def test_scores_with_zero_denominators_are_none():
 
 def test_episodes_split_on_gaps():
     assert v.episodes([_d(1), _d(2), _d(4)]) == [(_d(1), _d(2)), (_d(4), _d(4))]
+
+
+def test_per_episode_counting_one_long_episode_is_one_hit():
+    # review T-025 M2: one 10-day episode covering two floods is ONE hit; a separate episode is a false alarm
+    dates = [dt.date(2026, 10, i) for i in range(1, 31)]
+    lv = ["normal"] * 30
+    for i in range(9, 19):  # 10..19 Oct
+        lv[i] = "severe"
+    lv[25] = "severe"  # 26 Oct
+    floods = [v.Flood("a", dt.date(2026, 10, 11), dt.date(2026, 10, 12)), v.Flood("b", dt.date(2026, 10, 19), dt.date(2026, 10, 19)),
+              v.Flood("c", dt.date(2026, 10, 3), dt.date(2026, 10, 3))]
+    outcomes, counts, eps = v.verify_episodes(floods, {"u": lv}, dates, frozenset({"severe"}), 1, 1)
+    assert counts == {"hits": 1, "misses": 1, "false_alarms": 1}
+    assert eps == [(dt.date(2026, 10, 10), dt.date(2026, 10, 19)), (dt.date(2026, 10, 26), dt.date(2026, 10, 26))]
+    hit = [o for o in outcomes if o.outcome == "hit"][0]
+    assert hit.flood_or_episode_id == "a" and "b" in hit.description
+    assert v.coincident_floods(floods, eps, 1, 1) == ["a", "b"]

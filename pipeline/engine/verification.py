@@ -4,10 +4,11 @@ Counts first: hits, misses, false alarms. POD = hits / (hits + misses); FAR = fa
 CSI = hits / (hits + misses + false alarms); a ratio with a zero denominator is None. With a handful of events the
 ratios are not skill estimates; reports quote the counts.
 
-Matching (design, config/alerts.yaml `verification`): a documented flood [start, end] (local calendar dates) is a hit
-when any unit is at the alert level on a data day inside [start - days_before, end + days_after]; otherwise a miss.
-Every alert episode (consecutive days with at least one unit at the alert level) that touches no flood window is one
-false alarm. A false alarm here means "no documented flood", not "no flood".
+Matching (design, config/alerts.yaml `verification`): a flood's window is [start - days_before, end + days_after]
+(local calendar dates against UTC data days). `verify_episodes` (used by the engine since review T-025 M2) counts in
+one unit, the alert episode (consecutive days with at least one unit at the alert level): an episode touching a flood
+window is one hit, an episode touching none is one false alarm, a flood touched by no episode is one miss. `verify`
+(per flood) is kept for comparison. A false alarm means "no documented flood", not "no flood".
 """
 
 from __future__ import annotations
@@ -25,6 +26,7 @@ class Flood:
     kind: str = "documented_flood"
     description: str | None = None
     sources: tuple[dict, ...] = ()
+    in_catchment: bool = True  # on the river whose catchment feeds the farm (verification) or elsewhere (context)
 
 
 @dataclass
@@ -108,3 +110,61 @@ def verify(
         "false_alarms": sum(o.outcome == "false_alarm" for o in outcomes),
     }
     return outcomes, counts
+
+
+def verify_episodes(
+    floods: Sequence[Flood],
+    levels: Mapping[str, Sequence[str]],
+    dates: Sequence[dt.date],
+    alert_levels: frozenset[str],
+    days_before: int,
+    days_after: int,
+) -> tuple[list[Outcome], dict[str, int], list[tuple[dt.date, dt.date]]]:
+    """Per-episode counting (scientist-reviewer T-025 M2): the unit is an alert episode (consecutive days with at least
+    one unit at an alert level). An episode that overlaps a flood's matching window is ONE hit, however many floods it
+    covers; an episode that overlaps none is one false alarm; a flood that no episode overlaps is one miss.
+    Returns the outcomes, the counts and the episodes."""
+    if days_before < 0 or days_after < 0:
+        raise ValueError("matching windows are non-negative")
+    alerts = alert_days(levels, dates, alert_levels)
+    first, last = min(dates), max(dates)
+    windows = []
+    for flood in floods:
+        lo, hi = flood.start - dt.timedelta(days=days_before), flood.end + dt.timedelta(days=days_after)
+        if not (hi < first or lo > last):
+            windows.append((flood, lo, hi))
+    eps = episodes(list(alerts))
+    outcomes: list[Outcome] = []
+    matched: set[str] = set()
+    for s, e in eps:
+        units = sorted({u for d, us in alerts.items() if s <= d <= e for u in us})
+        hit = [f for f, lo, hi in windows if not (e < lo or s > hi)]
+        if hit:
+            first_flood = hit[0]
+            matched.update(f.id for f in hit)
+            others = f" Same episode also covers: {', '.join(f.id for f in hit[1:])}." if len(hit) > 1 else ""
+            outcomes.append(Outcome(first_flood.id, first_flood.kind, first_flood.start, first_flood.end, "hit", units,
+                                    f"{first_flood.description or ''} Alert episode {s.isoformat()}..{e.isoformat()} ({(e - s).days + 1} d).{others}".strip(),
+                                    list(first_flood.sources)))
+        else:
+            outcomes.append(Outcome(f"alert-episode-{s.isoformat()}", "alert_without_flood", s, e, "false_alarm", units,
+                                    f"Alert episode {s.isoformat()}..{e.isoformat()} ({(e - s).days + 1} d) with no documented flood in its window (not proof that no flood happened).", []))
+    for flood, lo, hi in windows:
+        if flood.id not in matched:
+            outcomes.append(Outcome(flood.id, flood.kind, flood.start, flood.end, "miss", [], flood.description, list(flood.sources)))
+    counts = {
+        "hits": sum(o.outcome == "hit" for o in outcomes),
+        "misses": sum(o.outcome == "miss" for o in outcomes),
+        "false_alarms": sum(o.outcome == "false_alarm" for o in outcomes),
+    }
+    return outcomes, counts, eps
+
+
+def coincident_floods(floods: Sequence[Flood], eps: Sequence[tuple[dt.date, dt.date]], days_before: int, days_after: int) -> list[str]:
+    """Ids of the floods whose matching window overlaps an alert episode (regional context, not verification)."""
+    out = []
+    for f in floods:
+        lo, hi = f.start - dt.timedelta(days=days_before), f.end + dt.timedelta(days=days_after)
+        if any(not (e < lo or s > hi) for s, e in eps):
+            out.append(f.id)
+    return out
