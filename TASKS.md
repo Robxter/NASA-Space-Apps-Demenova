@@ -104,7 +104,8 @@ review queue, the flood candidates and the logo options.
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
 - [x] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles (2ea3983; Map = Leaflet + GIBS lazy,
   Lot charts uPlot lazy; open: run against real snapshots after T-024, map month view, prior-years comparison)
-- [ ] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests
+- [x] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests (39 backend tests;
+  open: real email from the replay once T-024 is in Supabase; security review; P-013)
 - [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate; CI must run
   `python scripts/check_provenance.py` and `uv run pytest` on every push (not wired anywhere yet; Phase 0 review)
 - [ ] T-030 technical-writer: block 2 report, SI-use log (English only, D-026)

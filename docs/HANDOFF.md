@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 04:34 - api-engineer to main session
+State: T-028 done on block/2-core (backend FastAPI + Severe email with dedupe); not pushed.
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: backend/app/{main,alerts,email,supabase,settings,ids}.py, 39 tests; report
+docs/reports/api-engineer/2026-11-15-0434.md. Full suite 305 passed; provenance OK.
+Waiting on Roberto: Render env vars ADMIN_TOKEN, RESEND_API_KEY, ALERT_EMAIL_TO, SUPABASE_URL,
+SUPABASE_SERVICE_ROLE_KEY (+ optional APP_BASE_URL, ALERT_EMAIL_FROM_NAME). lead-architect: P-013 (class B).
+Next for the receiver, in order: 1. ECC security-reviewer on backend/. 2. devops T-029: Render service; pipeline
+workflow runs `uv run python -m backend.app.alerts` after Scoring. 3. After T-024 is in Supabase: send the real
+demo Severe email to Roberto's inbox and film it.
+
 ## 2026-11-15 00:45 - Main session (Claude Code) to Roberto and the next session (PAUSED at the usage limit)
 State: Phase 2 paused on block/2-core: Opus 5-hour limit hit ~00:15, resets 03:30 Spain. FIX2.md applied (solo build).
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
