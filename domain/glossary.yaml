@@ -1,6 +1,11 @@
-# domain/glossary.yaml - agronomic terms (owner: agronomist; Tyson approves).
-# Schema: docs/contracts/schemas/domain/glossary.schema.json.
-# Standard Spanish terms pending Tyson's local vocabulary (questionnaire 5.6, T-061). Definitions are drafts.
+# domain/glossary.yaml - agronomic terms (owner: agronomist agent).
+# Schema: docs/contracts/schemas/domain/glossary.schema.json; model: pipeline/common/models.py GlossaryFile.
+# Questionnaire 5.6 (local vocabulary) is closed: standard Spanish terms are the v1 values (encharcamiento, lote,
+# drenaje, inundación), origin estimated, "team agronomist left; default retained". Definitions without an opened
+# source carry the label "General guidance — not reviewed by an agronomist" in `reason` (the Learn screen shows
+# every card as general guidance). Every item: reviewed_by [agronomist-agent, scientist-reviewer], human_review none.
+# Fusarium TR4: no recommendation of our own; the only text is one neutral line to Agrocalidad, Ecuador's official
+# plant-health agency, whose page was opened (D-025).
 
 terms:
 
@@ -10,10 +15,13 @@ terms:
       es: "Suelo saturado de agua, con el nivel freático dentro de la zona de raíces (70 cm). El banano tolera como máximo 2 días."
       en: "Soil saturated with water, with the water table inside the root zone (70 cm). Banana tolerates 2 days at most."
     origin: estimated
+    source: "team agronomist, 14 Nov 2026"
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6); the 2 days and 70 cm are Tyson's confirmed values."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist; the 2 days and 70 cm are from the closed archive."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: lote
     term: {es: "Lote", en: "Lot"}
@@ -22,9 +30,11 @@ terms:
       en: "Part of the farm managed as one unit (harvest, field work, records)."
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: cuadrilla
     term: {es: "Cuadrilla", en: "Field crew"}
@@ -33,9 +43,11 @@ terms:
       en: "Group of workers who carry out field work."
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: drenaje
     term: {es: "Drenaje", en: "Drainage"}
@@ -44,9 +56,11 @@ terms:
       en: "Ditches and outlets that remove excess water from the lot."
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: nivel_freatico
     term: {es: "Nivel freático", en: "Water table"}
@@ -54,10 +68,13 @@ terms:
       es: "Profundidad a la que el suelo está saturado de agua; si sube a menos de 70 cm por más de 2 días, daña las raíces."
       en: "Depth at which the soil is saturated; if it rises above 70 cm depth for more than 2 days, roots are damaged."
     origin: estimated
+    source: "team agronomist, 14 Nov 2026"
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6); damage line from Tyson's values (review queue Q-01)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist; damage line from the archived values (review-queue.md Q-01)."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: crecida
     term: {es: "Crecida o desborde del río", en: "River overflow"}
@@ -65,34 +82,39 @@ terms:
       es: "Agua de lluvia caída en la parte alta de la cuenca que llega horas o días después y se sale del cauce."
       en: "Rain that fell in the upper catchment arriving hours or days later and leaving the river channel."
     origin: estimated
+    source: "team agronomist, 14 Nov 2026"
     estimated_by: questionnaire-default
-    reason: "Standard term; meaning from Tyson's field problems (water arriving from the highlands hours or days later). Local word pending (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist; the field problem (water from the highlands arriving hours or days later) is from the closed archive."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: mani_forrajero
     term: {es: "Maní forrajero", en: "Pinto peanut (Arachis pintoi)"}
     definition:
-      es: "Leguminosa perenne rastrera (Arachis pintoi) que forma una cobertura densa; se usa como cobertura viva en algunas fincas bananeras."
-      en: "Perennial creeping legume (Arachis pintoi) that forms a dense cover; some banana farms use it as living cover."
-    origin: estimated
-    source: "https://en.wikipedia.org/wiki/Arachis_pintoi"
-    accessed: 2026-11-14
-    estimated_by: "agronomist agent; botany from the opened source, farm use from Tyson (many farms use it, many do not)"
-    reason: "Definition draft pending Tyson's wording (5.6)."
-    task_id: T-061
+      es: "Leguminosa forrajera (Arachis pintoi) usada como cobertura del suelo; se reporta alto potencial como cobertura en banano, con establecimiento lento y posible competencia por nutrientes."
+      en: "Forage legume (Arachis pintoi) used as ground cover; reported to have high potential as a cover crop in banana, with slow establishment and possible competition for nutrients."
+    origin: sourced
+    source: "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e"
+    accessed: 2026-11-15
+    reason: "De la Cruz, Suarez and Ferguson (1994), CIAT, abstract in FAO AGRIS, opened 2026-11-15."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: micorrizas
     term: {es: "Micorrizas", en: "Mycorrhizae"}
     definition:
-      es: "Hongos del suelo que se asocian con las raíces; bioinsumo en la estrategia C, aplicado con suelo no saturado."
-      en: "Soil fungi that associate with roots; a bio-input in strategy C, applied on unsaturated soil."
-    origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6)."
-    task_id: T-061
+      es: "Hongos del suelo que se asocian con las raíces. El banano es una planta micorrízica, pero su beneficio en campo sigue en gran parte sin conocerse. En la estrategia C se aplican con el suelo no saturado."
+      en: "Soil fungi that associate with roots. Banana is a mycorrhizal plant, but the field benefit remains largely unknown. In strategy C they are applied on unsaturated soil."
+    origin: sourced
+    source: "https://ishs.org/ishs-article/879_52/"
+    accessed: 2026-11-15
+    reason: "Jefwa et al. (2010), Acta Horticulturae 879, abstract opened 2026-11-15. The strategy C timing is the draft design, not a sourced effect."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: microorganismos_de_montana
     term: {es: "Microorganismos de montaña (MM)", en: "Mountain microorganisms (MM)"}
@@ -101,9 +123,11 @@ terms:
       en: "Bio-input prepared from microorganisms collected from forest soil; in strategy C it is applied by drench on unsaturated soil."
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary and his description of how MM is prepared on farms (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist; the Costa Rica MAG bulletin found on 2026-11-15 returned HTTP 404."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: drench
     term: {es: "Drench", en: "Drench"}
@@ -112,9 +136,11 @@ terms:
       en: "A liquid application aimed at the soil around the plant."
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Standard term pending Tyson's local vocabulary (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: sigatoka_negra
     term: {es: "Sigatoka negra", en: "Black Sigatoka"}
@@ -123,9 +149,11 @@ terms:
       en: "Banana leaf disease favoured by warmth, high humidity and wet leaves."
     origin: estimated
     estimated_by: "agronomist agent from SPEC section 08"
-    reason: "Definition draft; the Watch thresholds are in domain/thresholds.yaml, pending Tyson."
-    task_id: T-040
+    reason: "General guidance — not reviewed by an agronomist. The papers found on 2026-11-15 (APS, PMC) could not be opened (HTTP 403 or captcha); the experimental Watch thresholds are in domain/thresholds.yaml."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: llenado_de_fruta
     term: {es: "Llenado de fruta", en: "Fruit filling"}
@@ -136,9 +164,11 @@ terms:
     source: "https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/"
     accessed: 2026-11-14
     estimated_by: "agronomist agent; cold effect from the opened producer report (El Oro, 2010)"
-    reason: "Definition draft pending Tyson's wording (5.6)."
-    task_id: T-061
+    reason: "Questionnaire 5.6: team agronomist left; default retained. General guidance — not reviewed by an agronomist; the cold effect comes from a producer report, not a trial."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: temporada_fresca
     term: {es: "Temporada fresca", en: "Cool season"}
@@ -149,11 +179,18 @@ terms:
     source: "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o"
     accessed: 2026-11-14
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - term_id: fusarium_r4t
     term: {es: "Fusarium R4T (marchitez por Fusarium raza 4 tropical)", en: "Fusarium wilt Tropical Race 4 (TR4)"}
-    definition: null
-    origin: pending
-    reason: "Biosecurity content: no text is shown in the app until Tyson approves the exact wording (T-062). Draft only in domain/tyson-review-queue.md."
-    task_id: T-062
+    definition:
+      es: "Para Fusarium R4T, infórmate por los canales oficiales de Agrocalidad, la agencia fitosanitaria del Ecuador."
+      en: "For Fusarium TR4, follow the official channels of Agrocalidad, Ecuador's plant-health agency."
+    origin: sourced
+    source: "https://www.agrocalidad.gob.ec/se-fortalecen-medidas-de-prevencion-para-evitar-el-ingreso-de-fusarium-2/"
+    accessed: 2026-11-15
+    reason: "D-025: the only biosecurity text, one neutral line with no recommendation of our own. Agrocalidad (Agencia de Regulación y Control Fito y Zoosanitario) page of 1 Nov 2023 asks citizens to inform themselves through the Agency's official channels."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none

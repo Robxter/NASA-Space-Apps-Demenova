@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T04:29:57Z",
+ "generated_at": "2026-11-15T04:50:36Z",
  "provenance": {
   "id": "prov-app-domain-glossary",
   "dataset": null,
@@ -17,7 +17,7 @@
    "keep display fields only",
    "drop the former agronomist's name (D-027)"
   ],
-  "code_commit": "c5c2db4",
+  "code_commit": "3e32b9a",
   "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
   "notes": "Domain table copied from domain/glossary.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
  },
@@ -33,6 +33,7 @@
     "en": "Soil saturated with water, with the water table inside the root zone (70 cm). Banana tolerates 2 days at most."
    },
    "origin": "estimated",
+   "source": "team agronomist, 14 Nov 2026",
    "approved_by": null
   },
   {
@@ -85,6 +86,7 @@
     "en": "Depth at which the soil is saturated; if it rises above 70 cm depth for more than 2 days, roots are damaged."
    },
    "origin": "estimated",
+   "source": "team agronomist, 14 Nov 2026",
    "approved_by": null
   },
   {
@@ -98,6 +100,7 @@
     "en": "Rain that fell in the upper catchment arriving hours or days later and leaving the river channel."
    },
    "origin": "estimated",
+   "source": "team agronomist, 14 Nov 2026",
    "approved_by": null
   },
   {
@@ -107,12 +110,12 @@
     "en": "Pinto peanut (Arachis pintoi)"
    },
    "definition": {
-    "es": "Leguminosa perenne rastrera (Arachis pintoi) que forma una cobertura densa; se usa como cobertura viva en algunas fincas bananeras.",
-    "en": "Perennial creeping legume (Arachis pintoi) that forms a dense cover; some banana farms use it as living cover."
+    "es": "Leguminosa forrajera (Arachis pintoi) usada como cobertura del suelo; se reporta alto potencial como cobertura en banano, con establecimiento lento y posible competencia por nutrientes.",
+    "en": "Forage legume (Arachis pintoi) used as ground cover; reported to have high potential as a cover crop in banana, with slow establishment and possible competition for nutrients."
    },
-   "origin": "estimated",
-   "source": "https://en.wikipedia.org/wiki/Arachis_pintoi",
-   "accessed": "2026-11-14",
+   "origin": "sourced",
+   "source": "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e",
+   "accessed": "2026-11-15",
    "approved_by": null
   },
   {
@@ -122,10 +125,12 @@
     "en": "Mycorrhizae"
    },
    "definition": {
-    "es": "Hongos del suelo que se asocian con las raíces; bioinsumo en la estrategia C, aplicado con suelo no saturado.",
-    "en": "Soil fungi that associate with roots; a bio-input in strategy C, applied on unsaturated soil."
+    "es": "Hongos del suelo que se asocian con las raíces. El banano es una planta micorrízica, pero su beneficio en campo sigue en gran parte sin conocerse. En la estrategia C se aplican con el suelo no saturado.",
+    "en": "Soil fungi that associate with roots. Banana is a mycorrhizal plant, but the field benefit remains largely unknown. In strategy C they are applied on unsaturated soil."
    },
-   "origin": "estimated",
+   "origin": "sourced",
+   "source": "https://ishs.org/ishs-article/879_52/",
+   "accessed": "2026-11-15",
    "approved_by": null
   },
   {
@@ -195,6 +200,21 @@
    "origin": "sourced",
    "source": "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o",
    "accessed": "2026-11-14",
+   "approved_by": null
+  },
+  {
+   "term_id": "fusarium_r4t",
+   "term": {
+    "es": "Fusarium R4T (marchitez por Fusarium raza 4 tropical)",
+    "en": "Fusarium wilt Tropical Race 4 (TR4)"
+   },
+   "definition": {
+    "es": "Para Fusarium R4T, infórmate por los canales oficiales de Agrocalidad, la agencia fitosanitaria del Ecuador.",
+    "en": "For Fusarium TR4, follow the official channels of Agrocalidad, Ecuador's plant-health agency."
+   },
+   "origin": "sourced",
+   "source": "https://www.agrocalidad.gob.ec/se-fortalecen-medidas-de-prevencion-para-evitar-el-ingreso-de-fusarium-2/",
+   "accessed": "2026-11-15",
    "approved_by": null
   }
  ]

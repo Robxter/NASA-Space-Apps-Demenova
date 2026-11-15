@@ -1,76 +1,96 @@
-# domain/thresholds.yaml - agronomic thresholds and regional defaults (owner: agronomist; Tyson approves).
-# Schema: docs/contracts/schemas/domain/thresholds.schema.json. Alert-index weights and W thresholds are NOT here:
-# they belong to data-scientist in config/alerts.yaml.
-# Tyson's confirmed answers are origin "sourced" with source "Tyson, 14 Nov 2026" (DATA_POLICY.md §5).
-# Questionnaire 5.1-5.10 defaults are "estimated" with estimated_by "questionnaire-default" (DATA_POLICY.md §4).
-# Every unapproved entry is listed in domain/tyson-review-queue.md.
+# domain/thresholds.yaml - agronomic thresholds and regional defaults (owner: agronomist agent).
+# Schema: docs/contracts/schemas/domain/thresholds.schema.json; model: pipeline/common/models.py ThresholdsFile.
+# Alert-index weights and W thresholds are NOT here: they belong to data-scientist in config/alerts.yaml.
+# No human agronomist is on the team since 14 Nov 2026 (D-022, D-025). Every item is reviewed by agents only:
+# reviewed_by [agronomist-agent, scientist-reviewer], human_review none. approved_by stays null until a future local
+# agronomist reviews it. The former team agronomist's confirmed answers are origin "sourced" with source
+# "team agronomist, 14 Nov 2026" (closed archive: domain/agronomist-answers-archive.md; DATA_POLICY.md §5).
+# Questionnaire 5.1-5.10 is closed: defaults are the v1 values, origin "estimated", reason "team agronomist left;
+# default retained" (DATA_POLICY.md §4, D-023). Statements without an opened source carry the label
+# "General guidance — not reviewed by an agronomist". Open questions: domain/review-queue.md (nothing waits on them).
 
 thresholds:
 
-  # --- Waterlogging (confirmed by Tyson) ---------------------------------------------------------------
+  # --- Waterlogging (team agronomist, 14 Nov 2026) -----------------------------------------------------
   waterlogging_tolerance_days:
     value: 2
     unit: d
     origin: sourced
-    source: "Tyson, 14 Nov 2026"
-    reason: "Banana tolerates at most 2 days of waterlogging."
-    approved_by: Tyson
+    source: "team agronomist, 14 Nov 2026"
+    reason: "Banana tolerates at most 2 days of waterlogging (closed archive, domain/agronomist-answers-archive.md)."
+    approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   root_zone_depth_cm:
     value: 70
     unit: cm
     origin: sourced
-    source: "Tyson, 14 Nov 2026"
-    reason: "Banana roots sit at 70 cm."
-    approved_by: Tyson
+    source: "team agronomist, 14 Nov 2026"
+    reason: "Banana roots reach 70 cm (closed archive, domain/agronomist-answers-archive.md)."
+    approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   waterlogging_damage_rule:
     value: "Damage line: water table shallower than root_zone_depth_cm for more than waterlogging_tolerance_days consecutive days (damage from day 3)."
     origin: sourced
-    source: "Tyson, 14 Nov 2026; combined as stated in SPEC section 08 (Thresholds, now set)"
-    reason: "Combination of Tyson's two confirmed values. Whether damage starts on day 3 (more than 2 days) or day 2 (2 days or more) is queued for Tyson (review queue Q-01)."
+    source: "team agronomist, 14 Nov 2026; combined as stated in SPEC section 08 (Thresholds, now set)"
+    reason: "Combination of the two archived values. Whether damage starts on day 3 (more than 2 days) or day 2 (2 days or more) is an open question for a future local agronomist (review-queue.md Q-01)."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
-  # --- Black Sigatoka side indicator (research proposal, awaiting Tyson) --------------------------------
+  # --- Black Sigatoka side indicator (experimental, nice-to-have) --------------------------------------
   sigatoka_watch_mean_temp_c:
     value: 23
     unit: "°C"
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md; SPEC section 08)"
-    reason: "Watch when daily mean temperature is above this value. Attributed to TEC Costa Rica and Atena papers listed in SPEC section 29; the agronomist agent could not text-read those PDFs on 2026-11-14 (the TEC abstract gives correlations, no cut-off), so the value is not cited as sourced."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md; SPEC section 08)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental. Watch when daily mean temperature is above this value. Attributed to TEC Costa Rica and Atena papers (SPEC section 29) that the agronomist agent could not text-read (P-004), so the value is not cited as sourced."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   sigatoka_watch_rh_pct:
     value: 75
     unit: "%"
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md; SPEC section 08)"
-    reason: "Watch when mean relative humidity is above this value. Same source situation as sigatoka_watch_mean_temp_c."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md; SPEC section 08)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental. Watch when mean relative humidity is above this value. Same source situation as sigatoka_watch_mean_temp_c."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   sigatoka_watch_requires_rain:
     value: true
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md; SPEC section 08)"
-    reason: "Rain (wet leaves) on the same days is part of the proposed Watch condition. Awaiting Tyson."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md; SPEC section 08)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental. Rain (wet leaves) on the same days is part of the proposed Watch condition; the leaf-wetness papers found on 2026-11-15 could not be opened (HTTP 403 or captcha)."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   sigatoka_watch_consecutive_days:
     value: 3
     unit: d
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md)"
-    reason: "Watch after 3 consecutive days meeting temperature, humidity and rain conditions. Listed as awaiting Tyson in DATA_POLICY.md section 4."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental (DATA_POLICY.md §4). Watch after 3 consecutive days meeting the temperature, humidity and rain conditions."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   sigatoka_unfavourable_rh_pct:
     value: 70
     unit: "%"
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md; SPEC section 08)"
-    reason: "Below this mean relative humidity conditions are unfavourable for the disease. Same source situation as sigatoka_watch_mean_temp_c."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md; SPEC section 08)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental. Below this mean relative humidity conditions are unfavourable for the disease. Same source situation as sigatoka_watch_mean_temp_c."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
-  # --- Cool season and cold stress, El Oro -------------------------------------------------------------
+  # --- Cool season and cold stress, El Oro (experimental, nice-to-have) --------------------------------
   cool_season_machala:
     value:
       start_month_day: "07-01"
@@ -78,8 +98,10 @@ thresholds:
     origin: sourced
     source: "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o"
     accessed: 2026-11-14
-    reason: "WeatherSpark climatology for Machala: cool season 1 July to 13 November (4.4 months). Used as context for the cold-stress indicator."
+    reason: "WeatherSpark climatology for Machala: cool season 1 July to 13 November (4.4 months). Context for the cold-stress indicator."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   coldest_month_mean_min_temp_c_machala:
     value: 21
     unit: "°C"
@@ -88,6 +110,8 @@ thresholds:
     accessed: 2026-11-14
     reason: "WeatherSpark: August is the coldest month in Machala, mean daily minimum 21 °C."
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   cold_night_temp_c:
     value: 20
     unit: "°C"
@@ -95,85 +119,108 @@ thresholds:
     source: "https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/"
     accessed: 2026-11-14
     estimated_by: "agronomist agent from a producer report (Ecuador Times, 15 Nov 2010)"
-    reason: "The article reports El Oro plantations at 20 °C at night with fruit not reaching normal thickness and longer time to harvest. It is a producer report, not a trial, so its use as an alert threshold awaits Tyson."
-    task_id: T-040
+    reason: "General guidance — not reviewed by an agronomist. Experimental. The article reports El Oro plantations at 20 °C at night with fruit not reaching normal thickness and a longer time to harvest. It is a producer report, not a trial, so it is not a sourced alert threshold."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   heat_unit_base_temp_c:
     value: 14
     unit: "°C"
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md: Ganry and Meyer 1975; CORBANA)"
-    reason: "Base temperature for daily heat units. The CORBANA PDF could not be text-read on 2026-11-14 and Ganry and Meyer 1975 was not opened, so the value is not cited as sourced."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md: Ganry and Meyer 1975; CORBANA)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental. The CORBANA PDF could not be text-read (P-004) and Ganry and Meyer 1975 was not opened; the review opened on 2026-11-15 (Turner et al. 2007) uses growing-degree-days but states no base temperature."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   cold_stress_rule:
     value: "Weekly sum of heat units (base heat_unit_base_temp_c) compared with the climatology for the same week; a sum below climatology flags cold stress."
     origin: estimated
-    estimated_by: "research proposal in Tyson's doc (domain/tyson-answers.md)"
-    reason: "Method proposal awaiting Tyson; how far below climatology counts as stress is not defined yet."
-    task_id: T-040
+    estimated_by: "research proposal in the team agronomist's archived notes (domain/agronomist-answers-archive.md)"
+    reason: "General guidance — not reviewed by an agronomist. Experimental method; how far below climatology counts as stress is not defined (review-queue.md Q-04)."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
-  # --- Questionnaire 5.1-5.10 defaults (pending Tyson's answers) ---------------------------------------
+  # --- Questionnaire 5.1-5.10 (closed; defaults are the v1 values) -------------------------------------
   default_variety:
     value: "Cavendish Williams"
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Questionnaire 5.1 (local variety) pending; stated default."
-    task_id: T-060
+    reason: "Questionnaire 5.1 (local variety): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   default_planting_density_plants_ha:
     value: null
     unit: "plants/ha"
     origin: pending
-    reason: "Questionnaire 5.2: the default is a literature value, but no source was opened and verified on 2026-11-14, so it stays empty until Tyson answers."
-    task_id: T-060
+    reason: "Questionnaire 5.2 (planting density): team agronomist left; no default value was ever set and no source giving it was opened, so it stays empty (shown as not estimated)."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   default_soil_texture:
     value: loam
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Questionnaire 5.3 (soil type) pending; stated default."
-    task_id: T-060
+    reason: "Questionnaire 5.3 (soil type): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   drain_depth_cm:
     value: null
     unit: cm
     origin: pending
-    reason: "Questionnaire 5.4: no banana-specific drain depth for El Oro was found in an opened source on 2026-11-14; waiting for Tyson."
-    task_id: T-060
+    reason: "Questionnaire 5.4 (drain depth): team agronomist left; no default value was ever set and no banana-specific drain depth for El Oro was found in an opened source, so it stays empty."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   drain_spacing_m:
     value: null
     unit: m
     origin: pending
-    reason: "Questionnaire 5.4: no banana-specific drain spacing for El Oro was found in an opened source on 2026-11-14; waiting for Tyson."
-    task_id: T-060
+    reason: "Questionnaire 5.4 (drain spacing): team agronomist left; no default value was ever set and no banana-specific drain spacing for El Oro was found in an opened source, so it stays empty."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   default_alert_channel:
     value: WhatsApp
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Questionnaire 5.7 (preferred channel) pending; stated default. The app ships email (and Telegram as a nice-to-have); WhatsApp is recorded as the farmer preference to confirm."
-    task_id: T-061
+    reason: "Questionnaire 5.7 (preferred channel): team agronomist left; default retained. The app ships email (and Telegram as a nice-to-have); WhatsApp is recorded as a preference only."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   local_vocabulary_set:
-    value: "standard Spanish terms (encharcamiento, lote, cuadrilla, drenaje)"
+    value: "standard Spanish terms (encharcamiento, lote, drenaje, inundación)"
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Questionnaire 5.6 (local vocabulary) pending; see domain/glossary.yaml."
-    task_id: T-061
+    reason: "Questionnaire 5.6 (local vocabulary): team agronomist left; default retained. See domain/glossary.yaml."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
   biosecurity_text_status:
-    value: null
-    origin: pending
-    reason: "Questionnaire 5.8: no Fusarium TR4 biosecurity text is shown in the app until Tyson approves the exact wording. Draft is only in domain/tyson-review-queue.md."
-    task_id: T-062
+    value: "One neutral line pointing to Agrocalidad (glossary.yaml term fusarium_r4t, official page opened 2026-11-15); no biosecurity recommendations of our own."
+    origin: design
+    reason: "Questionnaire 5.8 closed (team agronomist left). D-025 and DATA_POLICY.md §4: no recommendations of our own; at most one neutral line to Ecuador's official plant-health authority, only with its opened and cited page."
     approved_by: null
-  tyson_review_turnaround:
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
+  review_turnaround:
     value: "same day"
     origin: estimated
     estimated_by: questionnaire-default
-    reason: "Questionnaire 5.10 (review time) pending; stated default."
-    task_id: T-040
+    reason: "Questionnaire 5.10 (review time): team agronomist left; default retained. No human review happens today (human_review: none); kept for a future local agronomist. Key renamed from the former person-named key on 2026-11-15 (no code reads it)."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none

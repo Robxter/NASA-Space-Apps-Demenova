@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T04:29:57Z",
+ "generated_at": "2026-11-15T04:50:36Z",
  "provenance": {
   "id": "prov-app-domain-strategies",
   "dataset": null,
@@ -16,7 +16,7 @@
    "keep contract fields",
    "drop the former agronomist's name (D-027)"
   ],
-  "code_commit": "c5c2db4",
+  "code_commit": "3e32b9a",
   "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
   "notes": "Domain table copied from domain/strategies.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
  },
@@ -37,7 +37,7 @@
    },
    "evidence": [
     {
-     "citation": "Team agronomist (archive), 14 Nov 2026",
+     "citation": "team agronomist, 14 Nov 2026",
      "url": null,
      "accessed": null
     }
@@ -47,8 +47,8 @@
     "en": "Needs no extra investment or labour."
    },
    "gaps": {
-    "es": "No reduce los días de encharcamiento en lotes bajos; la tolerancia del banano es de 2 días como máximo.",
-    "en": "Does not reduce waterlogging days on low lots; banana tolerates 2 days at most."
+    "es": "No reduce los días de encharcamiento en lotes bajos; el banano tolera como máximo 2 días. Orientación general — no revisada por un agrónomo.",
+    "en": "Does not reduce waterlogging days on low lots; banana tolerates 2 days at most. General guidance — not reviewed by an agronomist."
    },
    "risks": {
     "es": "Lotes bajos y planos siguen expuestos a encharcamiento y a crecidas del río.",
@@ -58,34 +58,54 @@
     "soil": {
      "value": 2,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "water": {
      "value": 1,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "cost": {
      "value": 5,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = lowest cost).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = lowest cost), not a cost estimate; costs in USD stay not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "labour": {
      "value": 5,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = least labour).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = least labour), not a labour estimate; labour stays not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     }
    },
    "approved_by": null,
@@ -102,14 +122,19 @@
     "en": "Improve drainage: clear and open drains so water leaves the lot within 2 days."
    },
    "why": {
-    "es": "El banano tolera como máximo 2 días de encharcamiento y sus raíces están a 70 cm.",
-    "en": "Banana tolerates at most 2 days of waterlogging and its roots sit at 70 cm."
+    "es": "El banano tolera como máximo 2 días de encharcamiento y sus raíces llegan a 70 cm; la falta de oxígeno mata rápido las puntas de las raíces (Turner y col. 2007).",
+    "en": "Banana tolerates at most 2 days of waterlogging and its roots reach 70 cm; oxygen deficiency quickly kills the root tips (Turner et al. 2007)."
    },
    "evidence": [
     {
-     "citation": "Team agronomist (archive), 14 Nov 2026",
+     "citation": "team agronomist, 14 Nov 2026",
      "url": null,
      "accessed": null
+    },
+    {
+     "citation": "Turner, D.W., Fortescue, J.A., Thomas, D.S. (2007). Environmental physiology of the bananas (Musa spp.). Brazilian Journal of Plant Physiology 19(4).",
+     "url": "https://www.scielo.br/j/bjpp/a/w6fWfdQLYKrby3L5m6xnvMP/?lang=en",
+     "accessed": "2026-11-15"
     }
    ],
    "benefits": {
@@ -117,8 +142,8 @@
     "en": "Fewer days with a saturated root zone on low lots."
    },
    "gaps": {
-    "es": "Faltan profundidad y espaciamiento de drenes para El Oro (pregunta 5.4) y los costos.",
-    "en": "Drain depth and spacing for El Oro (question 5.4) and costs are still missing."
+    "es": "Faltan la profundidad y el espaciamiento de drenes para El Oro (pregunta 5.4, sin valor) y los costos (no estimados). Orientación general — no revisada por un agrónomo.",
+    "en": "Drain depth and spacing for El Oro (question 5.4, no value) and costs (not estimated) are missing. General guidance — not reviewed by an agronomist."
    },
    "risks": {
     "es": "Requiere mano de obra; un drenaje mal ubicado puede pasar el agua a lotes vecinos.",
@@ -128,34 +153,54 @@
     "soil": {
      "value": 3,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "water": {
      "value": 4,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "cost": {
      "value": 3,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = lowest cost).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = lowest cost), not a cost estimate; costs in USD stay not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "labour": {
      "value": 3,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = least labour).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = least labour), not a labour estimate; labour stays not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     }
    },
    "approved_by": null,
@@ -177,60 +222,90 @@
    },
    "evidence": [
     {
-     "citation": "Team agronomist (archive), 14 Nov 2026",
+     "citation": "team agronomist, 14 Nov 2026",
      "url": null,
      "accessed": null
     },
     {
-     "citation": "Arachis pintoi, Wikipedia",
-     "url": "https://en.wikipedia.org/wiki/Arachis_pintoi",
-     "accessed": "2026-11-14"
+     "citation": "Johns, G.G. (1994). Effect of Arachis pintoi groundcover on performance of bananas in northern New South Wales. Australian Journal of Experimental Agriculture 34(8), 1197-1204.",
+     "url": "https://connectsci.au/an/article/34/8/1197/153145/Effect-of-Arachis-pintoi-groundcover-on",
+     "accessed": "2026-11-15"
+    },
+    {
+     "citation": "De la Cruz, R., Suarez, S., Ferguson, J.E. (1994). The contribution of Arachis pintoi as a ground cover in some farming systems of Tropical America. CIAT (FAO AGRIS record).",
+     "url": "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e",
+     "accessed": "2026-11-15"
+    },
+    {
+     "citation": "Jefwa, J. et al. (2010). Benefits and potential use of arbuscular mycorrhizal fungi (AMF) in banana and plantain (Musa spp.) systems in Africa. Acta Horticulturae 879, 479-486.",
+     "url": "https://ishs.org/ishs-article/879_52/",
+     "accessed": "2026-11-15"
     }
    ],
    "benefits": {
-    "es": "Suelo cubierto por una leguminosa perenne rastrera, más el control del agua de B; efectos medidos en banano de El Oro aún sin fuente.",
-    "en": "Soil covered by a perennial creeping legume, plus B's water control; measured effects in El Oro banana have no source yet."
+    "es": "El control del agua de B, más una cobertura de maní forrajero que en un ensayo en banano (Australia) controló la erosión (Johns 1994). El banano es una planta micorrízica (Jefwa y col. 2010).",
+    "en": "B's water control, plus a maní forrajero cover that controlled erosion in a banana trial in Australia (Johns 1994). Banana is a mycorrhizal plant (Jefwa et al. 2010)."
    },
    "gaps": {
-    "es": "Faltan costos, mano de obra y evidencia local; muchas fincas no usan maní forrajero.",
-    "en": "Costs, labour and local evidence are missing; many farms do not use maní forrajero."
+    "es": "Faltan costos y mano de obra (no estimados) y evidencia de El Oro; el beneficio de las micorrizas en campo sigue en gran parte sin conocerse (Jefwa y col. 2010); muchas fincas de El Oro no usan maní forrajero. Orientación general — no revisada por un agrónomo.",
+    "en": "Costs and labour (not estimated) and El Oro evidence are missing; the field benefit of mycorrhizae remains largely unknown (Jefwa et al. 2010); many El Oro farms do not use maní forrajero. General guidance — not reviewed by an agronomist."
    },
    "risks": {
-    "es": "Más mano de obra y acceso a bioinsumos.",
-    "en": "More labour and access to bio-inputs."
+    "es": "Más mano de obra y acceso a bioinsumos (barreras de adopción). El maní forrajero se establece lento y puede competir por nutrientes (De la Cruz y col. 1994); en el ensayo de Johns (1994) hubo 9 % menos racimos con cobertura, en parte quizá por competencia por agua.",
+    "en": "More labour and access to bio-inputs (adoption barriers). Maní forrajero establishes slowly and may compete for nutrients (De la Cruz et al. 1994); in the Johns (1994) trial there were 9% fewer bunches with the cover, possibly partly from competition for water."
    },
    "scores": {
     "soil": {
      "value": 5,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "water": {
      "value": 4,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist.",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft 1-5 score; team agronomist left; default retained. Not yet reviewed by a local agronomist.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "cost": {
      "value": 2,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = lowest cost).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = lowest cost), not a cost estimate; costs in USD stay not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     },
     "labour": {
      "value": 2,
      "origin": "estimated",
-     "estimated_by": "draft scores in the team agronomist's archived notes (domain/agronomist-answers-archive.md)",
-     "reason": "Draft 1-5 score awaiting review by a local agronomist (5 = least labour).",
-     "task_id": "T-040",
-     "approved_by": null
+     "estimated_by": "Claude draft (agronomist agent), never validated",
+     "reason": "Draft relative 1-5 score (5 = least labour), not a labour estimate; labour stays not estimated.",
+     "task_id": "T-065",
+     "approved_by": null,
+     "reviewed_by": [
+      "agronomist-agent",
+      "scientist-reviewer"
+     ],
+     "human_review": "none"
     }
    },
    "approved_by": null,

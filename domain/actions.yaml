@@ -1,98 +1,119 @@
-# domain/actions.yaml - recommended action per alert level and mode (owner: agronomist; Tyson approves).
-# Schema: docs/contracts/schemas/domain/actions.schema.json.
-# Levels show as colour AND word in the UI: Normal (green / verde), Watch (yellow / Vigilancia, amarillo),
-# Warning (orange / Aviso, naranja), Severe (red / Severo, rojo).
-# Farmer mode = one action a farmer with no staff can do alone (questionnaire 5.9).
-# Agronomist mode = fuller guidance (questionnaire 5.5).
-# All drafts: origin estimated, approved_by null. No chemicals, no doses. No Fusarium TR4 biosecurity text until
-# Tyson approves it (T-062). Spanish uses standard terms pending Tyson's local vocabulary (5.6).
+# domain/actions.yaml - recommended check per alert level and mode (owner: agronomist agent).
+# Schema: docs/contracts/schemas/domain/actions.schema.json; model: pipeline/common/models.py ActionsFile.
+# Levels show as colour AND word in the UI: Normal (green; es Normal, verde), Watch (yellow; es Vigilancia,
+# amarillo), Warning (orange; es Aviso, naranja), Severe (red; es Severo, rojo).
+# Farmer mode = one person with no staff, checks they can do alone (questionnaire 5.9).
+# Agronomist mode = fuller checks (questionnaire 5.5).
+# Checks, not prescriptions (D-025): no products, doses, chemicals, diagnoses, yield or cost promises.
+# No Fusarium TR4 text here (D-025). Standard Spanish terms: encharcamiento, lote, drenaje, inundación.
+# All drafts: origin estimated, "team agronomist left; default retained", labelled
+# "General guidance — not reviewed by an agronomist". The 2-day tolerance is from the closed archive
+# ("team agronomist, 14 Nov 2026"). Every item: reviewed_by [agronomist-agent, scientist-reviewer], human_review none.
 
 actions:
 
   - level: normal
     mode: farmer
     text:
-      es: "Todo normal. Mantén limpios los drenajes."
-      en: "All normal. Keep the drains clear."
+      es: "Todo normal. De vez en cuando, revisa que los canales de drenaje de tus lotes no estén tapados."
+      en: "All normal. Now and then, check that the drainage channels of your lots are not blocked."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.9 (solo-farmer actions) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.9 (solo-farmer actions): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: normal
     mode: agronomist
     text:
-      es: "Sin acción urgente. Rutina: revisar que drenajes y salidas estén limpios, registrar notas de campo (lecturas de nivel freático, análisis de suelo, fechas de bioinsumos) y planificar bioinsumos mientras el suelo no esté saturado."
-      en: "No urgent action. Routine: check that drains and outlets are clear, log field notes (water table readings, soil analyses, bio-input dates) and plan bio-inputs while the soil is not saturated."
+      es: "Sin señales de encharcamiento. Rutina: revisar que canales y salidas de drenaje estén libres, registrar notas de campo (nivel freático, análisis de suelo, fechas de labores) y comparar con el historial del lote."
+      en: "No waterlogging signals. Routine: check that drainage channels and outlets are clear, log field notes (water table, soil analyses, field-work dates) and compare with the lot's history."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.5 (actions per level) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.5 (actions per level): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: watch
     mode: farmer
     text:
-      es: "Puede venir agua. Hoy limpia las salidas de los drenajes de los lotes bajos."
-      en: "Water may be coming. Today, clear the drain outlets of the low lots."
+      es: "Puede venir agua. Hoy revisa que las salidas de drenaje de los lotes bajos no estén tapadas."
+      en: "Water may be coming. Today, check that the drain outlets of the low lots are not blocked."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.9 (solo-farmer actions) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.9 (solo-farmer actions): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: watch
     mode: agronomist
     text:
-      es: "Revisar a diario la lluvia aguas arriba y la humedad del suelo del lote. Limpiar salidas de drenaje, primero en lotes bajos y planos. Posponer drench de bioinsumos hasta que el suelo drene. Avisar a la cuadrilla que puede hacer falta trabajo de drenaje."
-      en: "Check upstream rain and the lot's soil moisture daily. Clear drain outlets, low and flat lots first. Postpone bio-input drenches until the soil drains. Tell the crew that drainage work may be needed."
+      es: "Revisar a diario la lluvia aguas arriba y la humedad del suelo del lote. Revisar canales y salidas de drenaje, primero en lotes bajos y planos. Antes de cualquier labor en campo, comprobar que el suelo no esté saturado."
+      en: "Check upstream rain and the lot's soil moisture daily. Check drainage channels and outlets, low and flat lots first. Before any field work, check that the soil is not saturated."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.5 (actions per level) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.5 (actions per level): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: warning
     mode: farmer
     text:
-      es: "Riesgo de encharcamiento. Abre y limpia los drenajes hoy y revisa cada mañana si hay agua estancada."
-      en: "Waterlogging risk. Open and clear the drains today and check every morning for standing water."
+      es: "Riesgo de encharcamiento. Hoy revisa los canales de drenaje de este lote y cada mañana mira si hay agua estancada. Evita entrar con maquinaria pesada en suelo saturado."
+      en: "Waterlogging risk. Today, check this lot's drainage channels and every morning look for standing water. Avoid heavy machinery on saturated soil."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.9 (solo-farmer actions) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.9 (solo-farmer actions): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: warning
     mode: agronomist
     text:
-      es: "Encharcamiento probable en los próximos días. Priorizar lotes con alta humedad del terreno: abrir y limpiar drenajes, revisar agua estancada cada mañana y contar los días con agua (tolerancia: 2 días). Posponer fertilización, bioinsumos y tránsito en lotes saturados. Evaluar cortar racimos cercanos a cosecha en lotes en riesgo si el acceso puede cortarse."
-      en: "Waterlogging likely within days. Prioritise lots with high terrain wetness: open and clear drains, check for standing water each morning and count days with water (tolerance: 2 days). Postpone fertiliser, bio-inputs and field traffic on saturated lots. Consider cutting bunches close to harvest in at-risk lots if access may be lost."
+      es: "Encharcamiento probable en los próximos días. Priorizar lotes con alta humedad del terreno: revisar canales y salidas de drenaje, inspeccionar cada mañana si hay agua estancada y contar los días con agua (el banano tolera como máximo 2 días). Evitar maquinaria pesada y tránsito en lotes saturados."
+      en: "Waterlogging likely within days. Prioritise lots with high terrain wetness: check drainage channels and outlets, inspect each morning for standing water and count the days with water (banana tolerates 2 days at most). Avoid heavy machinery and field traffic on saturated lots."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.5 (actions per level) pending; draft by the agronomist agent."
-    task_id: T-061
+    source: "team agronomist, 14 Nov 2026"
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.5 (actions per level): team agronomist left; default retained. General guidance — not reviewed by an agronomist; the 2-day tolerance is from the closed archive."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: severe
     mode: farmer
     text:
-      es: "Peligro de inundación. Primero la seguridad de las personas. Cuando sea seguro, abre los drenajes y anota cuántos días se queda el agua."
-      en: "Flood danger. People's safety first. When it is safe, open the drains and note how many days the water stays."
+      es: "Inundación posible o en curso. Primero tu seguridad: no entres en agua que corre. Cuando sea seguro, mira si hay agua estancada en tus lotes y anota cuántos días se queda."
+      en: "Flooding possible or under way. Your safety first: do not walk into flowing water. When it is safe, look for standing water on your lots and note how many days it stays."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.9 (solo-farmer actions) pending; draft by the agronomist agent."
-    task_id: T-061
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.9 (solo-farmer actions): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - level: severe
     mode: agronomist
     text:
-      es: "Inundación o encharcamiento de más de 2 días esperado o en curso. Primero la seguridad: nadie trabaja en agua corriendo. Cuando el agua lo permita, abrir salidas de drenaje en los lotes afectados y registrar la fecha de llegada del agua y los días que permanece (memoria de inundación). No aplicar fertilización ni bioinsumos en suelo saturado. Al bajar el agua, inspeccionar plantas y registrar daños por lote."
-      en: "Flooding or waterlogging beyond 2 days expected or under way. Safety first: nobody works in flowing water. When water allows, open drain outlets on affected lots and record the date the water arrived and the days it stays (flood memory). Do not apply fertiliser or bio-inputs to saturated soil. When the water drops, inspect plants and record damage per lot."
+      es: "Inundación o encharcamiento de más de 2 días esperado o en curso. Primero la seguridad: nadie entra en agua que corre. Cuando el agua lo permita, inspeccionar los lotes afectados, revisar las salidas de drenaje y registrar la fecha de llegada del agua y los días que permanece. Evitar maquinaria pesada en suelo saturado. Al bajar el agua, inspeccionar las plantas y registrar lo observado por lote."
+      en: "Flooding or waterlogging beyond 2 days expected or under way. Safety first: nobody enters flowing water. When water allows, inspect the affected lots, check the drain outlets and record the date the water arrived and the days it stays. Avoid heavy machinery on saturated soil. When the water drops, inspect the plants and record what you see per lot."
     origin: estimated
-    estimated_by: questionnaire-default
-    reason: "Questionnaire 5.5 (actions per level) pending; draft by the agronomist agent."
-    task_id: T-061
+    source: "team agronomist, 14 Nov 2026"
+    estimated_by: "questionnaire-default (agronomist agent draft)"
+    reason: "Questionnaire 5.5 (actions per level): team agronomist left; default retained. General guidance — not reviewed by an agronomist; the 2-day tolerance is from the closed archive."
+    task_id: T-065
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none

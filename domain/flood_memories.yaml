@@ -1,6 +1,55 @@
-# domain/flood_memories.yaml - past floods remembered by farmers (owner: agronomist; origin observed).
-# Schema: docs/contracts/schemas/domain/flood_memories.schema.json.
-# Empty on purpose: Tyson's flood memory of his farm and its approximate location (his doc, Task 6; T-063) has not
-# arrived yet. The February 2026 Buenavista flood is the demo replay event, not a farmer memory, so it is not here.
+# domain/flood_memories.yaml - documented floods (owner: agronomist agent; model: pipeline/common/models.py
+# FloodMemoriesFile). Schema: docs/contracts/schemas/domain/flood_memories.schema.json.
+# No farm memories: the former team agronomist never sent one and no farmer has reported one (D-022, D-024).
+# Only press-documented floods, origin observed, reported_by = the press URL (opened by the agronomist agent on
+# 2026-11-15; same events and ids as pipeline/engine/run.py DOCUMENTED_FLOODS). farm_id is the synthetic demo farm
+# because the contract requires one; only the February event is in the demo farm's catchment. Which lots the water
+# reached and for how many days is not reported by the sources, so lots_or_zone is empty and days_with_water null.
+# The Chaguana second overflow is Monday 26 Oct 2026 (source text; the D-024 text says 24 Oct).
+# FloodMemory has no reviewed_by / human_review fields in contract 1.2.0, so they are not added here.
 
-flood_memories: []
+flood_memories:
+
+  - id: flood-2026-02-22-buenavista-pasaje
+    farm_id: farm_demo-el-oro
+    date_or_month: "2026-02-22"
+    lots_or_zone: []
+    days_with_water: null
+    damage_notes: "El Universo, 23 Feb 2026: rain from Sunday night 22 Feb to the early hours of Monday 23 Feb; the Buenavista river overflowed at the Buenavista-Pasaje road and water entered crop areas, mainly banana farms. In the demo farm's catchment (demo replay event)."
+    reported_by: "https://www.eluniverso.com/noticias/ecuador/inundaciones-en-machala-y-desbordamientos-de-rios-paralizan-parte-de-el-oro-el-23-de-febrero-nota/"
+    origin: observed
+    matched_event_id: null
+    created_at: "2026-11-15T04:48:00Z"
+
+  - id: flood-2026-10-11-santa-rosa
+    farm_id: farm_demo-el-oro
+    date_or_month: "2026-10-11"
+    lots_or_zone: []
+    days_with_water: null
+    damage_notes: "Teleamazonas, SNGR table with cut-off Monday 12 Oct 2026, 07:00: Río Chico (El Recreo, Bellamaría, Santa Rosa) and Río Caluguro (Caluguro, Santa Rosa) overflowed. Regional event outside the demo farm's catchment; not a memory of this farm."
+    reported_by: "https://www.teleamazonas.com/actualidad/noticias/ecuador/seis-rios-esteros-desbordados-tres-provincias-lunes-12-octubre-130196/"
+    origin: observed
+    matched_event_id: null
+    created_at: "2026-11-15T04:48:00Z"
+
+  - id: flood-2026-10-19-chaguana
+    farm_id: farm_demo-el-oro
+    date_or_month: "2026-10-19"
+    lots_or_zone: []
+    days_with_water: null
+    damage_notes: "Extra, 26 Oct 2026: first overflow of the Chaguana river on Monday 19 Oct 2026 (Tendales, El Guabo). Regional event outside the demo farm's catchment; not a memory of this farm."
+    reported_by: "https://www.extra.ec/noticia/ecuador/oro-tendales-inunda-segunda-vez-desbordamiento-rio-chaguana-166024.html"
+    origin: observed
+    matched_event_id: null
+    created_at: "2026-11-15T04:48:00Z"
+
+  - id: flood-2026-10-26-chaguana
+    farm_id: farm_demo-el-oro
+    date_or_month: "2026-10-26"
+    lots_or_zone: []
+    days_with_water: null
+    damage_notes: "Extra, 26 Oct 2026: second Chaguana river overflow in less than a week, water rising from about 02:00 local on Monday 26 Oct 2026 (Tendales, El Guabo). D-024 text says 24 Oct; the source says 26 Oct. Regional event outside the demo farm's catchment; not a memory of this farm."
+    reported_by: "https://www.extra.ec/noticia/ecuador/oro-tendales-inunda-segunda-vez-desbordamiento-rio-chaguana-166024.html"
+    origin: observed
+    matched_event_id: null
+    created_at: "2026-11-15T04:48:00Z"

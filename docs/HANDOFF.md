@@ -2,6 +2,13 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 07:30 - agronomist to main session
+State: T-040 done in domain/ (all yaml + review-queue.md + README.md); not committed (no shell). Report
+docs/reports/agronomist/2026-11-15-0730.md. Former agronomist no longer named in any domain yaml.
+Next for the receiver: 1. `uv run pytest -q` and `python scripts/check_provenance.py`. 2. frontend-engineer reruns
+app/scripts/build_domain_snapshots.py (glossary fusarium_r4t now has the one Agrocalidad line, so it is no longer
+skipped). 3. thresholds key `tyson_review_turnaround` renamed `review_turnaround` (no code reads it).
+
 ## 2026-11-15 06:00 - frontend-engineer to main session
 State: real-data re-check and T-042 must-haves done on block/2-core (c5c2db4..0f1f9b2); not pushed.
 Report docs/reports/frontend-engineer/2026-11-15-0600.md. Checks: tsc clean; Vitest 61; build 92.6 kB gzip initial.

@@ -135,8 +135,12 @@ review queue, the flood candidates and the logo options.
 - [ ] T-030 technical-writer: block 2 report, SI-use log (English only, D-026)
 
 ## Block 3: scope completion (day 2)
-- [ ] T-040 agronomist: apply FIX2 §5 mandate (sourced or labelled, checks not prescriptions, reviewed_by /
-  human_review fields, review-queue.md for a future local agronomist) (D-025)
+- [x] T-040 agronomist: apply FIX2 §5 mandate (sourced or labelled, checks not prescriptions, reviewed_by /
+  human_review fields, review-queue.md for a future local agronomist) (D-025) — done 2026-11-15, report
+  docs/reports/agronomist/2026-11-15-0730.md; one Agrocalidad line in glossary fusarium_r4t
+- [ ] T-065 agronomist (post-hackathon): source or replace the `estimated` domain values (Sigatoka, heat units, cold
+  night, practice drafts, glossary definitions, questionnaire defaults) with opened sources; agent work, no human
+  expert (D-022). Every estimated item in domain/ points here
 - [x] T-041 closed: won't do — no expert AHP matrix; replaced by T-024b sensitivity check (D-024); ahp.py kept unused
 - [x] T-042 frontend-engineer: Strategies (badge "Not yet reviewed by a local agronomist"), Alerts, Learn, Farm setup
   data levels 0–2 (level 3 is nice-to-have), data saver, sensitivity result in Lot detail or "How reliable is this?"

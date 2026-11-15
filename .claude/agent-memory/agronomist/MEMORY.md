@@ -1,2 +1,3 @@
 - [Demo farm final for v1](project_demo_farm_redefinition.md) — synthetic demo farm is final; 5.1–5.10 closed on estimated defaults
-- [Source verification](reference_source_verification.md) — sources opened 2026-11-14, unreadable PDFs (P-004), former agronomist answers = sourced
+- [Source verification](reference_source_verification.md) — sources opened 2026-11-14/15, unopenable pages, archive answers = sourced
+- [Domain conventions](project_domain_conventions.md) — review tags, label placement, T-065, flood memories, single Agrocalidad line

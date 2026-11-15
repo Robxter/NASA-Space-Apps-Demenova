@@ -1,8 +1,11 @@
-# domain/practices.yaml - management practices (levers) that strategies combine (owner: agronomist; Tyson approves).
-# Schema: docs/contracts/schemas/domain/practices.schema.json.
-# waterlogging_tolerance_days and root_depth_cm are crop values confirmed by Tyson; they do not change with the
-# practice. Costs and labour are pending Tyson's doc (costs and labour for strategies); none is invented here.
-# Biosecurity (Fusarium TR4) is deliberately absent until Tyson approves the text (T-062).
+# domain/practices.yaml - management practices (levers) that strategies combine (owner: agronomist agent).
+# Schema: docs/contracts/schemas/domain/practices.schema.json; model: pipeline/common/models.py PracticesFile.
+# waterlogging_tolerance_days and root_depth_cm are crop values from the closed archive ("team agronomist,
+# 14 Nov 2026", domain/agronomist-answers-archive.md); they do not change with the practice. Costs and labour are
+# pending (shown as "not estimated"); none is invented. No products, doses or chemicals.
+# Biosecurity (Fusarium TR4) is deliberately absent (D-025): only one neutral line to Agrocalidad, in glossary.yaml.
+# Every item: reviewed_by [agronomist-agent, scientist-reviewer], human_review none (no human agronomist, D-022).
+# Statements without an opened source carry the label "General guidance — not reviewed by an agronomist".
 
 practices:
 
@@ -13,46 +16,65 @@ practices:
       value: 2
       unit: d
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
+      source: "team agronomist, 14 Nov 2026"
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     root_depth_cm:
       value: 70
       unit: cm
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
-    soil_benefits:
-      value: "Lowers the water table faster after rain so the 70 cm root zone spends fewer days saturated; the aim is to stay within the 2-day tolerance."
-      origin: estimated
-      estimated_by: "agronomist agent draft from SPEC section 08 (water balance, damage line)"
-      reason: "Qualitative draft; no measured effect for El Oro was opened. Tyson to confirm wording."
-      task_id: T-040
+      source: "team agronomist, 14 Nov 2026"
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
+    soil_benefits:
+      value: "Lowers the water table faster after rain so the 70 cm root zone spends fewer days saturated; the aim is to stay within the 2-day tolerance. Oxygen deficiency quickly kills the banana root apex (Turner, Fortescue and Thomas 2007)."
+      origin: estimated
+      source: "https://www.scielo.br/j/bjpp/a/w6fWfdQLYKrby3L5m6xnvMP/?lang=en"
+      accessed: 2026-11-15
+      estimated_by: "agronomist agent from SPEC section 08 (water balance, damage line) and the opened review"
+      reason: "General guidance — not reviewed by an agronomist. The root-oxygen statement is from the opened review (Braz. J. Plant Physiol. 19(4), 2007); the drainage effect itself has no measured value for El Oro."
+      task_id: T-065
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     cost_usd_ha:
       value: null
       unit: "USD/ha"
       origin: pending
-      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives drainage costs for El Oro or Ecuador; no cost is invented."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     labour:
       value: null
       origin: pending
-      reason: "Labour for strategies is pending in Tyson's doc. Tyson lists labour cost and staff shortage as adoption barriers."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives labour for this practice. Labour cost and staff shortage are adoption barriers (team agronomist, 14 Nov 2026)."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     risks:
-      value: "Drain depth and spacing for El Oro are not defined yet (questionnaire 5.4); badly placed drains may move water toward neighbouring lots."
+      value: "Drain depth and spacing for El Oro are not defined (questionnaire 5.4 closed without a value); badly placed drains may move water toward neighbouring lots."
       origin: estimated
       estimated_by: "agronomist agent draft"
-      reason: "Qualitative draft awaiting Tyson."
-      task_id: T-060
+      reason: "General guidance — not reviewed by an agronomist."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     sources:
-      - citation: "Tyson, 14 Nov 2026"
+      - citation: "team agronomist, 14 Nov 2026"
         url: null
         accessed: null
+      - citation: "Turner, D.W., Fortescue, J.A., Thomas, D.S. (2007). Environmental physiology of the bananas (Musa spp.). Brazilian Journal of Plant Physiology 19(4)."
+        url: "https://www.scielo.br/j/bjpp/a/w6fWfdQLYKrby3L5m6xnvMP/?lang=en"
+        accessed: 2026-11-15
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - practice_id: living_cover_mani_forrajero
     name_es: "Cobertura viva con maní forrajero (Arachis pintoi)"
@@ -61,51 +83,66 @@ practices:
       value: 2
       unit: d
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
+      source: "team agronomist, 14 Nov 2026"
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     root_depth_cm:
       value: 70
       unit: cm
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
-    soil_benefits:
-      value: "Perennial creeping legume (Fabaceae) with nodulated roots that forms a dense sward, so it keeps the soil covered between banana plants. Nitrogen supply and soil-structure effects in El Oro banana are claimed in the SPEC but not yet backed by an opened study."
-      origin: estimated
-      source: "https://en.wikipedia.org/wiki/Arachis_pintoi"
-      accessed: 2026-11-14
-      estimated_by: "agronomist agent draft; botany from the opened source, benefits from SPEC section 08"
-      reason: "Botanical facts read in the source; agronomic benefit in banana awaits a study or Tyson's field experience."
-      task_id: T-040
+      source: "team agronomist, 14 Nov 2026"
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
+    soil_benefits:
+      value: "Ground cover against erosion: in a banana trial in northern New South Wales, Australia, the Arachis pintoi groundcover was always more than adequate to control erosion (Johns 1994). A review of Tropical American farming systems reports high potential as a cover crop in banana (De la Cruz, Suarez and Ferguson 1994). No opened study measures soil effects in El Oro banana."
+      origin: sourced
+      source: "https://connectsci.au/an/article/34/8/1197/153145/Effect-of-Arachis-pintoi-groundcover-on"
+      accessed: 2026-11-15
+      reason: "Abstracts opened on 2026-11-15 (Johns 1994; De la Cruz et al. 1994 via FAO AGRIS, listed in sources). Single-site and older studies; not from El Oro."
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     cost_usd_ha:
       value: null
       unit: "USD/ha"
       origin: pending
-      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives costs for this practice in El Oro or Ecuador; no cost is invented."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     labour:
       value: null
       origin: pending
-      reason: "Labour for strategies is pending in Tyson's doc."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives labour for this practice."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     risks:
-      value: "Many El Oro farms do not use it (Tyson's family farm does not). Establishment needs work and access to planting material; competition with young plants is a question for Tyson."
-      origin: estimated
-      estimated_by: "agronomist agent draft from Tyson's answers (maní forrajero use, adoption barriers)"
-      reason: "Qualitative draft awaiting Tyson."
-      task_id: T-040
+      value: "Slow establishment and possible competition for nutrients (De la Cruz et al. 1994). In the Johns 1994 trial, banana plants with the groundcover produced 9% fewer bunches than on bare soil, and the author notes competition for water may explain part of it. Many El Oro farms use it and many do not (team agronomist, 14 Nov 2026)."
+      origin: sourced
+      source: "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e"
+      accessed: 2026-11-15
+      reason: "Abstracts opened on 2026-11-15 (De la Cruz et al. 1994 via FAO AGRIS; Johns 1994, listed in sources). Study results are reported as found, not as a prediction for El Oro."
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     sources:
-      - citation: "Tyson, 14 Nov 2026"
+      - citation: "team agronomist, 14 Nov 2026"
         url: null
         accessed: null
-      - citation: "Arachis pintoi, Wikipedia"
-        url: "https://en.wikipedia.org/wiki/Arachis_pintoi"
-        accessed: 2026-11-14
+      - citation: "Johns, G.G. (1994). Effect of Arachis pintoi groundcover on performance of bananas in northern New South Wales. Australian Journal of Experimental Agriculture 34(8), 1197-1204. doi:10.1071/EA9941197"
+        url: "https://connectsci.au/an/article/34/8/1197/153145/Effect-of-Arachis-pintoi-groundcover-on"
+        accessed: 2026-11-15
+      - citation: "De la Cruz, R., Suarez, S., Ferguson, J.E. (1994). The contribution of Arachis pintoi as a ground cover in some farming systems of Tropical America. In: Biology and agronomy of forage Arachis, CIAT, 102-108 (FAO AGRIS record)."
+        url: "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e"
+        accessed: 2026-11-15
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - practice_id: mycorrhizae_application
     name_es: "Aplicación de micorrizas en suelo no saturado"
@@ -114,46 +151,64 @@ practices:
       value: 2
       unit: d
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
+      source: "team agronomist, 14 Nov 2026"
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     root_depth_cm:
       value: 70
       unit: cm
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
-    soil_benefits:
-      value: "Bio-input in Tyson's draft strategy C; applied only when the soil is not saturated, using the app's soil-moisture and waterlogging status to pick the date."
-      origin: estimated
-      estimated_by: "draft strategy C in Tyson's doc (domain/tyson-answers.md)"
-      reason: "Timing rule from Tyson's draft; no product, dose or measured effect is given or invented."
-      task_id: T-040
+      source: "team agronomist, 14 Nov 2026"
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
+    soil_benefits:
+      value: "Banana and plantain are mycorrhizal plants, but how the association benefits plant performance under field conditions remains largely unknown (Jefwa et al. 2010). In draft strategy C it is applied only when the app shows the soil is not saturated; no product, dose or measured effect is given."
+      origin: sourced
+      source: "https://ishs.org/ishs-article/879_52/"
+      accessed: 2026-11-15
+      reason: "Abstract opened on 2026-11-15 (Acta Horticulturae 879, 2010; African systems, not El Oro). The timing rule is the draft strategy C design, not a sourced effect."
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     cost_usd_ha:
       value: null
       unit: "USD/ha"
       origin: pending
-      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives costs for this practice in El Oro or Ecuador; no cost is invented."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     labour:
       value: null
       origin: pending
-      reason: "Labour for strategies is pending in Tyson's doc."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives labour for this practice."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     risks:
-      value: "Access to bio-inputs is an adoption barrier (Tyson). Applying into saturated soil may waste the application; Tyson to confirm."
+      value: "Access to bio-inputs is an adoption barrier (team agronomist, 14 Nov 2026). Applying on saturated soil may waste the application."
       origin: estimated
-      estimated_by: "agronomist agent draft from Tyson's answers"
-      reason: "Qualitative draft awaiting Tyson."
-      task_id: T-040
+      source: "team agronomist, 14 Nov 2026"
+      estimated_by: "agronomist agent draft"
+      reason: "General guidance — not reviewed by an agronomist (the saturated-soil statement); the adoption barrier is from the closed archive."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     sources:
-      - citation: "Tyson, 14 Nov 2026"
+      - citation: "team agronomist, 14 Nov 2026"
         url: null
         accessed: null
+      - citation: "Jefwa, J., Vanlauwe, B., Coyne, D., van Asten, P., Gaidashova, S., Rurangwa, E., Mwashasha, M., Elsen, A. (2010). Benefits and potential use of arbuscular mycorrhizal fungi (AMF) in banana and plantain (Musa spp.) systems in Africa. Acta Horticulturae 879, 479-486. doi:10.17660/ActaHortic.2010.879.52"
+        url: "https://ishs.org/ishs-article/879_52/"
+        accessed: 2026-11-15
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
 
   - practice_id: mm_drench
     name_es: "Drench de microorganismos de montaña (MM) en suelo no saturado"
@@ -162,43 +217,57 @@ practices:
       value: 2
       unit: d
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
+      source: "team agronomist, 14 Nov 2026"
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     root_depth_cm:
       value: 70
       unit: cm
       origin: sourced
-      source: "Tyson, 14 Nov 2026"
-      approved_by: Tyson
-    soil_benefits:
-      value: "Bio-input in Tyson's draft strategy C, applied by drench only when the soil is not saturated, timed with the app's soil-moisture status."
-      origin: estimated
-      estimated_by: "draft strategy C in Tyson's doc (domain/tyson-answers.md)"
-      reason: "Timing rule from Tyson's draft; no product, dose or measured effect is given or invented."
-      task_id: T-040
+      source: "team agronomist, 14 Nov 2026"
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
+    soil_benefits:
+      value: "Bio-input in draft strategy C, applied by drench only when the soil is not saturated, timed with the app's soil-moisture status. No measured effect in banana was found in an opened source."
+      origin: estimated
+      estimated_by: "draft strategy C (domain/agronomist-answers-archive.md)"
+      reason: "General guidance — not reviewed by an agronomist. No product, dose or measured effect is given or invented; the Costa Rica MAG bulletin found on 2026-11-15 returned HTTP 404."
+      task_id: T-065
+      approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     cost_usd_ha:
       value: null
       unit: "USD/ha"
       origin: pending
-      reason: "Costs for strategies are pending in Tyson's doc; no cost is invented."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives costs for this practice in El Oro or Ecuador; no cost is invented."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     labour:
       value: null
       origin: pending
-      reason: "Labour for strategies is pending in Tyson's doc."
-      task_id: T-040
+      reason: "Not estimated: no opened source gives labour for this practice."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     risks:
-      value: "Needs labour for preparation and application; a drench just before heavy rain or on waterlogged soil may be washed out. Tyson to confirm."
+      value: "Needs labour for preparation and application; a drench just before heavy rain or on waterlogged soil may be washed out."
       origin: estimated
       estimated_by: "agronomist agent draft"
-      reason: "Qualitative draft awaiting Tyson."
-      task_id: T-040
+      reason: "General guidance — not reviewed by an agronomist."
+      task_id: T-065
       approved_by: null
+      reviewed_by: [agronomist-agent, scientist-reviewer]
+      human_review: none
     sources:
-      - citation: "Tyson, 14 Nov 2026"
+      - citation: "team agronomist, 14 Nov 2026"
         url: null
         accessed: null
     approved_by: null
+    reviewed_by: [agronomist-agent, scientist-reviewer]
+    human_review: none
