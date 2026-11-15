@@ -6,6 +6,12 @@
 # Local Claude Code settings (personal, never shared)
 .claude/settings.local.json
 
+# Third-party design skills and their working folders, installed locally (docs/DESIGN_TOOLS.md); never vendored
+.claude/skills/
+.playwright-mcp/
+.taste-skill/
+.impeccable/
+
 # Credential files that tools may drop in the working tree
 .netrc
 _netrc
