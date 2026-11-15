@@ -2,6 +2,18 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~08:30 - Main session (Claude Code) to Roberto: Supabase live and seeded
+State: schema applied by Roberto (SQL Editor, one transaction) and rls_test.sql passed on the hosted project; demo
+farm seeded by the main session (`supabase/seed/seed_demo.py`): provenance 13, farms 1, lots 8, zones 3,
+daily_features 495, alert_states 11, alert_events 18. Anon check: views v_farm_status 11, v_lot_history_7d 77,
+v_lot_history_90d 495, v_alert_log 18; anon UPDATE of the demo farm refused (42501); email_log not readable by anon.
+hCaptcha (D-032): app build index-vy1O5R7E.js is live with the Connect button and no CSP violations, but it was built
+WITHOUT `VITE_HCAPTCHA_SITEKEY` (loader absent from every chunk; verified locally that the loader is only bundled when
+the key is set), so Connect says "Sync is not configured on this build".
+Waiting on Roberto: set VITE_HCAPTCHA_SITEKEY on demenova-app (Render → Environment), Save, then Manual Deploy →
+Clear build cache & deploy; then the main session re-runs the live Connect test. Then: merge to main + tag v1.0.0,
+device checklist, video, submit.
+
 ## 2026-11-15 ~07:45 - Main session (Claude Code) to Roberto: LIVE, waiting on Supabase
 State: app and API live and smoke-tested; public docs carry the URLs (4ab7fcb); demo seed script ready (e5c766a).
 Live links: app https://demenova-app.onrender.com/ | backend https://demenova-api.onrender.com/health | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
