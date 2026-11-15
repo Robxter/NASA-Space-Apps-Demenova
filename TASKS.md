@@ -109,8 +109,10 @@ review queue, the flood candidates and the logo options.
   and D-029 (Severe 0.90, replay 2026-01-20..03-05) (ee9d6e4, d70d7b2 + snapshot commit; catchment tally 1 hit, 0 misses,
   4 false alarms in 2026; sensitivity at 0.90 not stable 10/10, lots 1, 2 Severe on flood days in every variant)
 - [x] T-049b data-scientist: old replay stack 2026-02-15_2026-03-05 removed (git rm) after the engine moved to the new one
-- [ ] T-024d data-scientist: on the next snapshot run write the structured `sensitivity` block into verification.json and
+- [x] T-024d data-scientist: on the next snapshot run write the structured `sensitivity` block into verification.json and
   `side.experimental: true` in replay snapshots (contract 1.2.0, D-030); not into Supabase alert_states (is_side check)
+  (done: sensitivity block from the T-024b run at 0.90, Sigatoka `experimental: true` in files only; old hourly POWER
+  file removed; existing fields unchanged, schema_version 1.2.0)
 - [ ] T-047 data-scientist: source or replace the engine's `estimated` values with opened sources (api_k NWS PDF,
   Sigatoka/leaf-wetness/heat-unit papers, Saaty's RI table for n = 5); agent work, no human expert (D-022)
 - [ ] T-048 data-scientist (post-hackathon, class A, P-017): seasonal (day-of-year window) percentiles for W, because

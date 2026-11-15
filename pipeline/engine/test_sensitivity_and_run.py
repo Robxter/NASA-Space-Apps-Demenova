@@ -113,3 +113,27 @@ def test_committed_d029_results():
     m = json.loads((R.DEMO / "manifest.json").read_text(encoding="utf-8"))
     assert m["replay_window"] == {"start": "2026-01-20", "end": "2026-03-05"}
     assert "3 of 3 documented El Oro floods on other rivers" in v["notes"] and "no flood-specific lead time" in v["notes"]
+
+
+def test_sensitivity_block_follows_the_variants():
+    win = (dt.date(2026, 2, 21), dt.date(2026, 2, 24))
+    sens = [{"factor": f, "delta": d, "weights": w, **S.compare({"lot_demo-el-oro_1": [win[0]]}, {"lot_demo-el-oro_1": [win[0]]}),
+             "flood_lots": ["lot_demo-el-oro_1"]} for f, d, w in S.variants(W, 0.10)]
+    block = R.sensitivity_block(sens, ["lot_demo-el-oro_1", "lot_demo-el-oro_2"], win)
+    from pipeline.common.models import SensitivityResult
+
+    SensitivityResult.model_validate(block)
+    assert block["stable"] and block["flood_day_core_units"] == ["lot_demo-el-oro_1"]
+    assert block["flood_day_any_units"] == ["lot_demo-el-oro_1", "lot_demo-el-oro_2"]
+    assert "lot 1 is Severe in every run" in block["summary"]
+
+
+@pytest.mark.skipif(not (R.DEMO / "manifest.json").exists(), reason="no committed snapshots yet")
+def test_committed_sensitivity_block_and_experimental_flag():
+    # T-024d (contracts 1.2.0): structured sensitivity from the T-024b run at Severe 0.90; Sigatoka marked experimental
+    v = json.loads((R.DEMO / "verification.json").read_text(encoding="utf-8"))
+    s = v["sensitivity"]
+    assert len(s["variants"]) == 10 and s["stable"] is False
+    assert s["flood_day_core_units"] == ["lot_demo-el-oro_1", "lot_demo-el-oro_2"]
+    day = json.loads((R.DEMO / "replay" / "2026-02-23.json").read_text(encoding="utf-8"))
+    assert all(u["alert"]["side"]["experimental"] is True for u in day["units"])

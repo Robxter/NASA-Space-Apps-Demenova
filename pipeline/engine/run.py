@@ -419,7 +419,8 @@ def alert_record(u: Unit, j: int, i: int, run: dict[str, UnitRun], series: Serie
         "since": _iso(state.since), "updated_at": _iso(_end_of_day(series.dates[i]) + lag), "newest_rain_data_at": _iso(newest_at),
         "confirmations": state.confirmations,
         "confidence": confidence_for_data_level(LOT_DATA_LEVEL if u.kind == "lot" else ZONE_DATA_LEVEL),
-        "side": {"sigatoka": side["sigatoka"][i], "cold": side["cold"][i]}, "origin": ALERT_ORIGIN,
+        # contract 1.2.0: Sigatoka is experimental (D-024); files only, Supabase alert_states.side omits the key
+        "side": {"sigatoka": side["sigatoka"][i], "cold": side["cold"][i], "experimental": True}, "origin": ALERT_ORIGIN,
     }
 
 
@@ -661,6 +662,39 @@ def _ranges(days: list[dt.date]) -> str:
     return ", ".join(a.isoformat()[5:] if a == b else f"{a.isoformat()[5:]}..{b.isoformat()[5:]}" for a, b in episodes(days))
 
 
+def _and(items: list[str]) -> str:
+    return items[0] if len(items) == 1 else ", ".join(items[:-1]) + " and " + items[-1]
+
+
+def sensitivity_block(sens: list[dict], base_flood_lots: list[str], flood_window: tuple[dt.date, dt.date]) -> dict:
+    """Contract 1.2.0 SensitivityResult from the T-024b run (same numbers as the notes text)."""
+    runs = [set(base_flood_lots)] + [set(v["flood_lots"]) for v in sens]
+    core = sorted(set.intersection(*runs))
+    any_units = sorted(set.union(*runs))
+    stable = all(v["same_days"] for v in sens)
+    not_same = sum(not v["same_days"] for v in sens)
+    lot = lambda u: u.rsplit("_", 1)[1]  # noqa: E731
+    summary = (
+        f"Each of the 5 weights was moved by +/-{SENSITIVITY_DELTA:.2f} (10 runs). "
+        + ("The same lots reach Severe on the same days in every run. " if stable else
+           f"Which lots are Severe on which days changes in {not_same} of 10 runs. ")
+        + (f"On the flood days ({flood_window[0].strftime('%d %b')} to {flood_window[1].strftime('%d %b')}), "
+           f"lot{'s' if len(core) != 1 else ''} {_and([lot(u) for u in core])} {'are' if len(core) != 1 else 'is'} Severe in every run."
+           if core else "No lot is Severe on the flood days in every run.")
+    )
+    return {
+        "delta": SENSITIVITY_DELTA,
+        "flood_days": {"start": flood_window[0].isoformat(), "end": flood_window[1].isoformat()},
+        "baseline_flood_day_units": sorted(base_flood_lots),
+        "variants": [{
+            "factor": v["factor"], "delta": v["delta"], "weights": v["weights"], "same_units": v["same_units"],
+            "same_days": v["same_days"], "units_gained": v["units_gained"], "units_lost": v["units_lost"],
+            "units_with_shifted_days": v["units_with_shifted_days"], "flood_day_units": sorted(v["flood_lots"]),
+        } for v in sens],
+        "stable": stable, "flood_day_core_units": core, "flood_day_any_units": any_units, "summary": summary,
+    }
+
+
 def write_verification(outcomes, facts, sens, base_severe, base_flood_lots, generated_at, engine_rec, v_dates) -> int:
     events = [{"id": o.flood_or_episode_id, "kind": o.kind, "start": o.start.isoformat(), "end": o.end.isoformat(), "outcome": o.outcome,
                "unit_ids": o.unit_ids, "description": o.description, "sources": o.sources} for o in outcomes]
@@ -724,5 +758,6 @@ def write_verification(outcomes, facts, sens, base_severe, base_flood_lots, gene
     write_json(DEMO / "verification.json", {
         "generated_at": generated_at, "events": events, **counts, **sc,
         "origin": {"*": "estimated", "events": "observed"}, "notes": notes,
+        "sensitivity": sensitivity_block(sens, base_flood_lots, facts["flood_window"]),
     }, [ver_rec, engine_rec])
     return (DEMO / "verification.json").stat().st_size
