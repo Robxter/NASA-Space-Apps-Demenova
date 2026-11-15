@@ -13,7 +13,8 @@ The one motion moment (since 2026-11-15, D-033) is **Flood**: water rises inside
 **Why:** the brief spends boldness only on calm-to-Severe; Flood makes logo, glyph and moment one idea, and is shorter
 than the old 2.2 s loop. PRODUCT.md and DESIGN.md at the repo root now record the system (D-033).
 
-**How to apply:** extend the core metaphor, not new motifs; Severe (#93154F / #E0336F) is the only solid status; Normal
+**How to apply:** extend the core metaphor, not new motifs (P-022, Roberto 15 Nov: Welcome illustrations may show the
+logo's world around the core: orbit, satellites, Earth limb, rain; the app's screens keep the core alone); Severe (#93154F / #E0336F) is the only solid status; Normal
 is blue-teal (never green). Motion tokens live in tokens.css (`--dn-ease-out` .23,1,.32,1 etc.); reduced motion is
 token fallbacks, never a global 0.01 ms kill (Impeccable audit flags that).
 
