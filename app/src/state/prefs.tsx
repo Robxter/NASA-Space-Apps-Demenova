@@ -99,7 +99,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
 
   // Data saver keeps no imagery cache (ADR-004): drop the runtime tile cache when it is selected.
   useEffect(() => {
-    if (prefs.storage_mode === 'saver' && typeof caches !== 'undefined') void caches.delete('gibs-tiles').catch(() => false);
+    if (prefs.storage_mode === 'saver' && typeof caches !== 'undefined') for (const name of ['gibs-tiles', 'osm-tiles']) void caches.delete(name).catch(() => false);
   }, [prefs.storage_mode]);
 
   const set = useCallback<PrefsValue['set']>((key, value) => setPrefs((p) => ({ ...p, [key]: value })), []);

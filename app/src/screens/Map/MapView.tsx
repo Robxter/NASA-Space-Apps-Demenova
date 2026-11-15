@@ -11,6 +11,8 @@ import { LevelBadge, LoadGate, ReplayDock, Segmented, StatusNotices } from '../.
 import { fromSpec, resolveOrigin } from '../../data/origin';
 import { LEVEL_RANK } from '../../data/select';
 import { flood, makeLabel, setLabelLevel, setTooltipLevel, tokenMs } from './flood';
+import { addBase, creditKey, gibsLayerName, type BaseId } from './baseLayers';
+import { BaseSelect } from '../../components/BaseSelect';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { navigate } from '../../state/nav';
 import { useData } from '../../state/data';
@@ -20,23 +22,6 @@ import { formatDate } from '../../time';
 import type { Lot, Severity } from '../../types/contracts';
 
 type Layer = 'level' | 'terrain' | 'rain';
-type Base = 'relief' | 'truecolor';
-
-const GIBS = 'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best';
-export const GIBS_LAYERS: Record<Base, { id: string; url: (date: string | null) => string; native: number }> = {
-  relief: {
-    id: 'ASTER_GDEM_Greyscale_Shaded_Relief',
-    url: () => `${GIBS}/ASTER_GDEM_Greyscale_Shaded_Relief/default/GoogleMapsCompatible_Level12/{z}/{y}/{x}.jpg`,
-    native: 12,
-  },
-  truecolor: {
-    id: 'MODIS_Terra_CorrectedReflectance_TrueColor',
-    url: (date) =>
-      `${GIBS}/MODIS_Terra_CorrectedReflectance_TrueColor/default/${date ?? 'default'}/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg`,
-    native: 9,
-  },
-};
-
 type Box = Pick<DOMRect, 'left' | 'right' | 'top' | 'bottom'>;
 const overlaps = (a: Box, b: Box) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
 
@@ -48,13 +33,13 @@ export default function MapView() {
   const { prefs, t } = usePrefs();
   const box = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
-  const base = useRef<L.TileLayer | null>(null);
+  const base = useRef<L.Layer[]>([]);
   const shapes = useRef(new Map<string, L.Polygon>());
   const prevIndex = useRef<number | null>(null);
   const floodEpoch = useRef(0);
   const labels = useRef(new Map<string, { root: HTMLSpanElement; word: HTMLSpanElement }>());
   const [layer, setLayer] = useState<Layer>('level');
-  const [baseName, setBaseName] = useState<Base>('relief');
+  const [baseName, setBaseName] = useState<BaseId>('satellite');
   const [selected, setSelected] = useState<string | null>(null);
   // Zoom drives which labels fit (break-ui: 40 permanent labels overlap into an unreadable block).
   const [zoom, setZoom] = useState(0);
@@ -83,7 +68,7 @@ export default function MapView() {
     return () => {
       m.remove();
       map.current = null;
-      base.current = null;
+      base.current = [];
       shapesNow.clear();
     };
   }, [status, lots, farm]);
@@ -92,10 +77,9 @@ export default function MapView() {
   useEffect(() => {
     const m = map.current;
     if (!m) return;
-    const spec = GIBS_LAYERS[baseName];
-    base.current?.remove();
-    base.current = L.tileLayer(spec.url(date), { maxNativeZoom: spec.native, maxZoom: 17, crossOrigin: true }).addTo(m);
-    base.current.bringToBack();
+    base.current.forEach((l) => l.remove());
+    // The base sits in Leaflet's tile pane, under the lots (overlay pane), whatever the order of creation.
+    base.current = addBase(m, baseName, date);
   }, [baseName, date, status, lots]);
 
   // Level, label and the Severe moment per lot for the current day and layer.
@@ -201,7 +185,6 @@ export default function MapView() {
 
   const sel = selected ? unitById(selected) : null;
   const source = sourceLabel(resolveProvenance(day?.provenance, demo?.manifest ?? null));
-  const spec = GIBS_LAYERS[baseName];
 
   if (status !== 'ready') return <LoadGate />;
 
@@ -237,22 +220,14 @@ export default function MapView() {
       {/* CL-04: only the layer switch sits above the map; imagery choice and credit move onto it. */}
       <div className="relative min-h-0 flex-1">
         <div ref={box} className="absolute inset-0 z-0 text-ink" aria-label={t('map.title')} role="region" />
-        <div className="absolute top-2.5 right-2.5 z-[1000] w-56 max-w-[calc(100%-4.5rem)]">
-          <Segmented
-            label={t('map.base')}
-            value={baseName}
-            onChange={setBaseName}
-            options={[
-              { value: 'relief', label: t('map.base.relief') },
-              { value: 'truecolor', label: t('map.base.truecolor') },
-            ]}
-          />
+        <div className="absolute top-2.5 right-2.5 z-[1000]">
+          <BaseSelect value={baseName} onChange={setBaseName} options={['satellite', 'streets', 'relief', 'truecolor']} />
         </div>
       </div>
 
       <div className="absolute inset-x-0 bottom-3 z-[1001] mx-auto flex max-w-3xl flex-col items-start gap-1.5 px-3">
         <p className="m-0 max-w-full rounded-control bg-surface/90 px-2 py-0.5 text-caption text-ink-2">
-          {t('map.attribution', { layer: spec.id })}
+          {t(creditKey(baseName), { layer: gibsLayerName(baseName) })}
         </p>
         {sel || selected ? (
           // CL-27 (1): the sheet enters from the bottom edge (spatial continuity); reduced motion keeps only the fade.

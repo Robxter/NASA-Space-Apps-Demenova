@@ -43,6 +43,17 @@ export default defineConfig({
               cacheableResponse: { statuses: [0, 200] },
             },
           },
+          {
+            // OpenStreetMap standard tiles (Streets base). Same rule as GIBS: Data saver deletes this cache. Kept for 7
+            // days at most, so the browser cache follows the OSM tile usage policy (cache, but not for ever).
+            urlPattern: ({ url }) => url.hostname === 'tile.openstreetmap.org',
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
         ],
       },
     }),

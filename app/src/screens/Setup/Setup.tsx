@@ -7,6 +7,8 @@ import 'leaflet/dist/leaflet.css';
 import { Button, Card, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { BaseSelect } from '../../components/BaseSelect';
+import { addBase, creditKey, gibsLayerName, type BaseId } from '../Map/baseLayers';
 import { ConnectDevice } from '../../components/ConnectDevice';
 import {
   addLot,
@@ -68,14 +70,12 @@ function SetupMap({
   const tap = useRef(onTap);
   tap.current = onTap;
   const fitted = useRef(false);
+  const [baseName, setBaseName] = useState<BaseId>('satellite');
+  const base = useRef<L.Layer[]>([]);
 
   useEffect(() => {
     if (!box.current) return;
     const m = L.map(box.current, { maxZoom: 18, attributionControl: false });
-    L.tileLayer(
-      'https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/ASTER_GDEM_Greyscale_Shaded_Relief/default/GoogleMapsCompatible_Level12/{z}/{y}/{x}.jpg',
-      { maxNativeZoom: 12, maxZoom: 18, crossOrigin: true },
-    ).addTo(m);
     m.setView(center ?? [0, -79], center ? 14 : 3);
     m.on('click', (e: L.LeafletMouseEvent) => tap.current([Number(e.latlng.lng.toFixed(6)), Number(e.latlng.lat.toFixed(6))]));
     layer.current = L.layerGroup().addTo(m);
@@ -83,10 +83,19 @@ function SetupMap({
     return () => {
       m.remove();
       map.current = null;
+      base.current = [];
     };
     // The map is created once; `center` only sets the first view.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Base map (after the map exists, so the first render has one): Satellite (NASA GIBS) by default, Streets (OpenStreetMap) or Relief on request.
+  useEffect(() => {
+    const m = map.current;
+    if (!m) return;
+    base.current.forEach((l) => l.remove());
+    base.current = addBase(m, baseName, null);
+  }, [baseName]);
 
   // onboard: the first run opens on the demo region as soon as its location loads, not on the whole continent.
   useEffect(() => {
@@ -135,13 +144,14 @@ function SetupMap({
     // Leaflet adds its own classes (leaflet-container, leaflet-touch...) to the element it owns. That element's
     // className must never change after mount, or React rewrites it and the map collapses (the "Drop pin" bug).
     // Anything that depends on the mode lives on the wrapper.
-    <div className="relative z-0 overflow-hidden rounded-group" data-mode={mode}>
-      <div
-        ref={box}
-        role="application"
-        aria-label={t('setup.mapLabel')}
-        className={SETUP_MAP_CLASS}
-      />
+    <div>
+      <div className="relative z-0 overflow-hidden rounded-group" data-mode={mode}>
+        <div ref={box} role="application" aria-label={t('setup.mapLabel')} className={SETUP_MAP_CLASS} />
+        <div className="absolute top-2.5 right-2.5 z-[1000]">
+          <BaseSelect value={baseName} onChange={setBaseName} options={['satellite', 'streets', 'relief']} />
+        </div>
+      </div>
+      <p className="m-0 mt-1 px-1 text-caption text-ink-3">{t(creditKey(baseName), { layer: gibsLayerName(baseName) })}</p>
     </div>
   );
 }
