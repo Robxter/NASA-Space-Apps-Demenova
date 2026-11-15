@@ -3,8 +3,8 @@
 All times are Spain time (CET). Deadline 15 Nov 23:59; target submission 20:00. Roberto sleeps about 00:00 to 04:30.
 Every prompt below is meant to be pasted into the **main Claude Code session** as written.
 
-> **Re-planned 15 Nov ~00:30 (FIX2.md, D-021..D-028): solo build by Roberto.** Tyson left the team on 14 Nov 2026;
-> every step below that mentions Tyson, his answers, his issues, his AHP matrix, his night shift or a Spanish summary
+> **Re-planned 15 Nov ~00:30 (FIX2.md, D-021..D-028): solo build by Roberto.** the former team agronomist left the team on 14 Nov 2026;
+> every step below that mentions the former team agronomist, his answers, his issues, his AHP matrix, his night shift or a Spanish summary
 > for him no longer applies. Timetable and must-have / nice-to-have scope: top of `TASKS.md` (D-028). Day-2 changes:
 > step 1 = agronomist applies the FIX2 §5 mandate (sourced or labelled; `domain/review-queue.md`); step 2 = the ±0.10
 > weight sensitivity check replaces AHP (D-024); step 3 = data levels 0–2 (level 3 and the farmer/agronomist toggle
@@ -14,7 +14,7 @@ Every prompt below is meant to be pasted into the **main Claude Code session** a
 >
 > **Re-planned 14 Nov 18:10 (FIX.md §8).** The times in this file are superseded by the timetable at the top of
 > `TASKS.md`. Phase 1 runs in two waves of two agents (CLAUDE.md §11: at most 2 subagents at a time): wave A
-> data-engineer + agronomist, wave B database-engineer + product-designer. The Render preview for Tyson moves to day 2.
+> data-engineer + agronomist, wave B database-engineer + product-designer. The Render preview for the former team agronomist moves to day 2.
 > Nice-to-haves are cut unless must-haves are green by day 2, 10:00.
 
 ---
@@ -44,7 +44,7 @@ Copy-Item .env.example .env   # then fill .env in VS Code; never commit it
 ```
 
 1. Open the Claude Doc "Demenova — Project Specification", download it as Markdown, save as `docs/SPEC.md`.
-2. Check `domain/tyson-answers.md` (already filled with Tyson's answers so far). Paste new answers there as they come.
+2. Check `domain/agronomist-answers-archive.md` (already filled with the former team agronomist's answers so far). Paste new answers there as they come.
 3. Commit:
 
 ```powershell
@@ -105,14 +105,14 @@ Create branch block/1-foundations from main after merging phase 0. Then run in p
    put the SQL diff in PENDING.md for my approval.
 3. @product-designer: write design/BRIEF.md with the revised token plan, three logo options, the severity
    palette for light and dark, and the presentational components with their specs.
-4. @agronomist: build domain/ files from the SPEC and domain/tyson-answers.md, queue everything unapproved in
-   domain/tyson-review-queue.md in Spanish, and save the memory note about Tyson redefining the demo lots.
+4. @agronomist: build domain/ files from the SPEC and domain/agronomist-answers-archive.md, queue everything unapproved in
+   domain/review-queue.md in Spanish, and save the memory note about the former team agronomist redefining the demo lots.
 When all four finish, show me their reports' "Open issues" and every PENDING.md item, with your
 recommendation for each.
 ```
 
 **Checkpoint A (Roberto, 10 min):** approve or change the schema SQL, pick a logo, answer any dependency request.
-Paste the 15 flood candidates to Tyson. Then:
+Paste the 15 flood candidates to the former team agronomist. Then:
 
 ```text
 Apply the approved schema to Supabase using the instructions in supabase/README.md (I will run the SQL in
@@ -140,24 +140,24 @@ code-reviewer on the same diff. Turn blockers into TASKS.md items for the owner 
 1. @devops-engineer: CI, pipeline workflow (manual run once), render.yaml, deploy the app as a Render
    Static Site and the backend as a Web Service, size-budget gate. Record live URLs in HANDOFF.md.
 2. @technical-writer: block 2 report and SI-use log entries for everything today.
-3. Write a HANDOFF.md entry for Tyson's night shift (Spanish summary): preview link, DEVICE_CHECKLIST items
-   for the Galaxy A55, tyson-review-queue.md items, project page draft location.
+3. Write a HANDOFF.md entry for the former team agronomist's night shift (Spanish summary): preview link, DEVICE_CHECKLIST items
+   for the Galaxy A55, review-queue.md items, project page draft location.
 4. Commit and push; then /save-session.
 ```
 
-Tyson works overnight from his doc and the preview (no code). Optional for long unattended reviews: restart with
+The former team agronomist works overnight from his doc and the preview (no code). Optional for long unattended reviews: restart with
 `scripts\start-energy.ps1` to save usage; normal mode (Opus 5.5) is the default for building.
 
 ## Day 2, 04:30 to 15:00: complete the scope
 
 ```text
-/resume-session. Read HANDOFF.md, Tyson's answers (I pasted them into domain/tyson-answers.md) and the
+/resume-session. Read HANDOFF.md, the former team agronomist's answers (I pasted them into domain/agronomist-answers-archive.md) and the
 GitHub issues he opened. Create branch block/3-scope. Then:
-1. @agronomist: replace every estimated value Tyson answered; mark approved items; keep the rest queued.
-2. If Tyson sent his AHP pairwise matrix: @data-scientist compute weights and CR; if CR <= 0.10 put the new
+1. @agronomist: replace every estimated value the former team agronomist answered; mark approved items; keep the rest queued.
+2. If the former team agronomist sent his AHP pairwise matrix: @data-scientist compute weights and CR; if CR <= 0.10 put the new
    weights in PENDING.md for my approval; regenerate snapshots after I approve.
 3. @frontend-engineer: Strategies screen, Alerts screen, Learn, Farm setup with data levels 0-3, farmer/
-   agronomist mode, data saver, fixes from Tyson's issues.
+   agronomist mode, data saver, fixes from the former team agronomist's issues.
 4. @api-engineer: Telegram bot if email is done.
 5. @qa-demo-engineer: e2e suite and the replay acceptance test; write DEVICE_CHECKLIST.md.
 6. @instructor: guides and judge quick start.

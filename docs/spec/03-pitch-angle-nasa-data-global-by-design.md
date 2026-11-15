@@ -10,7 +10,7 @@ Judge's verdict: keep it, it is one of the strongest lines in the pitch. Most te
 - Satellites from the North, solutions for the South.
 - Space science serving one of humanity's oldest activities: growing food.
 
-**Prove it, don't just say it.** Because every input is global, the same pipeline works for any farm on Earth by changing the area of interest. If time allows, run it once for Tyson's region in the Caribbean lowlands of Costa Rica and show both maps side by side for three seconds of the video: two countries, one pipeline, zero US-only data.
+**Prove it, don't just say it.** Because every input is global, the same pipeline works for any farm on Earth by changing the area of interest. If time allows, run it once for the former team agronomist's region in the Caribbean lowlands of Costa Rica and show both maps side by side for three seconds of the video: two countries, one pipeline, zero US-only data.
 
 **Biosecurity angle.** The demo flood carries a second story: according to Primicias, the February 2026 floods partly compromised the containment of Fusarium Tropical Race 4, detected in December 2025 on a farm in Santa Rosa, El Oro. In El Oro, knowing where water goes is also knowing where soil-borne disease can travel.
 

@@ -1,14 +1,14 @@
-# FIX2.md — Tyson has left the team: solo build by Roberto
+# FIX2.md — the former team agronomist has left the team: solo build by Roberto
 
 **For Claude Code (main session), executed in order after FIX.md.** Steps marked **[ROBERTO]** need him at the
 keyboard. Log every decision in `docs/decisions/DECISIONS.md` (D-013 onward). CLAUDE.md Rule zero still outranks
-everything here. Goal: zero stagnation. Nothing in the build may wait on Tyson again.
+everything here. Goal: zero stagnation. Nothing in the build may wait on the former team agronomist again.
 
 ---
 
 ## 0. What changed
 
-1. **Tyson (team agronomist) left the team on 14 Nov 2026.** He will answer nothing more. Everything he answered
+1. **The former team agronomist (team agronomist) left the team on 14 Nov 2026.** He will answer nothing more. Everything he answered
    before leaving stays valid as data (see §3). Everything still pending from him is closed now.
 2. **The product owner's name.** The owner is **Cristian Roberto Terán Paredes; preferred name Roberto.** "Roster"
    was a chat handle. Use **Roberto** in every file, prompt, report and commit. Use the full legal name only where an
@@ -39,18 +39,18 @@ The last command must print nothing. In CLAUDE.md's header, set the team line to
 `Team: Roberto (Cristian Roberto Terán Paredes), product owner, builder and final approver. Solo since 14 Nov 2026.`
 Log as **D-013**.
 
-## 2. Close everything that was waiting on Tyson (10 min)
+## 2. Close everything that was waiting on the former team agronomist (10 min)
 
-In TASKS.md mark these **[x] closed: won't do (team change, D-014)**: T-046 and T-060 to T-064. Remove Tyson from
+In TASKS.md mark these **[x] closed: won't do (team change, D-014)**: T-046 and T-060 to T-064. Remove the former team agronomist from
 every "Waiting on" line in HANDOFF.md. In `docs/AGENTS.md`, the humans are now Roberto only. Add to DECISIONS.md:
 
 | ID | Decision |
 | --- | --- |
-| D-014 | All tasks owned by Tyson are closed. No agent may create a task that waits on a human domain expert. |
+| D-014 | All tasks owned by the former team agronomist are closed. No agent may create a task that waits on a human domain expert. |
 
 ## 3. What his answers mean now (data policy)
 
-Rename `domain/tyson-answers.md` to `domain/agronomist-answers-archive.md` and put this header at the top:
+Rename `domain/agronomist-answers-archive.md` to `domain/agronomist-answers-archive.md` and put this header at the top:
 
 ```markdown
 # Agronomist answers archive (closed 14 Nov 2026)
@@ -95,7 +95,7 @@ Log as **D-016**.
 
 The agronomist agent stays, with a new mandate. Edit `.claude/agents/validation/agronomist.md`:
 
-- Remove every mention of Tyson approving work, `approved_by: Tyson`, the Spanish review queue for him, and the memory
+- Remove every mention of the former team agronomist approving work, `approved_by: The former team agronomist`, the Spanish review queue for him, and the memory
   note about him redefining demo lots. Replace the memory note with: "The synthetic demo farm is final for v1."
 - New fields on every domain item: `reviewed_by: [agronomist-agent, scientist-reviewer]`, `human_review: none`.
 - New rule: **sourced or labelled.** Each agronomic statement must cite a source the agent opened (FAO, CORBANA,
@@ -106,7 +106,7 @@ The agronomist agent stays, with a new mandate. Edit `.claude/agents/validation/
   doses, chemicals, diagnoses, yield or cost promises.
 - **Biosecurity (Fusarium TR4):** no recommendations of our own. At most one neutral line pointing to Ecuador's official
   plant-health authority, only if the agent opens its official page and cites it. Otherwise show nothing.
-- Rename `domain/tyson-review-queue.md` to `domain/review-queue.md` with the header "For a future local agronomist".
+- Rename `domain/review-queue.md` to `domain/review-queue.md` with the header "For a future local agronomist".
 - Vocabulary: standard Spanish (encharcamiento, lote, drenaje, inundación).
 
 In the app, strategy and action screens show the badge "Not yet reviewed by a local agronomist". Turn it into a strength
@@ -117,18 +117,18 @@ supports, never replaces, their judgment). Log as **D-017**.
 
 | Agent | Change |
 | --- | --- |
-| technical-writer | Drop the Spanish summaries for Tyson. Block reports in English only. |
+| technical-writer | Drop the Spanish summaries for the former team agronomist. Block reports in English only. |
 | qa-demo-engineer | Device checklist: Roberto's iPhone 14 Pro and iPad Air M2 only. Android coverage via Chrome DevTools device emulation at 360×780 with CPU 4× slowdown and "Slow 4G" throttling, plus Samsung Internet if Roberto can borrow an Android phone. |
 | instructor | Guides state that agronomic guidance is general and not yet reviewed by a local agronomist. Farmer guide still Spanish first. |
 | product-designer | No change; mockups must show the new "not reviewed" badge style. |
 | lead-architect | Update `docs/AGENTS.md` (humans: Roberto only), CLAUDE.md approvals (all class A decisions go to Roberto; nothing waits on anyone else). |
-| all agents | Remove "Resumen para Tyson" from the report template in `docs/AGENTS.md`. |
+| all agents | Remove "Resumen para el exagrónomo del equipo" from the report template in `docs/AGENTS.md`. |
 
 Commit: `chore: adapt agents to solo build (FIX2 §5-6)`. Log as **D-018**.
 
 ## 7. Public materials: name and consent
 
-- Do **not** name Tyson, show his photo or use his voice or quotes in the video, the project page, the guides or the
+- Do **not** name the former team agronomist, show his photo or use his voice or quotes in the video, the project page, the guides or the
   repo README, unless Roberto receives his written reconfirmation.
 - Allowed anonymous framing: "Demenova started from the experience of an agronomy student whose family runs a banana
   farm that keeps no records, so every flood comes as a surprise."
@@ -188,7 +188,7 @@ When usage approaches the limit at any point: commit, HANDOFF.md, `/save-session
 ## 11. Verify and commit
 
 - [ ] `Select-String` finds no "Roster" in the repo; CLAUDE.md shows Roberto as the team.
-- [ ] TASKS.md: Tyson's tasks closed; scope updated; no "waiting on Tyson".
+- [ ] TASKS.md: The former team agronomist's tasks closed; scope updated; no "waiting on the former team agronomist".
 - [ ] `domain/agronomist-answers-archive.md` exists with its header; `domain/review-queue.md` replaces the old queue.
 - [ ] Agronomist agent edited; report template has no Spanish summary.
 - [ ] DATA_POLICY §4–§5 and CLAUDE.md §13 updated.

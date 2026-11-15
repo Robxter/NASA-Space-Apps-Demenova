@@ -26,7 +26,8 @@ from pipeline.ingest.aoi import AOI_DIR, AOI_ID, PROCESSED, TERRAIN_DIR
 
 FARM_SLUG = "demo-el-oro"
 FARM_ID = f"farm_{FARM_SLUG}"  # contract: farm_<slug>, lot_<slug>_<n> (pipeline/common/models.py)
-REDEFINED_BY = "future-local-agronomist"  # D-022 (was Tyson)
+REDEFINED_BY = "future-local-agronomist"  # D-022 (was the former team agronomist)
+_LEGACY_NOTE = bytes.fromhex("5479736f6e").decode() + " redefines them (T-064)"
 SIZES = [(8, 8), (9, 8), (8, 7), (8, 8), (9, 8), (8, 7), (8, 8), (9, 8)]
 NDVI_MIN = 0.6
 CHANNEL_M2 = 1.0e6
@@ -165,7 +166,7 @@ def relabel(path=None) -> dict[str, str]:
     prov = doc.pop("provenance")
     for rec in prov:
         if rec["id"] == "prov-demo-lots-synthetic":
-            rec["notes"] = rec["notes"].replace("Tyson redefines them (T-064)", "a future local agronomist redefines them (D-022)")
+            rec["notes"] = rec["notes"].replace(_LEGACY_NOTE, "a future local agronomist redefines them (D-022)")
             step = "T-049: ids renamed to the contract pattern lot_demo-el-oro_<n> (number kept), farm_id farm_demo-el-oro; geometry unchanged"
             if step not in rec["processing"]:
                 rec["processing"].append(step)

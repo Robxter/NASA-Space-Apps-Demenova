@@ -154,9 +154,9 @@ export function dictionary(lang: Lang): Record<string, string> {
 /** Name the app must never render (D-027): read from the copy-time scrubber, so the test never restates it. */
 export function formerAgronomistName(): string {
   const src = readFileSync(join(REPO, 'app', 'scripts', 'build_domain_snapshots.py'), 'utf-8');
-  const m = /^NAME\s*=\s*"([^"]+)"/m.exec(src);
-  if (!m) throw new Error('NAME not found in app/scripts/build_domain_snapshots.py');
-  return m[1] as string;
+  const m = /^NAME_HEX\s*=\s*"([0-9a-f]+)"/m.exec(src);
+  if (!m) throw new Error('NAME_HEX not found in app/scripts/build_domain_snapshots.py');
+  return Buffer.from(m[1] as string, 'hex').toString('utf-8');
 }
 
 export const DEMO_DAY = '2026-02-23';

@@ -2,7 +2,7 @@
 Provided by the team's agronomy student before he left the team. Valid as data, origin `sourced`,
 source "team agronomist, 14 Nov 2026". Do not name him in public materials (§7). No new entries.
 
-Status per FIX2.md §3 (D-023). Former filename: `domain/tyson-answers.md`.
+Status per FIX2.md §3 (D-023). Former filename: `domain/agronomist-answers-archive.md`.
 
 ## Kept as data (origin: sourced, source "team agronomist, 14 Nov 2026")
 

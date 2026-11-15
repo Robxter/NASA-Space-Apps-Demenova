@@ -6,7 +6,7 @@ Demenova works for a farm that tracks nothing and gets sharper with every piece 
 
 | Level | What the farm gives | Map | Alerts | Strategies | Confidence badge |
 | --- | --- | --- | --- | --- | --- |
-| 0 | A pin | Regional view | Upstream flood warning, regional rain and soil moisture | Regional defaults from Tyson's table, labelled as defaults | Low |
+| 0 | A pin | Regional view | Upstream flood warning, regional rain and soil moisture | Regional defaults from the former team agronomist's table, labelled as defaults | Low |
 | 1 | Farm outline | Automatic risk zones from terrain wetness | Per zone | Per zone, defaults adjusted by zone wetness | Medium-low |
 | 2 | Lots, drawn, imported or typed | Per lot | Per lot | Per lot, using lot attributes such as drainage, plant age and cover | Medium |
 | 3 | Field notes: soil analyses, water table readings, past floods, management dates | Calibrated per lot | Thresholds calibrated to the farm | Per lot, tuned to its history | High |
@@ -19,5 +19,5 @@ Demenova works for a farm that tracks nothing and gets sharper with every piece 
 
 **Two modes.** Farmer mode: one status, one alert, one recommended action, plain Spanish, large text. Agronomist mode: full detail, factors, history and several farms.
 
-**Evidence.** Tyson's family farm is the founding case. Tyson documents in his doc why farms like his keep little or no data; the pitch claims no statistics without a source.
+**Evidence.** the former team agronomist's family farm is the founding case. The former team agronomist documents in his doc why farms like his keep little or no data; the pitch claims no statistics without a source.
 

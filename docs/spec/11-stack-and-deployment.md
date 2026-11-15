@@ -26,5 +26,5 @@ Judge's verdict on your proposal: GitHub, Render and Supabase are the right trio
 - Initial JavaScript under about 150 KB compressed.
 - Usable in under 3 seconds on a mid-range Android phone over 4G; test with Chrome DevTools throttling.
 - Lighthouse mobile performance score of 90 or more.
-- Works on current Chrome for Android, Samsung Internet and Safari on iOS. Test device: Tyson's Samsung Galaxy A55, an upper mid-range phone, plus Chrome CPU and network throttling to mimic cheaper ones.
+- Works on current Chrome for Android, Samsung Internet and Safari on iOS. Test device: The former team agronomist's Samsung Galaxy A55, an upper mid-range phone, plus Chrome CPU and network throttling to mimic cheaper ones.
 

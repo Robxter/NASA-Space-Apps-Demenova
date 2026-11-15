@@ -17,7 +17,7 @@ OpenAPI (`docs/contracts/openapi.yaml`). Field lists are complete for v0; values
 │  └─ agent-memory/<agent>/MEMORY.md
 ├─ config/        datasets.yaml  alerts.yaml
 ├─ domain/        farm.json  practices.yaml  strategies.yaml  actions.yaml  thresholds.yaml
-│                 flood_memories.yaml  glossary.yaml  tyson-answers.md  tyson-review-queue.md
+│                 flood_memories.yaml  glossary.yaml  agronomist-answers-archive.md  review-queue.md
 ├─ pipeline/
 │  ├─ common/     models.py  provenance.py  grid.py  io.py
 │  ├─ ingest/     imerg.py  smap.py  gldas.py  srtm.py  power.py  ecostress.py  ndvi.py  grace.py  aoi.py  __main__.py

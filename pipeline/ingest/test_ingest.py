@@ -306,7 +306,7 @@ def test_demo_lot_ids_follow_the_contract(tmp_path):
         assert f["properties"]["to_be_redefined_by"] == "future-local-agronomist" and f["properties"]["origin"] == "synthetic"
     # relabel keeps the lot number and is idempotent
     legacy = {"type": "FeatureCollection", "provenance": [{"id": "prov-demo-lots-synthetic", "notes": "", "processing": []}],
-              "features": [{"type": "Feature", "geometry": None, "properties": {"id": "lot_demo_el_oro_7", "to_be_redefined_by": "Tyson"}}]}
+              "features": [{"type": "Feature", "geometry": None, "properties": {"id": "lot_demo_el_oro_7", "to_be_redefined_by": "former-agronomist"}}]}
     path = tmp_path / "lots.geojson"
     path.write_text(json.dumps(legacy), encoding="utf-8")
     assert lots.relabel(path) == {"lot_demo_el_oro_7": "lot_demo-el-oro_7"}

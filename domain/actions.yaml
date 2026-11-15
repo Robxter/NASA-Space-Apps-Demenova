@@ -54,8 +54,8 @@ actions:
   - level: watch
     mode: agronomist
     text:
-      es: "Revisar a diario la lluvia aguas arriba y la humedad del suelo del lote. Revisar canales y salidas de drenaje, primero en lotes bajos y planos. Antes de cualquier labor en campo, comprobar que el suelo no esté saturado."
-      en: "Check upstream rain and the lot's soil moisture daily. Check drainage channels and outlets, low and flat lots first. Before any field work, check that the soil is not saturated."
+      es: "Revisar a diario la lluvia aguas arriba y el factor de saturación del suelo del lote. Revisar canales y salidas de drenaje, primero en lotes bajos y planos. Antes de cualquier labor en campo, comprobar que el suelo no esté saturado."
+      en: "Check upstream rain and the lot's soil-saturation factor daily. Check drainage channels and outlets, low and flat lots first. Before any field work, check that the soil is not saturated."
     origin: estimated
     estimated_by: "questionnaire-default (agronomist agent draft)"
     reason: "Questionnaire 5.5 (actions per level): team agronomist left; default retained. General guidance — not reviewed by an agronomist."
@@ -80,8 +80,8 @@ actions:
   - level: warning
     mode: agronomist
     text:
-      es: "Encharcamiento probable en los próximos días. Priorizar lotes con alta humedad del terreno: revisar canales y salidas de drenaje, inspeccionar cada mañana si hay agua estancada y contar los días con agua (el banano tolera como máximo 2 días). Evitar maquinaria pesada y tránsito en lotes saturados."
-      en: "Waterlogging likely within days. Prioritise lots with high terrain wetness: check drainage channels and outlets, inspect each morning for standing water and count the days with water (banana tolerates 2 days at most). Avoid heavy machinery and field traffic on saturated lots."
+      es: "Riesgo alto de encharcamiento en este lote (nivel del índice, no un pronóstico). Priorizar lotes con alta humedad del terreno: revisar canales y salidas de drenaje, inspeccionar cada mañana si hay agua estancada y contar los días con agua (el banano tolera como máximo 2 días). Evitar maquinaria pesada y tránsito en lotes saturados."
+      en: "High waterlogging risk for this lot (index level, not a forecast). Prioritise lots with high terrain wetness: check drainage channels and outlets, inspect each morning for standing water and count the days with water (banana tolerates 2 days at most). Avoid heavy machinery and field traffic on saturated lots."
     origin: estimated
     source: "team agronomist, 14 Nov 2026"
     estimated_by: "questionnaire-default (agronomist agent draft)"
@@ -107,8 +107,8 @@ actions:
   - level: severe
     mode: agronomist
     text:
-      es: "Inundación o encharcamiento de más de 2 días esperado o en curso. Primero la seguridad: nadie entra en agua que corre. Cuando el agua lo permita, inspeccionar los lotes afectados, revisar las salidas de drenaje y registrar la fecha de llegada del agua y los días que permanece. Evitar maquinaria pesada en suelo saturado. Al bajar el agua, inspeccionar las plantas y registrar lo observado por lote."
-      en: "Flooding or waterlogging beyond 2 days expected or under way. Safety first: nobody enters flowing water. When water allows, inspect the affected lots, check the drain outlets and record the date the water arrived and the days it stays. Avoid heavy machinery on saturated soil. When the water drops, inspect the plants and record what you see per lot."
+      es: "Inundación o encharcamiento de más de 2 días posible o en curso. Primero la seguridad: nadie entra en agua que corre. Cuando el agua lo permita, inspeccionar los lotes afectados, revisar las salidas de drenaje y registrar la fecha de llegada del agua y los días que permanece. Evitar maquinaria pesada en suelo saturado. Al bajar el agua, inspeccionar las plantas y registrar lo observado por lote."
+      en: "Flooding or waterlogging beyond 2 days possible or under way. Safety first: nobody enters flowing water. When water allows, inspect the affected lots, check the drain outlets and record the date the water arrived and the days it stays. Avoid heavy machinery on saturated soil. When the water drops, inspect the plants and record what you see per lot."
     origin: estimated
     source: "team agronomist, 14 Nov 2026"
     estimated_by: "questionnaire-default (agronomist agent draft)"

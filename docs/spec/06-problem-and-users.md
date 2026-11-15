@@ -1,6 +1,6 @@
 ## Problem and users
 
-Banana farms lose plants and money to water they could have seen coming. Tyson's field experience names four problems, and Demenova targets the first two directly:
+Banana farms lose plants and money to water they could have seen coming. The former team agronomist's field experience names four problems, and Demenova targets the first two directly:
 
 1. **Waterlogging.** Water held at root level rots roots and favours fungal disease.
 2. **River overflow.** Rain in the highlands reaches lowland lots hours or days later, with no warning today.

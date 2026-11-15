@@ -21,7 +21,7 @@ Harness ECC, but selectively: use its plan, review, security and session tools e
 | Build breaks | `/build-fix` | Fast repair of build and type errors |
 | Before the first deploy | `/security-scan` | Catches leaked Supabase, Resend or GitHub keys |
 | Session slows down | `/context-budget` | Trims context instead of restarting |
-| Before you sleep | `/save-session`, plus HANDOFF.md for Tyson | Resume tomorrow with `/resume-session` |
+| Before you sleep | `/save-session`, plus HANDOFF.md for the former team agronomist | Resume tomorrow with `/resume-session` |
 | Feature freeze | `/update-docs` | README and data citations in sync |
 
 Skip the `multi-*` commands: they need an extra runtime ECC doesn't install.

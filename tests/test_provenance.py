@@ -324,7 +324,7 @@ def test_numbers_with_an_origin_pass(tmp_path, body):
 
 FAILING_BODIES = {
     "no origin anywhere": ({"units": [{"w": 0.5}]}, "$.units[0].w: number without an origin"),
-    "origin that is not in the enumeration": ({"origin": "tyson", "a": 1}, "$.origin: origin 'tyson' is not one of"),
+    "origin that is not in the enumeration": ({"origin": "agronomist", "a": 1}, "$.origin: origin 'agronomist' is not one of"),
     "value whose origin is pending": ({"a": 1, "a_origin": "pending"}, "$.a: has a value, but its origin is 'pending'"),
     "sibling wins over the object origin": (
         {"origin": "sourced", "a": 1, "a_origin": "pending"},

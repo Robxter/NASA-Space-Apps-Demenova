@@ -86,8 +86,8 @@ strategies:
       es: "Mejorar el drenaje: limpiar y abrir canales para que el agua salga del lote antes de 2 días."
       en: "Improve drainage: clear and open drains so water leaves the lot within 2 days."
     why:
-      es: "El banano tolera como máximo 2 días de encharcamiento y sus raíces llegan a 70 cm; la falta de oxígeno mata rápido las puntas de las raíces (Turner y col. 2007)."
-      en: "Banana tolerates at most 2 days of waterlogging and its roots reach 70 cm; oxygen deficiency quickly kills the root tips (Turner et al. 2007)."
+      es: "El banano tolera como máximo 2 días de encharcamiento y sus raíces llegan a 70 cm (agrónomo del equipo, 14 nov 2026); la falta de oxígeno mata rápido las puntas de las raíces (Turner y col. 2007)."
+      en: "Banana tolerates at most 2 days of waterlogging and its roots reach 70 cm (team agronomist, 14 Nov 2026); oxygen deficiency quickly kills the root tips (Turner et al. 2007)."
     evidence:
       - citation: "team agronomist, 14 Nov 2026"
         url: null
@@ -153,8 +153,8 @@ strategies:
       es: "Drenaje mejorado + cobertura viva con maní forrajero + bioinsumos (micorrizas y drench de microorganismos de montaña) aplicados solo con el suelo no saturado."
       en: "Improved drainage + maní forrajero (Arachis pintoi) living cover + bio-inputs (mycorrhizae and mountain microorganism drench) applied only when the soil is not saturated."
     why:
-      es: "Combina el control del agua de B con cobertura del suelo y bioinsumos; la app indica cuándo el suelo no está saturado para aplicar."
-      en: "Combines B's water control with ground cover and bio-inputs; the app shows when the soil is unsaturated so applications are timed."
+      es: "Combina el control del agua de B con cobertura del suelo y bioinsumos, aplicados solo cuando una revisión en campo muestra que el suelo no está saturado (el factor de saturación de la app es un índice del historial de lluvia, no una medición del suelo)."
+      en: "Combines B's water control with ground cover and bio-inputs, applied only when a field check shows the soil is not saturated (the app's saturation factor is a rain-history index, not a soil measurement)."
     evidence:
       - citation: "team agronomist, 14 Nov 2026"
         url: null

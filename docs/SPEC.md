@@ -19,10 +19,10 @@ Seven sections are new and eight were updated; their headings carry a · New or 
 | Weekend plan | Updated | Rebuilt around the 7-hour Spain–Costa Rica gap, night shift, handoff rule |
 | Submission | Updated | Deadline in Spain time; video direction now a product-launch film |
 | Claude Code | Updated | ECC harnessed selectively, workflow table, Graphify, frontend-design, new CLAUDE.md; ECC and Graphify marked installed |
-| Tyson's questions | Updated | Two new questions: real farm data and his test phone |
+| The former team agronomist's questions | Updated | Two new questions: real farm data and his test phone |
 | Sources | Updated | Graphify and frontend-design added |
 
-**Update 3 (Tyson's answers).** Open questions now hold his answers plus researched ones; the agronomic thresholds, a new paragraph of agronomic rules in the risk engine, a biosecurity angle in the pitch, the demo flood (22–23 February 2026, Buenavista river), the demo farm location and the test phone were updated to match.
+**Update 3 (the former team agronomist's answers).** Open questions now hold his answers plus researched ones; the agronomic thresholds, a new paragraph of agronomic rules in the risk engine, a biosecurity angle in the pitch, the demo flood (22–23 February 2026, Buenavista river), the demo farm location and the test phone were updated to match.
 
 **Update 4 (zero-data promise and science).** New sections: Data modes (levels 0 to 3, exact lot input, flood memory, records by default, two modes), Prediction science (14 methods with formulas, sources and limits) and Alert channels (email, Telegram, why not WhatsApp). Scope, onboarding and Alerts screens, and the risk engine were updated to match.
 
@@ -36,7 +36,7 @@ Demenova has been defined since the end of October; today's ideas (farm dashboar
 
 **How it answers the challenge.** Banana is perennial and is not rotated like annual crops, so the pitch states it plainly: in perennial crops, rotation becomes soil management. Each risky lot gets the current management compared with two alternatives, as the challenge requires.
 
-**Why Machala.** Ecuador is the world's largest banana exporter and El Oro is one of its core banana provinces. Its coastal lowlands sit below Andean watersheds such as the Jubones river, which makes the upstream-rain warning story concrete. Confirm with Tyson that this is the farm area he knows.
+**Why Machala.** Ecuador is the world's largest banana exporter and El Oro is one of its core banana provinces. Its coastal lowlands sit below Andean watersheds such as the Jubones river, which makes the upstream-rain warning story concrete. Confirm with the former team agronomist that this is the farm area he knows.
 
 ## Pitch angle: NASA data, global by design · New
 
@@ -50,7 +50,7 @@ Judge's verdict: keep it, it is one of the strongest lines in the pitch. Most te
 - Satellites from the North, solutions for the South.
 - Space science serving one of humanity's oldest activities: growing food.
 
-**Prove it, don't just say it.** Because every input is global, the same pipeline works for any farm on Earth by changing the area of interest. If time allows, run it once for Tyson's region in the Caribbean lowlands of Costa Rica and show both maps side by side for three seconds of the video: two countries, one pipeline, zero US-only data.
+**Prove it, don't just say it.** Because every input is global, the same pipeline works for any farm on Earth by changing the area of interest. If time allows, run it once for the former team agronomist's region in the Caribbean lowlands of Costa Rica and show both maps side by side for three seconds of the video: two countries, one pipeline, zero US-only data.
 
 **Biosecurity angle.** The demo flood carries a second story: according to Primicias, the February 2026 floods partly compromised the containment of Fusarium Tropical Race 4, detected in December 2025 on a farm in Santa Rosa, El Oro. In El Oro, knowing where water goes is also knowing where soil-borne disease can travel.
 
@@ -62,7 +62,7 @@ Demenova works for a farm that tracks nothing and gets sharper with every piece 
 
 | Level | What the farm gives | Map | Alerts | Strategies | Confidence badge |
 | --- | --- | --- | --- | --- | --- |
-| 0 | A pin | Regional view | Upstream flood warning, regional rain and soil moisture | Regional defaults from Tyson's table, labelled as defaults | Low |
+| 0 | A pin | Regional view | Upstream flood warning, regional rain and soil moisture | Regional defaults from the former team agronomist's table, labelled as defaults | Low |
 | 1 | Farm outline | Automatic risk zones from terrain wetness | Per zone | Per zone, defaults adjusted by zone wetness | Medium-low |
 | 2 | Lots, drawn, imported or typed | Per lot | Per lot | Per lot, using lot attributes such as drainage, plant age and cover | Medium |
 | 3 | Field notes: soil analyses, water table readings, past floods, management dates | Calibrated per lot | Thresholds calibrated to the farm | Per lot, tuned to its history | High |
@@ -75,14 +75,14 @@ Demenova works for a farm that tracks nothing and gets sharper with every piece 
 
 **Two modes.** Farmer mode: one status, one alert, one recommended action, plain Spanish, large text. Agronomist mode: full detail, factors, history and several farms.
 
-**Evidence.** Tyson's family farm is the founding case. Tyson documents in his doc why farms like his keep little or no data; the pitch claims no statistics without a source.
+**Evidence.** the former team agronomist's family farm is the founding case. The former team agronomist documents in his doc why farms like his keep little or no data; the pitch claims no statistics without a source.
 
 ## Team notes and pending activities · New
 
 Kept exactly as written by the team; each one is answered in the section named after it.
 
 - We yet have to define the stack, which has to be most of all, preserve a good UX and UI design, develop a fast and low requirement yet refined frame, apple like design and app flow. And its backend has to be fast, low memory and optimized for every type of device and browser that comes their way. Has to have a strong focus on Android devices, as it is the strongest sector in Latin America which can also be the leading OS in Agricultural management, dont leave iOS behind tho because it can be definitive for judge review as in the US most devices are iOS devices. *(Answered in Stack and deployment.)*
-- I dont know if Tyson has lot detail and farm data from his existing farm, but if he hasnt we have to create demo-default data of a theorical farm in coastal zone near of what we defined which can be modified with any kind of farm data with the fields we have yet to specify. *(Answered in Demo farm data.)*
+- I dont know if the former team agronomist has lot detail and farm data from his existing farm, but if he hasnt we have to create demo-default data of a theorical farm in coastal zone near of what we defined which can be modified with any kind of farm data with the fields we have yet to specify. *(Answered in Demo farm data.)*
 - Screens of the app. *(Answered in Screen specifications.)*
 - Help with the email sending thing, because I dont know how to send emails using the tools I have so Claude Code and you have to solve it. *(Answered in Email alerts.)*
 - I like the diagram you make, but if you didnt take into account the latter I mentioned, I would like you to take into account. *(System data flow redrawn with the stack.)*
@@ -95,7 +95,7 @@ Kept exactly as written by the team; each one is answered in the section named a
 
 ## Problem and users
 
-Banana farms lose plants and money to water they could have seen coming. Tyson's field experience names four problems, and Demenova targets the first two directly:
+Banana farms lose plants and money to water they could have seen coming. The former team agronomist's field experience names four problems, and Demenova targets the first two directly:
 
 1. **Waterlogging.** Water held at root level rots roots and favours fungal disease.
 2. **River overflow.** Rain in the highlands reaches lowland lots hours or days later, with no warning today.
@@ -119,13 +119,13 @@ Demenova is three modules sitting on one alert engine. The engine scores every l
 | Alert engine | How serious is the water situation on each lot right now? | Upstream and local rain, soil wetness, terrain wetness, water balance | Risk index 0 to 1, severity level, top contributing factors, email on Severe |
 | Module 1: Water risk | Where and when will my lots flood or stay waterlogged? | GPM IMERG, SMAP, GLDAS, SRTM | Lot risk map, upstream flood warning, month-by-month risk calendar |
 | Module 2: Field history | How have conditions changed this week, month and quarter? | GPM, SMAP, NASA POWER, ECOSTRESS, Landsat/Sentinel-2 NDVI | Charts against prior years for rain, soil moisture, temperature, crop greenness |
-| Module 3: Soil strategies | What should I do with this lot? | Lot risk profile, Tyson's practice table, farmer priorities | Current management versus two alternatives, each with reasons, evidence, benefits, gaps and risks |
+| Module 3: Soil strategies | What should I do with this lot? | Lot risk profile, the former team agronomist's practice table, farmer priorities | Current management versus two alternatives, each with reasons, evidence, benefits, gaps and risks |
 
 **Prediction, defined honestly.** Demenova predicts in two ways that the data supports. Short term, observed upstream rain forecasts lowland flooding hours to days ahead. Seasonal, years of history give each lot a month-by-month risk calendar. It does not forecast tomorrow's weather; that would need a separate forecast service, kept out of the core.
 
 ## Agronomic and hydrological foundation
 
-The tool rests on four well-established ideas; Tyson supplies the crop-specific thresholds that turn them into decisions.
+The tool rests on four well-established ideas; the former team agronomist supplies the crop-specific thresholds that turn them into decisions.
 
 **1. Daily water balance.** Soil gains water from rain and loses it to evapotranspiration and drainage. When the balance stays positive for several days on poorly drained ground, the water table rises toward the roots.
 
@@ -145,9 +145,9 @@ a = upslope contributing area per unit contour width, β = local slope.
 
 **3. Upstream travel time.** Rain over the Andean part of a watershed reaches the lowlands after a delay. Summing IMERG rainfall over the upstream catchment for the last 24, 48 and 72 hours gives the flood warning; the catchment outline comes from SRTM. The exact delay for the demo river is calibrated against a past flood.
 
-**4. Soil management instead of rotation.** Banana lots run on a fixed harvest cycle, so the levers are management practices, defined by Tyson. Candidates from his answers: living cover with maní forrajero (Arachis pintoi, a legume that also fixes nitrogen), timing of mycorrhizae and mountain microorganism (MM) drench applications, and drainage work.
+**4. Soil management instead of rotation.** Banana lots run on a fixed harvest cycle, so the levers are management practices, defined by the former team agronomist. Candidates from his answers: living cover with maní forrajero (Arachis pintoi, a legume that also fixes nitrogen), timing of mycorrhizae and mountain microorganism (MM) drench applications, and drainage work.
 
-**Thresholds, now set.** Banana tolerates at most 2 days of waterlogging and its roots sit at 70 cm (Tyson), so a water table above 70 cm for 2 days is the damage line. Black Sigatoka pressure rises with mean temperature above 23 °C, relative humidity above 75% and wet leaves, and falls below 70% humidity (sources in Open questions).
+**Thresholds, now set.** Banana tolerates at most 2 days of waterlogging and its roots sit at 70 cm (the former team agronomist), so a water table above 70 cm for 2 days is the damage line. Black Sigatoka pressure rises with mean temperature above 23 °C, relative humidity above 75% and wet leaves, and falls below 70% humidity (sources in Open questions).
 
 **Local check, resolved.** In Machala the cool season runs roughly July to mid-November, with August the coldest month; producers report that nights near 20 °C slow fruit filling and delay harvest. Cold stress applies in El Oro, but mid-year rather than at year-end as in Costa Rica.
 
@@ -161,7 +161,7 @@ Demenova invents no science: it chains fourteen established methods, each checke
 2. Upstream: IMERG rain over the catchment becomes runoff through the Curve Number method, and arrives after a travel time first estimated with Kirpich, then calibrated on the February 2026 event.
 3. On the farm: rain, the antecedent precipitation index and SMAP give saturation; FAO-56 evapotranspiration removes water; the daily balance per zone gives waterlogging pressure and the 2-day rule.
 4. Side indicators: leaf wetness and the Sigatoka favourability rule; banana heat units for cold stress; NDVI for greenness.
-5. Weights come from Tyson's pairwise judgments (AHP); thresholds are calibrated against flood memory and documented floods with verification scores.
+5. Weights come from the former team agronomist's pairwise judgments (AHP); thresholds are calibrated against flood memory and documented floods with verification scores.
 
 | # | Method | Used for | Formula or rule | Source | Limits |
 | --- | --- | --- | --- | --- | --- |
@@ -173,11 +173,11 @@ Demenova invents no science: it chains fourteen established methods, each checke
 | 6 | FAO-56 Penman–Monteith and crop coefficient | Water leaving the soil | ETc = Kc × ETo; banana basal coefficient at mid-season about 1.05 in year one (Table 17) | Allen et al. 1998, FAO-56 ([FAO](https://www.fao.org/3/x0490e/x0490e0c.htm)) | Tables assume sub-humid, standard conditions |
 | 7 | Daily soil water balance | Waterlogging pressure and the 2-day rule | ΔS = P − ETc − D, summed over days | FAO-56 ([contents](https://www.fao.org/3/X0490E/x0490e00.htm)) | Drainage D is estimated from terrain and drainage class |
 | 8 | Leaf wetness from humidity | Hours of wet leaves | Hours with relative humidity ≥ 90%, from NASA POWER hourly data | Sentelhas et al. 2008 ([CNR](https://explore.cnr.it/resource/item/58890)) | Over- or underestimates by site; local thresholds improve it |
-| 9 | Sigatoka favourability | Sigatoka Watch | Mean temperature > 23 °C with humidity > 75% favourable; humidity < 70% unfavourable | [TEC Costa Rica](https://revistas.tec.ac.cr/index.php/agroinn/article/download/6503/6351); [Atena](https://atenaeditora.com.br/catalogo/dowload-post/77675); [UNAD](https://hemeroteca.unad.edu.co/index.php/riaa/article/download/970/953/1143) | Thresholds from other banana regions; Tyson validates |
+| 9 | Sigatoka favourability | Sigatoka Watch | Mean temperature > 23 °C with humidity > 75% favourable; humidity < 70% unfavourable | [TEC Costa Rica](https://revistas.tec.ac.cr/index.php/agroinn/article/download/6503/6351); [Atena](https://atenaeditora.com.br/catalogo/dowload-post/77675); [UNAD](https://hemeroteca.unad.edu.co/index.php/riaa/article/download/970/953/1143) | Thresholds from other banana regions; the former team agronomist validates |
 | 10 | Banana heat units | Cold stress | Daily units = mean temperature − 14 °C; weekly sum compared with the same week's climatology | Ganry & Meyer 1975 ([Taylor & Francis](https://informahealthcare.com/doi/full/10.1080/07060661.2013.870931)); [CORBANA](https://www.corbana.co.cr/wp-content/uploads/HD-n.°-1-2011Unidades-de-calor.pdf): 14 °C growth, 16 °C development, 34 °C upper limit | Base varies by variety, 13.9 to 17 °C in new hybrids ([Umber et al. 2011](https://agritrop.cirad.fr/559687/)) |
 | 11 | NDVI | Greenness history | (NIR − Red) / (NIR + Red) | Rouse et al. 1973–74, NASA ERTS symposium ([reference](https://docs.disasterscharter.org/services/spectral-index/service-specs/)) | Clouds block optical images in the tropics |
 | 12 | NDWI, optional | Standing water after a flood, when cloud-free | (Green − NIR) / (Green + NIR) | McFeeters 1996 ([cited in RJAS](https://www.rjas.ro/download/paper_version.paper_file.94fdfb5b070857a5.QmFkYWx1dGEucGRm.pdf)) | Needs a clear image right after the flood |
-| 13 | Analytic hierarchy process | Alert weights from Tyson's judgments | Pairwise matrix, principal eigenvector; CI = (λmax − n)/(n − 1), CR = CI/RI, accepted if CR ≤ 0.10 | Saaty 1980 ([Saaty](https://www.isahp-org.creativedecisions.net/uploads/1-how-to-make-a-decision-the-analytic-hierarchy-process-t-l-saaty.pdf)) | Only as good as the expert's judgments, which are recorded |
+| 13 | Analytic hierarchy process | Alert weights from the former team agronomist's judgments | Pairwise matrix, principal eigenvector; CI = (λmax − n)/(n − 1), CR = CI/RI, accepted if CR ≤ 0.10 | Saaty 1980 ([Saaty](https://www.isahp-org.creativedecisions.net/uploads/1-how-to-make-a-decision-the-analytic-hierarchy-process-t-l-saaty.pdf)) | Only as good as the expert's judgments, which are recorded |
 | 14 | Forecast verification | Calibrating thresholds on flood memory and documented floods | POD = hits/(hits + misses); FAR = false alarms/(hits + false alarms); CSI = hits/(hits + misses + false alarms) | NCAR DTC, [MET User's Guide](https://metplus.readthedocs.io/projects/met/en/develop/Users_Guide/appendixC.html); [DTC](https://dtcenter.ucar.edu/plots/hwt/traditional_eval.php) | Few events, so report counts, not percentages; POD alone rewards over-warning |
 
 The engineering choices layered on top (hysteresis, two-update confirmation, the Stale state) are design decisions, not scientific claims, and the doc labels them as such.
@@ -242,7 +242,7 @@ Judge's verdict on your proposal: GitHub, Render and Supabase are the right trio
 - Initial JavaScript under about 150 KB compressed.
 - Usable in under 3 seconds on a mid-range Android phone over 4G; test with Chrome DevTools throttling.
 - Lighthouse mobile performance score of 90 or more.
-- Works on current Chrome for Android, Samsung Internet and Safari on iOS. Test device: Tyson's Samsung Galaxy A55, an upper mid-range phone, plus Chrome CPU and network throttling to mimic cheaper ones.
+- Works on current Chrome for Android, Samsung Internet and Safari on iOS. Test device: The former team agronomist's Samsung Galaxy A55, an upper mid-range phone, plus Chrome CPU and network throttling to mimic cheaper ones.
 
 ## Risk engine and weighted alerts
 
@@ -260,7 +260,7 @@ W_{lot,t} = \sum_i w_i \, x_{i,lot,t} \qquad \sum_i w_i = 1
 | Local rain, last 24 h | GPM IMERG over the farm | Percentile against history | 0.10 |
 | 7-day water balance | Rain minus ET (POWER, ECOSTRESS) | Percentile against history | 0.10 |
 
-The weights are starting values, not findings. Tune them with Tyson so the past demo flood scores Severe on the right lots and the right day, and say so in the pitch.
+The weights are starting values, not findings. Tune them with the former team agronomist so the past demo flood scores Severe on the right lots and the right day, and say so in the pitch.
 
 **Severity levels.**
 
@@ -273,13 +273,13 @@ The weights are starting values, not findings. Tune them with Tyson so the past 
 
 **Anti-noise rules.** Escalate to Severe only when two consecutive updates agree, so one noisy rain estimate does not trigger an email. De-escalate only when W falls 0.10 below the level's threshold (hysteresis). Mark the lot Stale when its newest rain data is older than 12 hours; stale lots never send emails.
 
-**Agronomic rules on top of W.** Two consecutive days with a positive water balance on a lot in the top terrain-wetness third set a floor of Warning, matching the 2-day tolerance. Two side indicators run beside W and appear on Lot detail, never in the email: Sigatoka pressure (Watch after 3 consecutive days with mean temperature above 23 °C, humidity above 75% and rain) and cold stress (7-day mean below 23 °C). The 3-day and 23 °C values are proposals awaiting Tyson's validation; NASA POWER supplies temperature and humidity.
+**Agronomic rules on top of W.** Two consecutive days with a positive water balance on a lot in the top terrain-wetness third set a floor of Warning, matching the 2-day tolerance. Two side indicators run beside W and appear on Lot detail, never in the email: Sigatoka pressure (Watch after 3 consecutive days with mean temperature above 23 °C, humidity above 75% and rain) and cold stress (7-day mean below 23 °C). The 3-day and 23 °C values are proposals awaiting the former team agronomist's validation; NASA POWER supplies temperature and humidity.
 
-**Indicators, upgraded by Prediction science.** Upstream rain enters as Curve Number runoff with a calibrated lag; local wetness uses the antecedent precipitation index where SMAP is missing; the balance uses FAO-56 crop evapotranspiration. The starting weights above are replaced by AHP weights from Tyson's pairwise judgments (accepted at CR ≤ 0.10), and thresholds are calibrated with POD, FAR and CSI against documented and remembered floods.
+**Indicators, upgraded by Prediction science.** Upstream rain enters as Curve Number runoff with a calibrated lag; local wetness uses the antecedent precipitation index where SMAP is missing; the balance uses FAO-56 crop evapotranspiration. The starting weights above are replaced by AHP weights from the former team agronomist's pairwise judgments (accepted at CR ≤ 0.10), and thresholds are calibrated with POD, FAR and CSI against documented and remembered floods.
 
 **Explanation on every alert.** Each alert lists its top two contributing factors with their share of W, for example "upstream rain 62%, soil saturation 21%", plus the data timestamps.
 
-**Strategy scoring uses the same idea.** In Module 3, the farmer sets priority weights (soil health, water, cost, labour). Each strategy's criterion scores come from Tyson's practice table; the strategy score is the priority-weighted sum, shown next to its reasons, gaps and risks.
+**Strategy scoring uses the same idea.** In Module 3, the farmer sets priority weights (soil health, water, cost, labour). Each strategy's criterion scores come from the former team agronomist's practice table; the strategy score is the priority-weighted sum, shown next to its reasons, gaps and risks.
 
 **Email.** In the demo, Severe generates the email shown on screen; sending it through a transactional email service is a bonus.
 
@@ -346,14 +346,14 @@ widget on 2026-11-14 (the Markdown export drops diagrams).*
   NASA POWER, ECOSTRESS (ET); Landsat · S-2 (NDVI greenness).
 - → Pipeline · GitHub Actions: hourly download, harmonize to one 30 m grid; features per lot per day.
 - → Alert engine: weighted index W from 0 to 1 per lot; Normal, Watch, Warning, Severe; top two contributing factors.
-  Tyson's table (practices, costs and thresholds) feeds the engine its thresholds.
+  The former team agronomist's table (practices, costs and thresholds) feeds the engine its thresholds.
 - Alert engine → Supabase (Postgres): farms, lots, features, alerts, email log.
 - Alert engine → Backend · Render (on Severe): FastAPI emails the agronomist via Resend.
 - Supabase → PWA on Render Static Site (reads Supabase, works offline): Home (farm status, alerts), Risk map (lots and
-  day replay), Lot detail (factors and history), Strategies (3 options compared). Tyson's table → Strategies (strategy options).
+  day replay), Lot detail (factors and history), Strategies (3 options compared). The former team agronomist's table → Strategies (strategy options).
 - Foundation: GitHub and local Git, branches per block, secrets kept out of code; every push redeploys Render.
 
-Global satellite layers are harmonized onto one 30 m grid, scored per lot by the alert engine in an hourly GitHub Actions run, stored in Supabase and read directly by the phone app; the Render backend only sends Severe emails, so nothing a judge opens waits on a sleeping server; Tyson's table sets the thresholds and supplies the strategy options. The step-by-step user flow is in the UI section below.
+Global satellite layers are harmonized onto one 30 m grid, scored per lot by the alert engine in an hourly GitHub Actions run, stored in Supabase and read directly by the phone app; the Render backend only sends Severe emails, so nothing a judge opens waits on a sleeping server; the former team agronomist's table sets the thresholds and supplies the strategy options. The step-by-step user flow is in the UI section below.
 
 ## Backend state machine
 
@@ -456,9 +456,9 @@ Navigation is a bottom tab bar with four tabs (Home, Map, Alerts, Learn); Lot de
 
 ## Demo farm data · New
 
-Tyson confirmed there is no real lot data, so we ship a default demo farm: real satellite data over real plantation land near Machala, with synthetic farm attributes clearly labelled "demo farm" in the app. Judges reward that honesty; any user can replace it through Farm setup.
+The former team agronomist confirmed there is no real lot data, so we ship a default demo farm: real satellite data over real plantation land near Machala, with synthetic farm attributes clearly labelled "demo farm" in the app. Judges reward that honesty; any user can replace it through Farm setup.
 
-**Building the demo farm.** Open satellite imagery around Pasaje along the Buenavista river, pick an area of visible banana plantation that the February 2026 flood reached, and draw about 8 lots of roughly 5 to 7 ha each, some on low flat ground and some higher, so the risk map shows contrast. Tyson reviews the attributes when he wakes.
+**Building the demo farm.** Open satellite imagery around Pasaje along the Buenavista river, pick an area of visible banana plantation that the February 2026 flood reached, and draw about 8 lots of roughly 5 to 7 ha each, some on low flat ground and some higher, so the risk map shows contrast. The former team agronomist reviews the attributes when he wakes.
 
 **Farm fields.**
 
@@ -466,7 +466,7 @@ Tyson confirmed there is no real lot data, so we ship a default demo farm: real 
 | --- | --- | --- |
 | name | text | Finca Demo El Oro |
 | location | lat, lon | Plantation area in Pasaje canton along the Buenavista river, next to Machala |
-| crop, variety | text | Banana, Cavendish (Tyson to confirm the local variety) |
+| crop, variety | text | Banana, Cavendish (the former team agronomist to confirm the local variety) |
 | river, catchment | text, polygon | Nearest river and its upstream catchment from SRTM |
 | alert\_email | email | Your own address for the demo |
 
@@ -477,12 +477,12 @@ Tyson confirmed there is no real lot data, so we ship a default demo farm: real 
 | lot\_id, name | text | Identity on map and lists |
 | boundary | GeoJSON polygon | Places the lot on the 30 m grid |
 | area\_ha | number | Totals and costs per lot |
-| plant\_age\_months | number | Tyson listed banana age as key field knowledge |
+| plant\_age\_months | number | The former team agronomist listed banana age as key field knowledge |
 | drainage\_class | good, moderate, poor | Adjusts waterlogging risk alongside terrain wetness |
 | drainage\_works | none, ditches, other | Input to drainage strategies |
 | cover\_crop | none, maní forrajero, other | Input to soil strategies |
 | last\_soil\_analysis | date, pH, organic matter % | Context for strategy evidence |
-| nematode\_incidence | low, medium, high | Tyson listed it as ground knowledge satellites can't see |
+| nematode\_incidence | low, medium, high | The former team agronomist listed it as ground knowledge satellites can't see |
 | disease\_notes | text | Same |
 | bioinputs | last mycorrhizae and MM drench dates | Timing in strategies |
 | water\_table\_reading | depth in cm, date (optional) | Calibrates the model when available |
@@ -522,9 +522,9 @@ The demo wins on one convincing story: the 22–23 February 2026 Buenavista rive
 
 ## Weekend plan and roles · Updated
 
-The time difference is your advantage: Costa Rica is 7 hours behind Spain, so Tyson works while you sleep and the project moves almost around the clock. The deadline, 23:59 Spain time on November 15, is 16:59 in Costa Rica. Day 1 hours count from now; day 2 times are Spain time.
+The time difference is your advantage: Costa Rica is 7 hours behind Spain, so the former team agronomist works while you sleep and the project moves almost around the clock. The deadline, 23:59 Spain time on November 15, is 16:59 in Costa Rica. Day 1 hours count from now; day 2 times are Spain time.
 
-| Block | When | You (build) | Tyson (domain + docs) |
+| Block | When | You (build) | The former team agronomist (domain + docs) |
 | --- | --- | --- | --- |
 | 1. Setup and data | Day 1, now to +3 h | Repo, ECC, Graphify, frontend-design; SPEC.md and CLAUDE.md; demo farm lots; IMERG, SRTM and TWI for the area | Asleep |
 | 2. Engine, together | Day 1, +3 h to +7 h | Alert engine and calibration on the flood date he gives you; Supabase tables | Answers the open questions; practice table, three strategies, demo farm attributes |
@@ -537,7 +537,7 @@ The time difference is your advantage: Costa Rica is 7 hours behind Spain, so Ty
 
 **Handoff rule.** Nothing waits on a live conversation: every block ends with a written note (HANDOFF.md in the repo, or comments in this doc) saying what is done, what is next and what needs the other person.
 
-Tyson does not need to code: his table, thresholds, strategies and writing are what make the tool credible to judges.
+The former team agronomist does not need to code: his table, thresholds, strategies and writing are what make the tool credible to judges.
 
 ## Submission checklist · Updated
 
@@ -579,7 +579,7 @@ Harness ECC, but selectively: use its plan, review, security and session tools e
 | Build breaks | `/build-fix` | Fast repair of build and type errors |
 | Before the first deploy | `/security-scan` | Catches leaked Supabase, Resend or GitHub keys |
 | Session slows down | `/context-budget` | Trims context instead of restarting |
-| Before you sleep | `/save-session`, plus HANDOFF.md for Tyson | Resume tomorrow with `/resume-session` |
+| Before you sleep | `/save-session`, plus HANDOFF.md for the former team agronomist | Resume tomorrow with `/resume-session` |
 | Feature freeze | `/update-docs` | README and data citations in sync |
 
 Skip the `multi-*` commands: they need an extra runtime ECC doesn't install.
@@ -614,22 +614,22 @@ Mobile-first PWA: waterlogging and flood alerts for banana lots near Machala, El
 
 **SI-use log.** Keep a running note, one line per task: time, what Claude Code did, what you changed or decided yourself. It becomes the required SI description at submission.
 
-## Open questions for Tyson (needed in block 1) · Updated
+## Open questions for the former team agronomist (needed in block 1) · Updated
 
-Tyson answered on day 1; blanks were researched. Full detail and sources are in his workflow doc.
+The former team agronomist answered on day 1; blanks were researched. Full detail and sources are in his workflow doc.
 
 | Question | Answer | Source |
 | --- | --- | --- |
-| Is Machala, El Oro the right area? River and flood dates? | Yes. Demo flood: 22–23 Feb 2026, Buenavista river overflowed into banana farms in Pasaje; Pital river overflowed in Santa Rosa the same night | Tyson; [El Universo](https://www.eluniverso.com/noticias/ecuador/inundaciones-en-machala-y-desbordamientos-de-rios-paralizan-parte-de-el-oro-el-23-de-febrero-nota/), [Primicias](https://www.primicias.ec/economia/fusarium-inundaciones-contencion-hongo-eloro-lluvias-muro-contencion-quemado-116973/) |
-| Waterlogging tolerance and root depth | 2 days maximum; roots at 70 cm | Tyson |
-| Three strategies | Drafted: current management, improved drainage, drainage plus maní forrajero and well-timed bio-inputs; Tyson reviews | Research, his doc |
-| Maní forrajero | Many farms use it, many don't; his doesn't | Tyson |
+| Is Machala, El Oro the right area? River and flood dates? | Yes. Demo flood: 22–23 Feb 2026, Buenavista river overflowed into banana farms in Pasaje; Pital river overflowed in Santa Rosa the same night | The former team agronomist; [El Universo](https://www.eluniverso.com/noticias/ecuador/inundaciones-en-machala-y-desbordamientos-de-rios-paralizan-parte-de-el-oro-el-23-de-febrero-nota/), [Primicias](https://www.primicias.ec/economia/fusarium-inundaciones-contencion-hongo-eloro-lluvias-muro-contencion-quemado-116973/) |
+| Waterlogging tolerance and root depth | 2 days maximum; roots at 70 cm | The former team agronomist |
+| Three strategies | Drafted: current management, improved drainage, drainage plus maní forrajero and well-timed bio-inputs; the former team agronomist reviews | Research, his doc |
+| Maní forrajero | Many farms use it, many don't; his doesn't | The former team agronomist |
 | Fungal pressure (Black Sigatoka) | Favourable above 23 °C mean with relative humidity above 75% and wet leaves; unfavourable below 70% humidity | [TEC](https://revistas.tec.ac.cr/index.php/agroinn/article/download/6503/6351), [Atena](https://atenaeditora.com.br/catalogo/dowload-post/77675) |
 | Cool season in El Oro | About 1 July to 13 November; nights near 20 °C slow fruit filling and delay harvest | [WeatherSpark](https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o), [Ecuador Times](https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/) |
-| Real farm data | None: ship the synthetic demo farm | Tyson |
-| Test phone | Samsung Galaxy A55 | Tyson |
+| Real farm data | None: ship the synthetic demo farm | The former team agronomist |
+| Test phone | Samsung Galaxy A55 | The former team agronomist |
 
-**Still open with Tyson:** confirm the demo flood and how long the water took to reach the farms; costs and labour for each strategy; validate the proposed fungal and cold thresholds.
+**Still open with the former team agronomist:** confirm the demo flood and how long the water took to reach the farms; costs and labour for each strategy; validate the proposed fungal and cold thresholds.
 
 ## Sources
 

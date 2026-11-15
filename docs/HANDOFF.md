@@ -7,7 +7,7 @@ State: T-040 done in domain/ (all yaml + review-queue.md + README.md); not commi
 docs/reports/agronomist/2026-11-15-0730.md. Former agronomist no longer named in any domain yaml.
 Next for the receiver: 1. `uv run pytest -q` and `python scripts/check_provenance.py`. 2. frontend-engineer reruns
 app/scripts/build_domain_snapshots.py (glossary fusarium_r4t now has the one Agrocalidad line, so it is no longer
-skipped). 3. thresholds key `tyson_review_turnaround` renamed `review_turnaround` (no code reads it).
+skipped). 3. thresholds key `review_turnaround` renamed `review_turnaround` (no code reads it).
 
 ## 2026-11-15 06:00 - frontend-engineer to main session
 State: real-data re-check and T-042 must-haves done on block/2-core (c5c2db4..0f1f9b2); not pushed.
@@ -58,7 +58,7 @@ demo Severe email to Roberto's inbox and film it.
 State: Phase 2 paused on block/2-core: Opus 5-hour limit hit ~00:15, resets 03:30 Spain. FIX2.md applied (solo build).
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: frontend T-026/T-027 (2ea3983, d0acc61); engine T-020 (c39de04), T-021/T-022 (83d8cf0),
-T-023 (8b1194e); FIX2: Roster→Roberto, Tyson tasks closed, answers archived (domain/agronomist-answers-archive.md),
+T-023 (8b1194e); FIX2: Roster→Roberto, the former team agronomist tasks closed, answers archived (domain/agronomist-answers-archive.md),
 review queue → domain/review-queue.md, DATA_POLICY §4–§5, CLAUDE.md §13, agent files, D-021..D-028; P-007 closed (D-024).
 Paused agents (resume with SendMessage, their context is kept): data-scientist mid-T-024 (uncommitted
 pipeline/engine/verification.py + test_side_and_verification.py: leave them for it); api-engineer T-028 (nothing written).
@@ -66,9 +66,9 @@ Waiting on Roberto: apply schema to Supabase; open PRs to main. (Members tab: do
 Next for the receiver, in order: 1. After 03:30 resume data-scientist: finish T-024, then T-024b sensitivity check
 (D-024; weights origin `design`), snapshots to app/public/data/demo/. 2. Resume api-engineer T-028. 3. Then:
 scientist-reviewer + one code review on the engine; frontend re-check against real snapshots; devops T-029.
-4. FIX2 follow-ups for agents: agronomist T-040 (domain YAMLs still say Tyson/approved_by; reviewed_by/human_review
-fields); lead-architect class B: contract text in models.py/schemas mentioning Tyson, `reviewed_by`/`human_review`
-on domain items; data-engineer: demo_lots `to_be_redefined_by: future-local-agronomist`; engine comments mention Tyson.
+4. FIX2 follow-ups for agents: agronomist T-040 (domain YAMLs still say the former team agronomist/approved_by; reviewed_by/human_review
+fields); lead-architect class B: contract text in models.py/schemas mentioning the former team agronomist, `reviewed_by`/`human_review`
+on domain items; data-engineer: demo_lots `to_be_redefined_by: future-local-agronomist`; engine comments mention the former team agronomist.
 Do not touch: contracts without lead-architect; .env and api keys.txt.
 
 ## 2026-11-14 23:55 - frontend-engineer to main session
@@ -92,14 +92,14 @@ Next for the receiver, in order: 1. Review/commit. 2. After P-005: `uv run pytho
 Do not touch: pipeline/data/raw (git-ignored cache, ~80 MB SRTM tiles).
 
 ## 2026-11-14 19:30 - agronomist to main session
-State: T-017 domain files drafted (all unapproved except Tyson's 2 days / 70 cm); review queue ready for Tyson tonight.
+State: T-017 domain files drafted (all unapproved except the former team agronomist's 2 days / 70 cm); review queue ready for the former team agronomist tonight.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: domain/{thresholds,practices,strategies,actions,glossary,flood_memories}.yaml,
-domain/tyson-review-queue.md (Spanish, Q-01..Q-19); P-004 (unreadable Sigatoka/heat-unit PDFs, values kept estimated).
+domain/review-queue.md (Spanish, Q-01..Q-19); P-004 (unreadable Sigatoka/heat-unit PDFs, values kept estimated).
 Waiting on Roberto: run `uv run pytest -q` and `python scripts/check_provenance.py`; P-004.
-Next for the receiver, in order: 1. Run checks. 2. Send queue to Tyson. 3. After T-012 geometry, agronomist writes
-domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by Tyson).
-Do not touch: domain/ approvals (only Tyson's answers, via tyson-answers.md, set approved_by).
+Next for the receiver, in order: 1. Run checks. 2. Send queue to the former team agronomist. 3. After T-012 geometry, agronomist writes
+domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by the former team agronomist).
+Do not touch: domain/ approvals (only the former team agronomist's answers, via agronomist-answers-archive.md, set approved_by).
 
 ## 2026-11-14 23:45 - Main session (Claude Code) to Roberto (morning) and next session
 State: Phase 1 complete on block/1-foundations (stacked on block/0-skeleton); all reviews' findings fixed.
@@ -114,10 +114,10 @@ shell T-026/T-027, then api-engineer T-028 and devops T-029 (max 2 agents at a t
 P-007 answers; SMAP not used (D-019). 3. Engine review: scientist-reviewer + one code review.
 Do not touch: contracts without lead-architect; .env and api keys.txt (git-ignored, never read into reports).
 
-## 2026-11-14 23:00 - Main session (Claude Code) to Tyson (turno de noche)
+## 2026-11-14 23:00 - Main session (Claude Code) to the former team agronomist (turno de noche)
 Estado: fase 1 casi completa en la rama block/1-foundations (commit d22c638). Sin enlace de la app todavía (domingo).
 Para revisar esta noche, en orden:
-1. `domain/tyson-review-queue.md` (19 preguntas, Q-01..Q-19). Las más urgentes: Q-01 (¿el daño empieza a los 2 días
+1. `domain/review-queue.md` (19 preguntas, Q-01..Q-19). Las más urgentes: Q-01 (¿el daño empieza a los 2 días
    de encharcamiento o después de más de 2?) y Q-06 (¿5 = menor costo y menos mano de obra?).
 2. Fecha real de la inundación de demostración (P-007). **Corrección 23:10:** la lista de 15 eventos y las cifras de
    lluvia que había aquí NO son comparables (mezclan dos productos IMERG distintos antes y después de oct 2025; revisión
@@ -152,10 +152,10 @@ run or skip the FreeLLMAPI installer; remove OmniRoute (`npm uninstall -g omniro
 Next for the receiver, in order: 1. Confirm "lite" shows at startup. 2. Resume phase 0 (lead-architect). 3. Phase 1 wave A.
 Do not touch: committed phase 0 files except to complete them.
 
-## 2026-11-14 18:15 - Main session (Claude Code) to Tyson (plan change)
-Resumen para Tyson: el límite de uso de Claude retrasó la fase 0 unas tres horas. Esta noche no habrá enlace de vista
+## 2026-11-14 18:15 - Main session (Claude Code) to the former team agronomist (plan change)
+Resumen para el exagrónomo del equipo: el límite de uso de Claude retrasó la fase 0 unas tres horas. Esta noche no habrá enlace de vista
 previa de la app; pasa al domingo por la mañana. Para tu turno de noche tendrás, hacia las 23:30 (hora de España):
-la cola de revisión `domain/tyson-review-queue.md` (en español), la lista de las 15 lluvias de 72 h más fuertes aguas
+la cola de revisión `domain/review-queue.md` (en español), la lista de las 15 lluvias de 72 h más fuertes aguas
 arriba para que marques cuáles inundaron, y las tres opciones de logo. El plazo de entrega no cambia (domingo 20:00).
 
 ## 2026-11-14 17:55 - Main session (Claude Code) to Roberto

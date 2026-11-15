@@ -5,7 +5,7 @@ if the GitHub CLI is installed and authenticated, it may run `gh issue create --
 Status: [ ] todo, [~] in progress, [x] done, [!] blocked (see PENDING.md).
 
 ## Re-plan after FIX2.md (15 Nov ~00:30 Spain): solo build by Roberto (D-021..D-028)
-Tyson left the team on 14 Nov; nothing waits on him (D-022). Opus 5-hour limit hit at ~00:15; resets 03:30.
+The former team agronomist left the team on 14 Nov; nothing waits on him (D-022). Opus 5-hour limit hit at ~00:15; resets 03:30.
 
 | When (Spain, 15 Nov) | What | Tasks |
 | --- | --- | --- |
@@ -28,16 +28,16 @@ Rule: at most 2 subagents at a time (CLAUDE.md §11), so phase 1 runs in two wav
 | --- | --- | --- |
 | 18:15-18:45 | Roberto: FIX.md steps 4-6, restart with `scripts/start.ps1` | T-006, T-007 |
 | 18:45-19:30 | Finish phase 0 from commit 3a37c2b (lead-architect), review, commit, PR | T-001..T-005 |
-| 19:30-21:00 | Phase 1 wave A: data-engineer + agronomist (Tyson needs the review queue tonight) | T-010..T-014, T-017 |
+| 19:30-21:00 | Phase 1 wave A: data-engineer + agronomist (the former team agronomist needs the review queue tonight) | T-010..T-014, T-017 |
 | 21:00-22:15 | Phase 1 wave B: database-engineer + product-designer | T-015, T-016 |
-| 22:15-22:45 | Checkpoint A (schema, logo, dependencies); flood candidates to Tyson | T-018 |
-| 22:45-23:30 | technical-writer block 1 report; HANDOFF for Tyson's night shift; `/save-session` | T-030 (part) |
+| 22:15-22:45 | Checkpoint A (schema, logo, dependencies); flood candidates to the former team agronomist | T-018 |
+| 22:45-23:30 | technical-writer block 1 report; HANDOFF for the former team agronomist's night shift; `/save-session` | T-030 (part) |
 | Day 2 04:30-10:00 | Phase 2: engine + app shell, then email API + deploy (pairs of 2) | T-020..T-029 |
 | Day 2 10:00 | Gate: if must-haves are not green, every nice-to-have is cut (SPEC cut order) | - |
 | Day 2 10:00-15:00 | Phase 3 scope, as planned | T-040..T-046 |
 | 15:00 / 19:00 / 20:00 | Freeze, video, submit (unchanged) | T-050..T-053 |
 
-Moved: the Render preview link for Tyson's night shift is now day 2 (devops in phase 2). Tonight Tyson works on the
+Moved: the Render preview link for the former team agronomist's night shift is now day 2 (devops in phase 2). Tonight the former team agronomist works on the
 review queue, the flood candidates and the logo options.
 
 ## Block 0: skeleton
@@ -82,11 +82,11 @@ review queue, the flood candidates and the logo options.
   in index.html; without them Android shows no install prompt (Phase 0 review, medium 7). Follow-up for
   frontend-engineer: add `png,svg` to Workbox globPatterns and `theme_color`/`background_color` to the manifest
   (done in 2ea3983)
-- [~] T-017 agronomist: domain files; tyson-review-queue.md (Spanish); memory note on demo lots (thresholds,
+- [~] T-017 agronomist: domain files; review-queue.md (Spanish); memory note on demo lots (thresholds,
   practices, strategies, actions, glossary, flood_memories written + review queue Q-01..Q-19 + memory note;
   checks run by the main session 19:45: pytest 154 passed (all 6 domain files validate), provenance checker OK;
   domain/farm.json waits for T-012 lot geometry; P-004 raised)
-- [ ] T-018 Roberto: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
+- [ ] T-018 Roberto: checkpoint A (schema, logo, dependencies); send flood candidates to the former team agronomist; answer PENDING
   P-001 (state-machine diagram text), P-002 (Telegram farm code), P-003 (nullable country/province/canton)
 - [x] T-019 data-engineer (done in wave A, needed by T-014): `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m
   EPSG:32717 grid aligned to SRTM (ADR-002), writers whose output passes `scripts/check_provenance.py` (before T-014)
@@ -174,7 +174,7 @@ review queue, the flood candidates and the logo options.
 - [ ] T-052 Roberto: 30-second video with English captions, public link
 - [ ] T-053 Roberto: submit by 20:00 Spain; confirm only active members are listed (ask the Local Lead, D-027)
 
-## Former Tyson inputs (closed 14 Nov 2026)
+## Former the former team agronomist inputs (closed 14 Nov 2026)
 - [x] T-060 closed: won't do (team change, D-022); questionnaire defaults become v1 values tagged estimated (D-023)
 - [x] T-061 closed: won't do (team change, D-022)
 - [x] T-062 closed: won't do (team change, D-022); biosecurity: at most one cited line to the official authority (D-025)

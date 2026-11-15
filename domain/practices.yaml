@@ -29,7 +29,7 @@ practices:
       reviewed_by: [agronomist-agent, scientist-reviewer]
       human_review: none
     soil_benefits:
-      value: "Lowers the water table faster after rain so the 70 cm root zone spends fewer days saturated; the aim is to stay within the 2-day tolerance. Oxygen deficiency quickly kills the banana root apex (Turner, Fortescue and Thomas 2007)."
+      value: "Lowers the water table faster after rain so the 70 cm root zone spends fewer days saturated; the aim is to stay within the 2-day tolerance (team agronomist, 14 Nov 2026). Oxygen deficiency quickly kills the banana root apex (Turner, Fortescue and Thomas 2007)."
       origin: estimated
       source: "https://www.scielo.br/j/bjpp/a/w6fWfdQLYKrby3L5m6xnvMP/?lang=en"
       accessed: 2026-11-15
@@ -164,7 +164,7 @@ practices:
       reviewed_by: [agronomist-agent, scientist-reviewer]
       human_review: none
     soil_benefits:
-      value: "Banana and plantain are mycorrhizal plants, but how the association benefits plant performance under field conditions remains largely unknown (Jefwa et al. 2010). In draft strategy C it is applied only when the app shows the soil is not saturated; no product, dose or measured effect is given."
+      value: "Banana and plantain are mycorrhizal plants, but how the association benefits plant performance under field conditions remains largely unknown (Jefwa et al. 2010). In draft strategy C it is applied only when a field check shows the soil is not saturated; no product, dose or measured effect is given."
       origin: sourced
       source: "https://ishs.org/ishs-article/879_52/"
       accessed: 2026-11-15
@@ -230,7 +230,7 @@ practices:
       reviewed_by: [agronomist-agent, scientist-reviewer]
       human_review: none
     soil_benefits:
-      value: "Bio-input in draft strategy C, applied by drench only when the soil is not saturated, timed with the app's soil-moisture status. No measured effect in banana was found in an opened source."
+      value: "Bio-input in draft strategy C, applied by drench only when a field check shows the soil is not saturated. No measured effect in banana was found in an opened source."
       origin: estimated
       estimated_by: "draft strategy C (domain/agronomist-answers-archive.md)"
       reason: "General guidance — not reviewed by an agronomist. No product, dose or measured effect is given or invented; the Costa Rica MAG bulletin found on 2026-11-15 returned HTTP 404."

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T05:11:47Z",
+ "generated_at": "2026-11-15T05:24:41Z",
  "provenance": {
   "id": "prov-app-domain-glossary",
   "dataset": null,
@@ -17,7 +17,7 @@
    "keep display fields only",
    "drop the former agronomist's name (D-027)"
   ],
-  "code_commit": "8358689",
+  "code_commit": "89dcdc9",
   "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
   "notes": "Domain table copied from domain/glossary.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
  },

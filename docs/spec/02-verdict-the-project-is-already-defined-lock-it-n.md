@@ -8,5 +8,5 @@ Demenova has been defined since the end of October; today's ideas (farm dashboar
 
 **How it answers the challenge.** Banana is perennial and is not rotated like annual crops, so the pitch states it plainly: in perennial crops, rotation becomes soil management. Each risky lot gets the current management compared with two alternatives, as the challenge requires.
 
-**Why Machala.** Ecuador is the world's largest banana exporter and El Oro is one of its core banana provinces. Its coastal lowlands sit below Andean watersheds such as the Jubones river, which makes the upstream-rain warning story concrete. Confirm with Tyson that this is the farm area he knows.
+**Why Machala.** Ecuador is the world's largest banana exporter and El Oro is one of its core banana provinces. Its coastal lowlands sit below Andean watersheds such as the Jubones river, which makes the upstream-rain warning story concrete. Confirm with the former team agronomist that this is the farm area he knows.
 

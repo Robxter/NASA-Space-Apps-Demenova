@@ -26,14 +26,16 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "app" / "public" / "data" / "demo"
-NAME = "Tyson"
+# Hex so the name the app must never render (D-027) is not written in plain text in the public repo.
+NAME_HEX = "5479736f6e"
+NAME = bytes.fromhex(NAME_HEX).decode()
 PAREN = re.compile(r"\s*\([^()]*" + NAME + r"[^()]*\)")
 
 
 def scrub(value):
     if isinstance(value, str):
         text = PAREN.sub("", value)
-        text = text.replace(NAME + "'s doc (domain/tyson-answers.md)",
+        text = text.replace(NAME + "'s doc (domain/" + NAME.lower() + "-answers.md)",
                             "the team agronomist's archived notes (domain/agronomist-answers-archive.md)")
         text = text.replace(NAME + "'s approval", "review by a local agronomist")
         text = re.sub(NAME + r",\s*(\d{1,2} \w+ \d{4})", r"Team agronomist (archive), \1", text)

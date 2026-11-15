@@ -266,7 +266,7 @@ If sessions feel slow or tool calls lag, re-run `npx ecc-universal@2.2.3 setup` 
 2. Update TASKS.md and WORKFLOW.md times from the current clock (Spain time); keep the deadline: submit by 20:00 on
    15 Nov, hard close 23:59.
 3. Apply the SPEC cut order early: nice-to-haves are off unless the must-haves are green by day 2, 10:00.
-4. Write a HANDOFF.md entry for Tyson if the night-shift timing changed.
+4. Write a HANDOFF.md entry for the former team agronomist if the night-shift timing changed.
 
 ## 9. Verify and commit
 
