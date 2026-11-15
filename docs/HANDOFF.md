@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~11:25 - Main session (Claude Code) to Roberto: block 3 upgrade LIVE
+State: Roberto said "ship it". block/2-core fast-forwarded 79e05f3 -> 19d7d1f (54 commits, no force push; CI green on
+19d7d1f); Roberto deployed demenova-app by hand in Render. Live build index-BfDOnsji.js (was index-BA1yB0-Q.js).
+Live smoke (headless Edge): all screens render at 360 px with 0 console errors, Home in about 1 s, map tiles load,
+offline reopen works, Connect loads hCaptcha with 0 CSP violations, security headers present, two theme-color tags,
+service worker carries the /about/ denylist, /about/ answers 404, API /health ok; desktop Home shows the two-column
+layout. Rollback if ever needed: Render -> demenova-app -> previous deploy -> Rollback.
+Waiting on Roberto: P-019 (Flood, default at 15:00), P-020 (default after submission); tick the hCaptcha box once;
+DEVICE_CHECKLIST.md on iPhone and iPad (portrait and landscape) + one Lighthouse run; merge block/3-polish to main and
+tag v1.0.0; video; submit by 20:00. Extract.md sections 11-13 and docs/extract/ still show the pre-upgrade build.
+
 ## 2026-11-15 11:15 - Main session (Claude Code) to Roberto: block 3 frontend upgrade COMPLETE, QA-green, not live
 State: block/3-polish, app code 2231e63 (head carries only docs and tests after it). QA verdict GREEN (C4,
 docs/reports/qa/2026-11-15-1110.md); main-session re-run on the final head agrees: Vitest 84, build 96.4 kB of 150 kB,
