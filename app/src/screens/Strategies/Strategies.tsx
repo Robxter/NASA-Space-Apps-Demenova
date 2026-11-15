@@ -45,7 +45,7 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
   const { prefs, t } = usePrefs();
   const section = (title: MessageKey, value: LocalizedText) => (
     <div>
-      <h4 className="m-0 text-footnote font-semibold text-ink-2">{t(title)}</h4>
+      <h3 className="m-0 text-footnote font-semibold text-ink-2">{t(title)}</h3>
       <p className="m-0 mt-0.5 text-callout text-ink">
         <Text value={value} />
       </p>
@@ -56,7 +56,8 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
       {/* CL-17: no lettered discs (ranking is by score, not letter); the current management carries a neutral tag. */}
       <div className="flex items-start gap-3">
         <div className="min-w-0 flex-1">
-          <h3 className="m-0 flex flex-wrap items-center gap-2 text-headline text-ink">
+          {/* T-068: h2 under the page h1 (no skipped level); the size stays text-headline. */}
+          <h2 className="m-0 flex flex-wrap items-center gap-2 text-headline text-ink">
             <span className="sr-only">{t('strategies.option', { label: s.label })}: </span>
             {t(`strategies.title.${s.label}`)}
             {s.label === 'A' ? (
@@ -64,7 +65,7 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
                 {t('strategies.currentTag')}
               </span>
             ) : null}
-          </h3>
+          </h2>
           <p className="m-0 mt-1 text-callout text-ink">
             <Text value={s.what} />
           </p>
@@ -87,7 +88,7 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
         <div className="flex flex-col gap-3 pb-1">
           {section('strategies.why', s.why)}
           <div>
-            <h4 className="m-0 text-footnote font-semibold text-ink-2">{t('strategies.evidence')}</h4>
+            <h3 className="m-0 text-footnote font-semibold text-ink-2">{t('strategies.evidence')}</h3>
             {s.evidence.length ? (
               <ul className="m-0 mt-0.5 list-disc pl-5 text-callout text-ink">
                 {s.evidence.map((e) => (

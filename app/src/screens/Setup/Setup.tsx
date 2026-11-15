@@ -39,7 +39,7 @@ export function ConfidenceBadge({ level }: { level: DataLevel }) {
   const { t } = usePrefs();
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-surface-2 px-2.5 py-1 text-footnote font-semibold text-ink">
-      {t('setup.level', { n: level })} · {t('setup.confidence', { level: t(`confidence.${CONFIDENCE_BY_LEVEL[level]}`) })}
+      {t('setup.level', { n: level })}, {t('setup.confidence', { level: t(`confidence.${CONFIDENCE_BY_LEVEL[level]}`) })}
     </span>
   );
 }

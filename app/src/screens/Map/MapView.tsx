@@ -128,7 +128,7 @@ export default function MapView() {
       else if (layer === 'rain') {
         const q = rainOf(lot.id);
         const origin = resolveOrigin(unit?.features, 'rain_local_mm');
-        text = q?.text && origin ? `${q.text} ${q.unit} · ${t(`origin.${origin}`)}` : t('common.noData');
+        text = q?.text && origin ? `${q.text} ${q.unit}, ${t(`origin.${origin}`)}` : t('common.noData');
       } else text = level ? t(`level.${level}`) : t('common.noData');
       el.setAttribute('aria-label', `${lot.name}: ${text}`);
       labelled.push({ lot, poly, text, level: layer === 'level' ? level : null, flooding, rank: level ? LEVEL_RANK[level] : -2 });
