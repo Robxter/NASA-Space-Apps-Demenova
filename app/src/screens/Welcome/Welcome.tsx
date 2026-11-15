@@ -136,7 +136,7 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
           ].map(([term, text]) => (
             <div key={term} className="grid gap-1 px-4 py-3.5 sm:grid-cols-[10rem_1fr] sm:gap-4">
               <dt className="text-callout font-semibold text-ink-2">{term}</dt>
-              <dd className="m-0 text-body text-ink">{text}</dd>
+              <dd className="m-0 text-pretty text-body text-ink">{text}</dd>
             </div>
           ))}
         </dl>
