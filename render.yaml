@@ -109,3 +109,10 @@ services:
         sync: false
       - key: APP_BASE_URL
         sync: false
+      # Block 4 (api-engineer): public test-email captcha and the Telegram bot. Secrets: no value here.
+      - key: HCAPTCHA_SECRET
+        sync: false
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: TELEGRAM_WEBHOOK_SECRET
+        sync: false
