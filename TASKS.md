@@ -152,8 +152,9 @@ review queue, the flood candidates and the logo options.
 - [ ] T-043 api-engineer: Telegram bot (nice-to-have)
 - [ ] T-044 qa-demo-engineer: e2e suite, replay acceptance, DEVICE_CHECKLIST.md (iPhone 14 Pro, iPad Air M2,
   Chrome DevTools Android emulation 360×780, CPU 4×, Slow 4G)
-- [ ] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
-  guidance stated as general and not reviewed by a local agronomist
+- [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
+  guidance stated as general and not reviewed by a local agronomist (5 guides done 2026-11-15; learn-cards.md
+  skipped, optional; <app URL> placeholder for Roberto; report docs/reports/instructor/2026-11-15-1400.md)
 - [x] T-046 closed: won't do (team change, D-022)
 
 ## Freeze and submission (day 2, 15:00 → 20:00)
