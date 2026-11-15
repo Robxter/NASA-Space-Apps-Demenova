@@ -137,6 +137,7 @@ No coverage target outside the engine.
 - Every agent ends its run with a report in `docs/reports/<agent>/<YYYY-MM-DD-HHmm>.md` using the template in
   `docs/AGENTS.md`, and updates `TASKS.md`.
 - Run `python scripts/check_provenance.py` before any commit that touches data files.
+- Before building or changing UI, read `DESIGN.md`.
 - Before you sleep or hand off: update `docs/HANDOFF.md` and run `/save-session`.
 
 ## 9. Definition of done (any task)
