@@ -10,6 +10,7 @@ import { usePrefs } from '../state/prefs';
 import { formatInstant } from '../time';
 import { recordsCsv, savedDays } from '../data/records';
 import { ConnectDevice } from '../components/ConnectDevice';
+import { EmailAlertCard, TelegramAlertCard } from '../components/AlertChannels';
 import { WelcomeRow } from './Welcome/BackToWelcome';
 import type { AlertEvent } from '../types/contracts';
 
@@ -76,7 +77,8 @@ export function Alerts() {
               </List>
             )}
           </Card>
-          <p className="m-0 px-4 text-footnote text-ink-3">{t('alerts.channels')}</p>
+          <EmailAlertCard />
+          <TelegramAlertCard />
           <ReplayDock />
         </div>
       )}
