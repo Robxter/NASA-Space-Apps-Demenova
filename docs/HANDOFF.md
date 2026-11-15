@@ -2,6 +2,17 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 04:55 - data-scientist to main session
+State: T-020..T-024b done on block/2-core (c39de04, 83d8cf0, 8b1194e, 969e4c8, 7e1f49c, 940cd32); not pushed.
+Done since last handoff: engine + demo snapshots in app/public/data/demo (644 KB, all contracts pass; 348 tests);
+verification 4 hits / 0 misses / 6 false alarms in 2026; sensitivity not stable at marginal lots (report
+docs/reports/data-scientist/2026-11-15-0450.md). Re-run: `uv run python -m pipeline.engine replay`.
+Waiting on Roberto: P-014 (thresholds and replay start: the replay is Severe all window for 7 of 8 lots).
+Waiting on lead-architect: P-015 (sensitivity field, experimental flag; class B).
+Next for the receiver, in order: 1. T-025 scientist-reviewer + code review of 969e4c8..940cd32. 2. data-engineer
+T-049 (NDVI layers invalid, > 1; lot ids). 3. frontend: real snapshots replace the fixture; NDVI is null everywhere.
+Do not touch: app/public/data/demo by hand (regenerate with the command above).
+
 ## 2026-11-15 04:50 - devops-engineer (via main session) to Roberto
 State: T-029 committed (0a8024a): ci.yml, pipeline.yml (hourly; live ingest/score step is a marked, never-run TODO),
 render.yaml (Static Site app + free Web Service API), scripts/check_bundle_size.mjs, docs/DEPLOY.md. Nothing live yet.

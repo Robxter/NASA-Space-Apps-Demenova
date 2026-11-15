@@ -89,16 +89,25 @@ review queue, the flood candidates and the logo options.
   EPSG:32717 grid aligned to SRTM (ADR-002), writers whose output passes `scripts/check_provenance.py` (before T-014)
 
 ## Block 2: core
-- [x] T-020 data-scientist: terrain features, TWI terciles, zones (c39de04)
-- [x] T-021 data-scientist: runoff (CN), Kirpich first lag, calibrated lag on Feb 2026 event (83d8cf0; calibration
-  uses documented events only, FIX2 §4.4 / D-024)
-- [x] T-022 data-scientist: API, FAO-56 ETc, daily balance, 2-day floor rule (83d8cf0)
-- [x] T-023 data-scientist: index W, state machine, side indicators, explanations, confidence (8b1194e; side
-  indicators are nice-to-have with an "Experimental" badge, D-024)
-- [~] T-024 data-scientist: verification counts; replay snapshots; tests (paused at the usage limit; verification.py
-  uncommitted)
-- [ ] T-024b data-scientist: weight sensitivity check ±0.10 on the 22–23 Feb 2026 replay ->
-  app/public/data/demo/verification.json (FIX2 §4.2, replaces expert AHP; D-024)
+- [x] T-020 data-scientist: terrain features, TWI terciles, zones (c39de04; zones = TWI terciles of the lot cells,
+  the demo farm has no outline)
+- [x] T-021 data-scientist: runoff (CN), Kirpich first lag, calibrated lag on Feb 2026 event (83d8cf0, 969e4c8;
+  Kirpich tc 250.7 min; travel_lag_days 0 `calibrated` on the El Universo 23 Feb 2026 report; CN pending, no data)
+- [x] T-022 data-scientist: API, FAO-56 ETc, daily balance, 2-day floor rule (83d8cf0; FAO-56 Example 18 test;
+  Kc 1.10 Table 12; D pending, so the floor runs on P - ETc)
+- [x] T-023 data-scientist: index W, state machine, side indicators, explanations, confidence (8b1194e, 969e4c8;
+  weights/thresholds `design` per D-024; AHP in unused ahp.py; side indicators experimental)
+- [x] T-024 data-scientist: verification counts; replay snapshots; tests (7e1f49c, 940cd32; 2026: 4 hits, 0 misses,
+  6 false alarms vs 4 press floods; replay window 1/0/0; snapshots 644 KB, reproducible-from-repo test; 91 engine tests)
+- [x] T-024b data-scientist: weight sensitivity check ±0.10 on the 22–23 Feb 2026 replay ->
+  app/public/data/demo/verification.json (7e1f49c, 940cd32; strict test NOT stable in 9/10 variants at marginal
+  lots 3, 6, 8; lots 1, 2, 4, 5, 7 Severe on the flood days in every variant; result in `notes`, P-015)
+- [ ] T-047 data-scientist: source or replace the engine's `estimated` values with opened sources (api_k NWS PDF,
+  Sigatoka/leaf-wetness/heat-unit papers, Saaty's RI table for n = 5); agent work, no human expert (D-022)
+- [ ] T-048 data-scientist: apply Roberto's answer to P-014 (W thresholds, earlier replay start) and re-run replay
+- [ ] T-049 data-engineer: NDVI layers invalid (19 Feb 2026 scene: 90 % of clear pixels > 1, median 1.40; the
+  2025–26 composite used for lot placement likewise; check the STAC raster:bands scale/offset); demo_lots.geojson
+  ids `lot_demo_el_oro_N` break the contract (`lot_demo-el-oro_N`); engine maps them meanwhile
 - [ ] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks
 - [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
