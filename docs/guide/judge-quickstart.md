@@ -5,7 +5,7 @@ farms in coastal El Oro, Ecuador. Built with NASA Earth observations. Agronomic 
 guidance, not yet reviewed by a local agronomist.
 
 ## 1. Open it
-1. Open **<app URL>** on a phone or desktop browser. Nothing to install; it also installs to the home screen.
+1. Open **https://demenova-app.onrender.com/** on a phone or desktop browser. Nothing to install; it also installs to the home screen.
 2. The app opens on **Home** for the demo farm, **Finca Demo El Oro**, marked **Demo**.
 
 ## 2. Switch language and units

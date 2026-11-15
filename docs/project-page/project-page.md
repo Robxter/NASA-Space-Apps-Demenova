@@ -84,7 +84,7 @@ Sentinel-2 via Element 84 Earth Search, OpenStreetMap contributors, FAO-56, El U
 Primicias, Agrocalidad, and the agronomy papers listed in docs/CITATIONS.md with URLs and access dates.
 
 ## Links
-- App: <app URL>
+- App: https://demenova-app.onrender.com/
 - Demo video: <video URL>
-- Code: <repository URL>
-- Judge quick start: docs/guide/judge-quickstart.md
+- Code: https://github.com/Robxter/NASA-Space-Apps-Demenova
+- Judge quick start: https://github.com/Robxter/NASA-Space-Apps-Demenova/blob/main/docs/guide/judge-quickstart.md

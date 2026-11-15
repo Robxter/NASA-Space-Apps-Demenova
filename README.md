@@ -6,7 +6,8 @@ built for the 2026 NASA Space Apps Challenge, challenge "Field Shift: Adapting F
 
 Built with NASA Earth observations. Demenova is an independent project; it is not endorsed by NASA.
 
-- Live app: <app URL>
+- Live app: https://demenova-app.onrender.com/ (backend health: https://demenova-api.onrender.com/health; the free
+  backend sleeps when idle, so its first call can take about a minute; the app itself never waits on it)
 - Judge quick start (one page): [docs/guide/judge-quickstart.md](docs/guide/judge-quickstart.md)
 - Guides: [farmer (es)](docs/guide/farmer-es.md), [farmer (en)](docs/guide/farmer-en.md),
   [agronomist (en)](docs/guide/agronomist-en.md), [agronomist (es)](docs/guide/agronomist-es.md)
