@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Prototype: a lot turns Severe (Demenova, D-033)</title>
+  <link rel="stylesheet" href="../../app/src/styles/tokens.css" />
+  <link rel="stylesheet" href="severe-moment.css" />
+  <link rel="stylesheet" href="picker.css" />
+</head>
+<body>
+  <main class="phone" aria-label="Risk map, demo farm">
+    <header class="head">
+      <h1 class="title">Risk map</h1>
+      <p class="meta"><span class="demo">Demo</span> <span id="day">Fri, 6 Feb 2026</span></p>
+    </header>
+    <div id="stage"></div>
+    <div class="dock">
+      <button id="step" class="btn" type="button">Show 7 Feb</button>
+      <p class="note">Synthetic demo farm. Levels from the replay snapshots for 6 and 7 Feb 2026; outlines from farm.json.</p>
+    </div>
+  </main>
+
+  <nav class="proto-picker" aria-label="Prototype variants" data-position="top">
+    <span class="proto-picker-highlight" aria-hidden="true"></span>
+    <button class="proto-picker-item" data-active aria-current="true">Ripple</button>
+    <button class="proto-picker-item">Flood</button>
+    <button class="proto-picker-item">Label</button>
+    <span class="proto-picker-divider" aria-hidden="true"></span>
+    <button class="proto-picker-item proto-picker-replay" aria-label="Replay animation (R)">↻</button>
+  </nav>
+
+  <script src="severe-moment-data.js"></script>
+  <script src="severe-moment.js"></script>
+</body>
+</html>

@@ -41,4 +41,47 @@ missing, colour AND word, no data or contract change. Status: open unless marked
 
 ## Severe moment (A4 pick, owner FE for the map, PD for ui)
 
-Filled in after A4 (`design/prototypes/severe-moment.html`).
+Prototype: `design/prototypes/severe-moment.html` (serve the repo root, open `/design/prototypes/severe-moment.html`;
+keys 1-3 or the picker switch variants, R replays). Real demo data: replay 6 to 7 Feb 2026, Lote 1 (demo) and
+Lote 7 (demo) go Warning to Severe; outlines from `farm.json`. Variants, one axis (where the motion lives):
+
+| # | Variant | Axis | When it is right | Its cost |
+| --- | --- | --- | --- | --- |
+| 1 | Ripple (incumbent) | Outward: colour change 600 ms, ring x2 (2.2 s loop) | The lot is far from where the eye is | Longest; a loop on a data surface; the ring repeats the same news twice |
+| 2 | Flood (pick) | Inside the shape: water rises in the lot, spills once | The core metaphor carries the alert | Rise is subtle on a 20 px lot; the label core and the spill carry it at small zoom |
+| 3 | Label | Only the label moves (pop 260 ms, core fills 400 ms) | Daily-use screens | Not memorable; the brief puts the boldness here |
+
+**Pick: 2 Flood.** review-animations verdict on it: justified (rare, high-stakes state change), frequency rare (so
+over 300 ms is allowed), ease-in-out for on-screen fill and strong ease-out for the ring (STANDARDS curves), one ring
+instead of a loop, interruptible (a newer day cancels the sweep), reduced motion = final state with a 200 ms colour
+fade. Performance note (CL-26): the sweep updates two gradient stop offsets per frame on at most a few paths for
+700 ms; acceptable once, never on scrub. Roberto may override before 15:00.
+
+Timeline (choreograph format):
+
+| Element | Role | Starts | Duration | Motion | Relationship |
+| --- | --- | --- | --- | --- | --- |
+| Lot fill (map) | Lead | 0 ms | 700 ms | hard-stop gradient sweeps bottom to top, Warning fill (opacity .55) to Severe fill (.75), `cubic-bezier(.77,0,.175,1)` | - |
+| Lot stroke (map) | Support | 0 ms | 200 ms | stroke to severe ink, width 2 to 3, `--dn-ease-out` | Together with the fill |
+| Label core water | Support | 0 ms | 700 ms | `scaleY(.75)` to `scaleY(1)`, origin bottom, same curve as the fill | Together (same object, same timing family) |
+| Label word | Support | 350 ms | 0 ms | text swaps Warning to Severe, no animation | Midpoint of the rise |
+| Spill ring (map) | Decoration | 560 ms | 900 ms | clone of the lot outline, stroke severe fill 2.5 px, `scale(1)` to `scale(1.5)`, opacity .85 to 0, `--dn-ease-out`, fill-mode forwards, removed at 1460 ms | Sequence: starts just before the rise ends |
+| Home alert banner, list rows, scrubber | Static | - | - | - | - |
+
+What does not move: the Home banner (it is read, not watched; the critique found its ring reads as a focus box), list
+rows (high frequency), the scrubber bars (data), the W number (no count-up: data, and it would need a library),
+neighbouring lots (their levels did not change).
+
+Feel check: scrub the recording at 520-620 ms, where the rise ends and the ring leaves; it should read as one gesture
+(water reaches the top and spills), not two events.
+
+- CL-29 P1 FE MapView: implement the Flood timeline above; trigger only when a unit's level becomes Severe from a non-Severe level on a forward one-day step (play or step button), never on drag-scrub, first load, Lot open or a backward step (with CL-25); copy `flood()` from `design/prototypes/severe-moment.js` (it cancels on a newer step); add class `dn-lot-ring` to the clone - check: replay 6 to 7 Feb at 360 and 1440, Lote 1 and Lote 7 flood once; dragging the scrubber across 7 Feb plays nothing; reduced motion shows the final state.
+- CL-30 P1 PD tokens and CSS for CL-29: `--dn-dur-flood` 700 ms, `--dn-dur-spill` 900 ms, `--dn-delay-spill` 560 ms, `--dn-ease-in-out`, `.dn-lot-ring` + `dn-lot-spill` keyframes, `SeverityGlyph` water as `scaleY` (replaces CL-26's `y`/`height`) - check: typecheck; reduced motion hides `.dn-lot-ring`. Status: open (PD A5).
+
+## From frontend-engineer (A2 break-ui, A3 motion) — appended 10:40, for PD review in B2
+
+- CL-25 P1 FE Severe ripple plays only on a transition: today `AlertBanner` is keyed by date and `onset` is just `level === 'severe'`, so the ripple replays on every scrubbed day and every Lot open of an already-Severe lot (A3 finding; breaks the CL-06 rule "never on the load of an already-Severe lot") - fix together with CL-06: onset when the previous replay day's level for that unit was not Severe.
+- CL-26 P2 PD `dn-lot-onset` animates `stroke-width`/`stroke-opacity` and `.dn-lot-shape` transitions `fill`/`stroke` (paint tier, short, few paths); `SeverityGlyph` water animates SVG `y`/`height` (animation-performance tier table) - consider `transform: scale` / `opacity` versions in CL-06 and CL-09; not a blocker.
+- CL-27 P2 FE Motion opportunities that passed find-animation-opportunities' gate (occasional, purpose = spatial continuity): (1) Map lot sheet enters from the bottom edge (`translateY(100%)`+`opacity` -> settled, `--dn-dur-sheet`, `--dn-ease-drawer`, `@starting-style`), exits the same edge; reduced motion: opacity only. (2) Reliability sheet as native `<dialog>` (focus trap, Escape; pick-ui-library mismatch "div dialog with manual focus") slides up on open, drag-to-dismiss per brief B4; reduced motion: 200 ms fade. Rejected (frequency or function): tab switches, Segmented thumb, Home list re-order while playing, W count-up (would need NumberFlow: class A), map layer switch, scrubber bars.
+- CL-28 P2 PD Map legend shown when lot labels collide (break-ui: 40 lots): today a row of small `SeverityBadge`s under the controls (`MapView.tsx`); review its look with CL-04/CL-05.
+- Note on CL-07: `learn.notReviewed` and the start of `learn.general` keep the D-026 wording with the em dash (coordinator's agreed text, asserted by `actions.test.ts`); the Setup badge separator " · " is asserted by QA in `tests/e2e/specs/setup.spec.ts:9` (`confidence()` helper), so QA updates that helper before the CL-07 separator change lands. The other 10 copy rows are applied (6210e77).

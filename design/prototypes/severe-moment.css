@@ -1,0 +1,87 @@
+/* Prototype: a lot turns Severe. Uses the app's tokens (../../app/src/styles/tokens.css); motion values from
+   .claude/skills/review-animations/STANDARDS.md. Three variants on one axis: where the motion lives. */
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  min-height: 100dvh;
+  background: var(--dn-bg);
+  color: var(--dn-ink);
+  font: 17px/1.47 system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.phone { max-width: 360px; margin: 0 auto; padding: 76px 16px 32px; }
+.head { padding: 0 4px 12px; }
+.title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 600; letter-spacing: -0.01em; }
+.meta { margin: 4px 0 0; display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--dn-ink-3); }
+.demo {
+  border: 1px solid var(--dn-alluvium); color: var(--dn-alluvium); border-radius: 999px;
+  padding: 1px 8px; font-size: 12px; font-weight: 600; background-image: var(--dn-hatch);
+}
+.dock { padding: 16px 4px 0; }
+.btn {
+  min-height: 48px; padding: 0 20px; border: 0; border-radius: 10px; font: inherit; font-weight: 600;
+  background: var(--dn-primary); color: var(--dn-on-primary); cursor: pointer;
+  transition: transform 160ms var(--ease-out);
+}
+.btn:active { transform: scale(0.97); }
+.btn:focus-visible { outline: 3px solid var(--dn-focus); outline-offset: 2px; }
+.note { margin: 12px 0 0; font-size: 13px; line-height: 1.38; color: var(--dn-ink-3); }
+
+/* Map */
+.map {
+  position: relative; aspect-ratio: 300 / 255; border-radius: 14px; overflow: hidden;
+  background: var(--dn-surface-2);
+}
+.map > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+
+.lot { stroke-width: 1.5; stroke-linejoin: round; }
+.lot[data-level='normal'] { fill: var(--dn-normal-fill); stroke: var(--dn-normal-ink); fill-opacity: 0.25; }
+.lot[data-level='watch'] { fill: var(--dn-watch-fill); stroke: var(--dn-watch-ink); fill-opacity: 0.4; }
+.lot[data-level='warning'] { fill: var(--dn-warning-fill); stroke: var(--dn-warning-ink); fill-opacity: 0.55; }
+.lot[data-level='severe'] { fill: var(--dn-severe-fill); stroke: var(--dn-severe-ink); fill-opacity: 0.75; stroke-width: 2.5; }
+.lot.is-flooding { fill-opacity: 0.75; }
+
+.ring {
+  fill: none; stroke: var(--dn-severe-fill); stroke-width: 2.5; pointer-events: none; opacity: 0;
+  transform-box: fill-box; transform-origin: center;
+}
+
+/* Labels (the app's .dn-map-label) */
+.label {
+  position: absolute; transform: translate(-50%, calc(-100% - 6px)); transform-origin: 50% 100%;
+  display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px 2px 6px; white-space: nowrap;
+  border-radius: 8px; border: 1px solid var(--lvl-ink); background: var(--dn-surface); color: var(--lvl-ink);
+  font-size: 12px; line-height: 16px; font-weight: 600;
+}
+.core { width: 10px; height: 13px; flex: none; }
+.core-outline { fill: none; stroke: var(--lvl-ink); stroke-width: 1.6; }
+.core-water { fill: var(--lvl-fill); transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(var(--lvl-ratio)); }
+
+/* 1. Ripple: the incumbent. Colour changes in place (600 ms), then a ring runs out from the lot twice. */
+[data-variant='ripple'] .lot { transition: fill 600ms var(--ease-out), fill-opacity 600ms var(--ease-out), stroke 600ms var(--ease-out), stroke-width 600ms var(--ease-out); }
+[data-variant='ripple'] .ring.is-on { animation: ring-wide 1100ms var(--ease-out) 2; }
+@keyframes ring-wide { from { opacity: 0.9; transform: scale(1); } to { opacity: 0; transform: scale(1.8); } }
+
+/* 2. Flood: water rises inside the lot (700 ms, JS sweeps a hard gradient stop), then spills once as one ring. */
+[data-variant='flood'] .lot { transition: stroke 200ms var(--ease-out), stroke-width 200ms var(--ease-out); }
+[data-variant='flood'] .ring.is-on { animation: ring-spill 900ms var(--ease-out) 560ms 1 forwards; }
+@keyframes ring-spill { from { opacity: 0.85; transform: scale(1); } to { opacity: 0; transform: scale(1.5); } }
+[data-variant='flood'] .core-water { transition: transform 700ms var(--ease-in-out); }
+
+/* 3. Label: the shape changes as a plain state change (200 ms); the label carries the moment. */
+[data-variant='label'] .lot { transition: fill 200ms var(--ease-out), fill-opacity 200ms var(--ease-out), stroke 200ms var(--ease-out); }
+[data-variant='label'] .label.is-on { animation: label-pop 260ms var(--ease-out); }
+@keyframes label-pop { from { transform: translate(-50%, calc(-100% - 6px)) scale(0.92); } to { transform: translate(-50%, calc(-100% - 6px)) scale(1); } }
+[data-variant='label'] .core-water { transition: transform 400ms var(--ease-out); }
+
+@media (prefers-reduced-motion: reduce) {
+  .ring { display: none; }
+  .label.is-on { animation: none !important; }
+  .lot { transition: fill 200ms linear, fill-opacity 200ms linear, stroke 200ms linear !important; }
+  .core-water { transition: none !important; }
+}
