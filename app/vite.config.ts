@@ -15,12 +15,12 @@ export default defineConfig({
       manifest: false,
       workbox: {
         // App shell, including the lazy Map and Lot chunks, so offline reopen works on every screen (ADR-004).
-        globPatterns: ['**/*.{js,css,html,webmanifest,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,webmanifest,png,svg}', 'templates/*.csv'],
         // Snapshots are cached at runtime (below) and in IndexedDB, never precached: they change with each engine run.
         // The About page (app/public/about/, static) is never precached and never answered with the app shell.
         globIgnores: ['data/**', 'about/**'],
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/about\//],
+        navigateFallbackDenylist: [/^\/about\//, /^\/templates\//],
         runtimeCaching: [
           {
             // Demo snapshots: fresh copy when online, cached copy when offline.

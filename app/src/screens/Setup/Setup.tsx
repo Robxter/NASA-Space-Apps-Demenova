@@ -24,6 +24,7 @@ import {
   type LocalFarmRecord,
 } from '../../data/farmSetup';
 import { deleteLocalFarm, deleteRemoteFarm, loadLocalFarm, saveLocalFarm, syncFarm } from '../../data/farmStore';
+import { CSV_COLUMNS, CSV_MAX_BYTES, parseLotsCsv } from '../../data/csvLots';
 import { getSupabase } from '../../data/identity';
 import { loadZones } from '../../data/snapshots';
 import { useData } from '../../state/data';
@@ -180,6 +181,7 @@ export default function Setup() {
   const [lotArea, setLotArea] = useState('');
   const [lotAge, setLotAge] = useState('');
   const [message, setMessage] = useState<string | null>(null);
+  const [csvRejected, setCsvRejected] = useState<string[]>([]);
   const [syncing, setSyncing] = useState(false);
   const zonesFile = useSnapshot(() => loadZones());
   const zones = zonesFile.status === 'ready' ? zonesFile.value.data : null;
@@ -308,6 +310,23 @@ export default function Setup() {
     setMessage(t('setup.imported', { n: res.lots.length, skipped: res.skipped.length }));
   };
 
+  // CSV import (block 4): one row per lot, SI units, values become `provided`; each rejected row is listed.
+  const importCsv = async (file: File | undefined) => {
+    if (!rec || !file) return;
+    setCsvRejected([]);
+    if (file.size > CSV_MAX_BYTES) return setMessage(t('setup.importTooBig'));
+    const res = parseLotsCsv(await file.text());
+    if (res.error) return setMessage(t(res.error === 'empty' ? 'setup.csvEmpty' : 'setup.csvHeader'));
+    let next = rec;
+    for (const l of res.lots)
+      next = addLot(next, { name: l.name, geometry: l.geometry, area_ha: l.area_ha, plant_age_months: l.plant_age_months }, nowIso());
+    if (res.lots.length) await commit(next);
+    setMessage(t('setup.csvImported', { n: res.lots.length, rejected: res.rejected.length }));
+    setCsvRejected(
+      res.rejected.map((r) => t('setup.csvRow', { line: r.line, reason: t(`setup.csvReason.${r.reason}`, { column: r.column ?? '' }) })),
+    );
+  };
+
   const reset = async () => {
     if (!rec || !window.confirm(t('setup.resetConfirm'))) return;
     const err = identity.status === 'signed-in' && rec.synced_at ? await deleteRemoteFarm(rec.farm.id, await getSupabase()) : null;
@@ -373,9 +392,16 @@ export default function Setup() {
       <div className="flex flex-col gap-5 px-4">
         <p className="m-0 text-callout text-ink-2">{t('setup.intro')}</p>
         {message ? (
-          <p role="status" className="m-0 rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink">
-            {message}
-          </p>
+          <div role="status" className="rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink">
+            <p className="m-0">{message}</p>
+            {csvRejected.length ? (
+              <ul className="m-0 mt-1 list-disc pl-5 text-footnote text-ink-2">
+                {csvRejected.map((r) => (
+                  <li key={r}>{r}</li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
         ) : null}
 
         <SetupMap rec={rec} mode={mode} draft={draft} zones={zonesHere ? zones : null} center={center} onTap={onTap} />
@@ -463,6 +489,37 @@ export default function Setup() {
                     }}
                   />
                 </label>
+                <label className="inline-flex min-h-12 dn-press cursor-pointer touch-manipulation select-none items-center justify-center rounded-control bg-surface-2 px-5 text-body font-semibold text-ink focus-within:outline focus-within:outline-3 focus-within:outline-focus">
+                  {t('setup.importCsv')}
+                  <input
+                    type="file"
+                    accept=".csv,text/csv"
+                    className="sr-only"
+                    onChange={(e) => {
+                      void importCsv(e.currentTarget.files?.[0]);
+                      e.currentTarget.value = '';
+                    }}
+                  />
+                </label>
+              </div>
+            ) : null}
+            {!drawing ? (
+              <div className="text-footnote text-ink-2">
+                <a
+                  href={`${import.meta.env.BASE_URL}templates/demenova-lots-template.csv`}
+                  download
+                  className="inline-flex min-h-11 items-center font-semibold text-leaf"
+                >
+                  {t('setup.csvTemplate')}
+                </a>
+                <p className="m-0">{t('setup.csvHelp')}</p>
+                <ul className="m-0 mt-1 list-disc pl-5">
+                  {CSV_COLUMNS.map((c) => (
+                    <li key={c}>
+                      <code className="font-semibold text-ink">{c}</code>: {t(`setup.csvCol.${c}`)}
+                    </li>
+                  ))}
+                </ul>
               </div>
             ) : null}
             {rec.lots.length ? (
