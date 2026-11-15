@@ -4,13 +4,14 @@ import { lazy, Suspense, useEffect, useMemo } from 'react';
 import { EmptyState } from './components/ui';
 import { TabBar } from './components/shell';
 import Home from './screens/Home/Home';
-import { Alerts, Learn, Settings, Strategies } from './screens/Other';
+import { Alerts, Learn, Settings } from './screens/Other';
 import { parseHash, tabOf, useHash } from './state/nav';
 import { DataProvider } from './state/data';
 import { PrefsProvider, usePrefs } from './state/prefs';
 
 const MapView = lazy(() => import('./screens/Map/MapView'));
 const Lot = lazy(() => import('./screens/Lot/Lot'));
+const Strategies = lazy(() => import('./screens/Strategies/Strategies'));
 
 function Screens() {
   const hash = useHash();

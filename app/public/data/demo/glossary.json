@@ -1,0 +1,201 @@
+{
+ "generated_at": "2026-11-15T04:29:57Z",
+ "provenance": {
+  "id": "prov-app-domain-glossary",
+  "dataset": null,
+  "version": null,
+  "provider": null,
+  "url": null,
+  "accessed": null,
+  "spatial_resolution": null,
+  "temporal_resolution": null,
+  "aoi": null,
+  "time_range": null,
+  "processing": [
+   "yaml.safe_load",
+   "keep terms with a definition in both languages",
+   "keep display fields only",
+   "drop the former agronomist's name (D-027)"
+  ],
+  "code_commit": "c5c2db4",
+  "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
+  "notes": "Domain table copied from domain/glossary.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
+ },
+ "terms": [
+  {
+   "term_id": "encharcamiento",
+   "term": {
+    "es": "Encharcamiento",
+    "en": "Waterlogging"
+   },
+   "definition": {
+    "es": "Suelo saturado de agua, con el nivel freático dentro de la zona de raíces (70 cm). El banano tolera como máximo 2 días.",
+    "en": "Soil saturated with water, with the water table inside the root zone (70 cm). Banana tolerates 2 days at most."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "lote",
+   "term": {
+    "es": "Lote",
+    "en": "Lot"
+   },
+   "definition": {
+    "es": "Parte de la finca que se maneja como una unidad (cosecha, labores, registros).",
+    "en": "Part of the farm managed as one unit (harvest, field work, records)."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "cuadrilla",
+   "term": {
+    "es": "Cuadrilla",
+    "en": "Field crew"
+   },
+   "definition": {
+    "es": "Grupo de trabajadores que hace las labores de campo.",
+    "en": "Group of workers who carry out field work."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "drenaje",
+   "term": {
+    "es": "Drenaje",
+    "en": "Drainage"
+   },
+   "definition": {
+    "es": "Canales y salidas que sacan el exceso de agua del lote.",
+    "en": "Ditches and outlets that remove excess water from the lot."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "nivel_freatico",
+   "term": {
+    "es": "Nivel freático",
+    "en": "Water table"
+   },
+   "definition": {
+    "es": "Profundidad a la que el suelo está saturado de agua; si sube a menos de 70 cm por más de 2 días, daña las raíces.",
+    "en": "Depth at which the soil is saturated; if it rises above 70 cm depth for more than 2 days, roots are damaged."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "crecida",
+   "term": {
+    "es": "Crecida o desborde del río",
+    "en": "River overflow"
+   },
+   "definition": {
+    "es": "Agua de lluvia caída en la parte alta de la cuenca que llega horas o días después y se sale del cauce.",
+    "en": "Rain that fell in the upper catchment arriving hours or days later and leaving the river channel."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "mani_forrajero",
+   "term": {
+    "es": "Maní forrajero",
+    "en": "Pinto peanut (Arachis pintoi)"
+   },
+   "definition": {
+    "es": "Leguminosa perenne rastrera (Arachis pintoi) que forma una cobertura densa; se usa como cobertura viva en algunas fincas bananeras.",
+    "en": "Perennial creeping legume (Arachis pintoi) that forms a dense cover; some banana farms use it as living cover."
+   },
+   "origin": "estimated",
+   "source": "https://en.wikipedia.org/wiki/Arachis_pintoi",
+   "accessed": "2026-11-14",
+   "approved_by": null
+  },
+  {
+   "term_id": "micorrizas",
+   "term": {
+    "es": "Micorrizas",
+    "en": "Mycorrhizae"
+   },
+   "definition": {
+    "es": "Hongos del suelo que se asocian con las raíces; bioinsumo en la estrategia C, aplicado con suelo no saturado.",
+    "en": "Soil fungi that associate with roots; a bio-input in strategy C, applied on unsaturated soil."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "microorganismos_de_montana",
+   "term": {
+    "es": "Microorganismos de montaña (MM)",
+    "en": "Mountain microorganisms (MM)"
+   },
+   "definition": {
+    "es": "Bioinsumo preparado con microorganismos colectados de suelo de bosque; en la estrategia C se aplica por drench con suelo no saturado.",
+    "en": "Bio-input prepared from microorganisms collected from forest soil; in strategy C it is applied by drench on unsaturated soil."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "drench",
+   "term": {
+    "es": "Drench",
+    "en": "Drench"
+   },
+   "definition": {
+    "es": "Aplicación de un líquido dirigida al suelo alrededor de la planta.",
+    "en": "A liquid application aimed at the soil around the plant."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "sigatoka_negra",
+   "term": {
+    "es": "Sigatoka negra",
+    "en": "Black Sigatoka"
+   },
+   "definition": {
+    "es": "Enfermedad de las hojas del banano favorecida por calor, humedad alta y hojas mojadas.",
+    "en": "Banana leaf disease favoured by warmth, high humidity and wet leaves."
+   },
+   "origin": "estimated",
+   "approved_by": null
+  },
+  {
+   "term_id": "llenado_de_fruta",
+   "term": {
+    "es": "Llenado de fruta",
+    "en": "Fruit filling"
+   },
+   "definition": {
+    "es": "Crecimiento en grosor de los dedos del racimo hasta la cosecha; noches frías lo hacen más lento.",
+    "en": "Growth in thickness of the bunch fingers until harvest; cool nights slow it down."
+   },
+   "origin": "estimated",
+   "source": "https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/",
+   "accessed": "2026-11-14",
+   "approved_by": null
+  },
+  {
+   "term_id": "temporada_fresca",
+   "term": {
+    "es": "Temporada fresca",
+    "en": "Cool season"
+   },
+   "definition": {
+    "es": "En Machala, aproximadamente del 1 de julio al 13 de noviembre; agosto es el mes más frío.",
+    "en": "In Machala, roughly 1 July to 13 November; August is the coldest month."
+   },
+   "origin": "sourced",
+   "source": "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o",
+   "accessed": "2026-11-14",
+   "approved_by": null
+  }
+ ]
+}

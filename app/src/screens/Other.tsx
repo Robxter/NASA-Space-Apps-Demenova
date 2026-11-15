@@ -73,18 +73,6 @@ export function Learn() {
   );
 }
 
-export function Strategies({ id }: { id: string }) {
-  const { t } = usePrefs();
-  const { unitName } = useData();
-  return (
-    <div className="pb-4">
-      <ScreenHeader title={`${t('strategies.title')}: ${unitName(id)}`} back={{ name: 'lot', id }} />
-      <EmptyState title={t('strategies.title')} body={t('common.comingSoon')} />
-      <p className="m-0 mx-4 rounded-control bg-surface p-4 text-callout text-ink">{t('strategies.disclaimer')}</p>
-    </div>
-  );
-}
-
 export function Settings() {
   const { prefs, set, t } = usePrefs();
   const { identity } = useData();

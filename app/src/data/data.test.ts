@@ -5,6 +5,8 @@ import { memoryKV } from './idb';
 import { fromSpec, resolveOrigin } from './origin';
 import { bannerUnit, countByLevel, highestLevel, highestW, sortByW, topFactor } from './select';
 import { initialIndex, loadDemo } from './demo';
+import { isSourcedScore, localized, strategiesForUnit } from './strategies';
+import type { Strategy } from '../types/contracts';
 import { guards, loadJson, resolveProvenance, SnapshotError, sourceLabel, trimHistory } from './snapshots';
 import type { ReplayUnit } from '../types/contracts';
 
@@ -153,5 +155,41 @@ describe('selectors (display only)', () => {
     expect(topFactor([{ name: 'local', share: 0.2 }, { name: 'upstream', share: 0.5 }])?.name).toBe('upstream');
     expect(topFactor([])).toBeNull();
     expect(highestW([u('a', 'normal', null)])).toBeNull();
+  });
+});
+
+describe('strategies (D-028)', () => {
+  const score = (value: number | null, origin: Strategy['origin']) => ({ value, origin });
+  const strat = (label: Strategy['label'], scope: string[]): Strategy => ({
+    strategy_id: `s_${label}_${scope.join()}`,
+    lot_scope: scope,
+    label,
+    what: { es: 'qué', en: null },
+    why: { es: null, en: null },
+    evidence: [],
+    benefits: { es: null, en: null },
+    gaps: { es: null, en: null },
+    risks: { es: null, en: null },
+    scores: { soil: score(2, 'estimated'), water: score(1, 'estimated'), cost: score(5, 'estimated'), labour: score(5, 'sourced') },
+    approved_by: null,
+    origin: 'estimated',
+  });
+
+  it('uses the lot own strategies, else the regional defaults, ordered A, B, C', () => {
+    const all = [strat('C', ['*']), strat('A', ['*']), strat('B', ['*'])];
+    expect(strategiesForUnit(all, 'lot_x_1').map((s) => s.label)).toEqual(['A', 'B', 'C']);
+    expect(strategiesForUnit([...all, strat('A', ['lot_x_1'])], 'lot_x_1')).toHaveLength(1);
+  });
+
+  it('shows cost and labour only when sourced', () => {
+    const s = strat('A', ['*']);
+    expect(isSourcedScore(s.scores.cost)).toBe(false);
+    expect(isSourcedScore(s.scores.labour)).toBe(true);
+    expect(isSourcedScore(score(null, 'sourced'))).toBe(false);
+  });
+
+  it('never fills a missing language from the other one', () => {
+    expect(localized({ es: 'qué', en: null }, 'en')).toBeNull();
+    expect(localized({ es: 'qué', en: null }, 'es')).toBe('qué');
   });
 });

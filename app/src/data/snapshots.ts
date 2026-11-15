@@ -3,6 +3,9 @@
 import type {
   AppManifest,
   FarmFile,
+  GlossaryTerm,
+  StrategiesFile,
+  VerificationFile,
   HistoryFile,
   Provenance,
   ProvenanceBlock,
@@ -53,7 +56,18 @@ export const guards = {
   replayDay: (v: unknown): v is ReplayDay => isObj(v) && typeof v.date === 'string' && Array.isArray(v.units),
   history: (v: unknown): v is HistoryFile =>
     isObj(v) && typeof v.unit_id === 'string' && Array.isArray(v.dates) && isObj(v.series),
+  strategies: (v: unknown): v is StrategiesFile => isObj(v) && Array.isArray(v.strategies),
+  glossary: (v: unknown): v is GlossaryAppFile => isObj(v) && Array.isArray(v.terms),
+  verification: (v: unknown): v is VerificationFile =>
+    isObj(v) && typeof v.hits === 'number' && typeof v.misses === 'number' && typeof v.false_alarms === 'number',
 };
+
+/** glossary.json: domain/glossary.yaml copied for the app (app/scripts/build_domain_snapshots.py). */
+export interface GlossaryAppFile {
+  generated_at: string;
+  provenance: ProvenanceBlock;
+  terms: GlossaryTerm[];
+}
 
 export function snapshotBase(): string {
   const base = (import.meta.env?.BASE_URL as string | undefined) ?? '/';
@@ -104,6 +118,9 @@ export async function loadJson<T>(path: string, guard: (v: unknown) => v is T, d
 export const loadManifest = (d?: LoaderDeps) => loadJson('manifest.json', guards.manifest, d);
 export const loadFarm = (d?: LoaderDeps) => loadJson('farm.json', guards.farm, d);
 export const loadReplayDay = (date: string, d?: LoaderDeps) => loadJson(`replay/${date}.json`, guards.replayDay, d);
+export const loadStrategies = (d?: LoaderDeps) => loadJson('strategies.json', guards.strategies, d);
+export const loadGlossary = (d?: LoaderDeps) => loadJson('glossary.json', guards.glossary, d);
+export const loadVerification = (d?: LoaderDeps) => loadJson('verification.json', guards.verification, d);
 export const loadHistory = (unitId: string, d?: LoaderDeps) =>
   loadJson(`history/${encodeURIComponent(unitId)}.json`, guards.history, d);
 
