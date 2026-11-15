@@ -146,11 +146,12 @@ function SetupMap({
     // className must never change after mount, or React rewrites it and the map collapses (the "Drop pin" bug).
     // Anything that depends on the mode lives on the wrapper.
     <div>
+      {/* Above the map, in the flow: keyboard order (chooser, map, zoom buttons) then matches the reading order. */}
+      <div className="mb-2 flex justify-end">
+        <BaseSelect value={baseName} onChange={setBaseName} options={['satellite', 'streets', 'relief']} />
+      </div>
       <div className="relative z-0 overflow-hidden rounded-group" data-mode={mode}>
         <div ref={box} role="application" aria-label={t('setup.mapLabel')} className={SETUP_MAP_CLASS} />
-        <div className="absolute top-2.5 right-2.5 z-[1000]">
-          <BaseSelect value={baseName} onChange={setBaseName} options={['satellite', 'streets', 'relief']} />
-        </div>
       </div>
       <p className="m-0 mt-1 px-1 text-caption text-ink-3">{t(creditKey(baseName), { layer: gibsLayerName(baseName) })}</p>
     </div>
