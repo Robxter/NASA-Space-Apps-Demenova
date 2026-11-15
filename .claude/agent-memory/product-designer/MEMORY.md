@@ -1,2 +1,3 @@
-- [Design direction v1](design-direction.md) — soil-core signature, palette roles, rejected ideas (sparkle, torn leaf, faded bars)
-- [Screenshot tooling](screenshot-tooling.md) — headless Edge recipe, 500 px clamp → iframe, transparent icon PNGs
+- [Design direction](design-direction.md) — soil-core signature, Flood Severe moment (D-033), palette roles, rejected ideas
+- [About page (cut, kept for later)](about-page.md) — Roberto may reuse it: restore from fc3c12e, 3 gate FAILs to fix first
+- [Screenshot tooling](screenshot-tooling.md) — pw_mcp bridge recipe, #settings language toggle, file:// blank, serve.mjs
