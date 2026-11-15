@@ -32,6 +32,8 @@ import { convert, toSI } from '../../units';
 import type { DataLevel, Point, Position, ZonesFile } from '../../types/contracts';
 
 type Mode = 'idle' | 'pin' | 'outline' | 'lot';
+/** Static on purpose: see SetupMap. Must not depend on state. */
+export const SETUP_MAP_CLASS = 'relative z-0 h-72 md:h-[26rem] overscroll-none text-ink';
 const nowIso = () => new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
 const ll = (p: Position): [number, number] => [p[1] ?? 0, p[0] ?? 0];
 
@@ -130,12 +132,17 @@ function SetupMap({
   }, [rec, mode, draft, zones, t]);
 
   return (
-    <div
-      ref={box}
-      role="application"
-      aria-label={t('setup.mapLabel')}
-      className={`relative z-0 h-72 overflow-hidden md:h-[26rem] overscroll-none rounded-group text-ink ${mode === 'idle' ? '' : 'cursor-crosshair'}`}
-    />
+    // Leaflet adds its own classes (leaflet-container, leaflet-touch...) to the element it owns. That element's
+    // className must never change after mount, or React rewrites it and the map collapses (the "Drop pin" bug).
+    // Anything that depends on the mode lives on the wrapper.
+    <div className="relative z-0 overflow-hidden rounded-group" data-mode={mode}>
+      <div
+        ref={box}
+        role="application"
+        aria-label={t('setup.mapLabel')}
+        className={SETUP_MAP_CLASS}
+      />
+    </div>
   );
 }
 
