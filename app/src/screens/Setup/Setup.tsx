@@ -332,6 +332,15 @@ export default function Setup() {
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {rec ? <ConfidenceBadge level={rec.farm.data_level} /> : <ConfidenceBadge level={0} />}
           {syncLine ? <span className="text-footnote text-ink-3">{syncLine}</span> : null}
+          {rec?.sync_error && identity.status === 'signed-in' && !syncing ? (
+            <button
+              type="button"
+              onClick={() => void sync(rec)}
+              className="min-h-11 touch-manipulation select-none rounded-control px-2 text-footnote font-semibold text-leaf active:opacity-60"
+            >
+              {t('setup.syncRetry')}
+            </button>
+          ) : null}
         </div>
       </ScreenHeader>
 

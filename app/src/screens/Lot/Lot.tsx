@@ -74,7 +74,7 @@ function History({ unitId, date }: { unitId: string; date: string | null }) {
   }, [hist, date, range]);
 
   if (hist.status === 'loading') return <EmptyState title={t('common.loading')} />;
-  if (hist.status === 'missing' || !view) return <EmptyState tone="missing" title={t('lot.noHistory')} />;
+  if (hist.status === 'missing' || !view) return <EmptyState tone="missing" title={t('lot.noHistory')} body={t('lot.noHistoryBody')} />;
   const source = sourceLabel(resolveProvenance(hist.file.provenance, demo?.manifest ?? null));
 
   return (

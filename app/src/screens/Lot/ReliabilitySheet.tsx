@@ -56,7 +56,7 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
         </header>
 
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
-        {file.status === 'missing' ? <EmptyState tone="missing" title={t('reliability.missing')} /> : null}
+        {file.status === 'missing' ? <EmptyState tone="missing" title={t('reliability.missing')} body={t('common.missingFileBody')} /> : null}
 
         {r ? (
           <div className="flex flex-col gap-5 px-4">

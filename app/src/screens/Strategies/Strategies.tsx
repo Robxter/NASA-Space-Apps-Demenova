@@ -127,7 +127,7 @@ export default function Strategies({ id }: { id: string }) {
       <div className="flex flex-col gap-4 px-4">
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
         {file.status === 'missing' || (file.status === 'ready' && list.length === 0) ? (
-          <EmptyState tone="missing" title={t('strategies.none')} />
+          <EmptyState tone="missing" title={t('strategies.none')} body={t('common.missingFileBody')} />
         ) : null}
         {list.map((s) => (
           <StrategyCard key={s.strategy_id} s={s} at={file.status === 'ready' ? file.value.data.generated_at : null} />

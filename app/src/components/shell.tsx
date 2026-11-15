@@ -187,6 +187,7 @@ export function LoadGate() {
     <EmptyState
       tone="error"
       title={t('status.loadError')}
+      body={t('status.loadErrorBody')}
       action={<Button variant="secondary" onClick={retry}>{t('common.retry')}</Button>}
     />
   );

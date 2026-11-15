@@ -22,7 +22,7 @@ export default function Learn() {
       <div className="flex flex-col gap-4 px-4">
         <p className="m-0 rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink-2">{t('learn.general')}</p>
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
-        {file.status === 'missing' ? <EmptyState tone="missing" title={t('learn.missing')} /> : null}
+        {file.status === 'missing' ? <EmptyState tone="missing" title={t('learn.missing')} body={t('common.missingFileBody')} /> : null}
         {terms.map((term) => {
           const title = localized(term.term, prefs.language);
           const body = localized(term.definition, prefs.language);
