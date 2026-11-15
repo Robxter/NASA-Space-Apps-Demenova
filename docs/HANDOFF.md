@@ -2,6 +2,22 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~14:40 - Main session (Claude Code) to Roberto: block 4 LIVE
+State: Roberto said "ship block 4"; block/2-core fast-forwarded 19d7d1f -> 8920a85 (31 commits, CI green, no force push);
+Roberto deployed demenova-api (with HCAPTCHA_SECRET, HCAPTCHA_SITEKEY, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET) and
+demenova-app. Live build index-DN2yR-Gm.js. Telegram webhook registered (setWebhook ok; getWebhookInfo url =
+https://demenova-api.onrender.com/telegram/webhook, 0 pending). QA C5 GREEN on app 6917745 (317 e2e passed); wording fix
+8920a85 re-checked (Vitest 112, welcome/sweep/csp specs 116 passed). Security review: no CRITICAL/HIGH; fixes 7f7e2a1; D-037.
+Live smoke (headless Edge, 393 px): Welcome at / with Enter the app on all 3 tabs, 0 demo-data requests before entering;
+Instructions.pdf served as application/pdf; App Access -> #home with the back link; Setup map stays visible after
+"Drop pin" (Satellite imagery); Alerts has the email form and the @DemenovaBot link; CSV template header-only; API:
+/health ok, webhook 401 without secret, test-email rejects a fake captcha (hCaptcha configured); 0 CSP violations, 0 errors.
+Earlier today: a TEST Severe email was sent to Roberto's Gmail through the backend code (Resend 200).
+Waiting on Roberto: send /start to @DemenovaBot and try the email form with his own address (the two real-world checks
+the tests mock); paste the YouTube link into app/public/site.json when the video exists; device checklist; merge to main
++ tag v1.0.0; submit by 20:00. Open: P-019 (Flood default), P-020, P-021 (Telegram per-chat retry needs a schema change);
+check the per-IP rate limit sees real client IPs on Render (backend README).
+
 ## 2026-11-15 ~12:40 - product-designer to frontend-engineer and QA: Welcome page (block 4, D-036)
 Commits bcf71b2, 0f9852d, b99c9c3, 3cbe88e, 1d18cda, f018364 on block/4-reception (not pushed).
 - Routing hook (your files, minimal): `state/nav.ts` adds `{ name: 'welcome', tab }`; empty hash, `#`, `#welcome`,
