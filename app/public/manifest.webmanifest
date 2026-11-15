@@ -2,7 +2,7 @@
   "name": "Demenova",
   "short_name": "Demenova",
   "description": "Waterlogging and flood alerts for banana farms in coastal El Oro, Ecuador. Built with NASA Earth observations.",
-  "start_url": "/",
+  "start_url": "/#home",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#0e2135",
