@@ -169,6 +169,13 @@ review queue, the flood candidates and the logo options.
   the Setup badge and the map rain label); Strategies cards are h3 under h1 (detector skipped-heading: make them h2)
 - [x] T-069 product-designer (non-blocking, D-033; done d64b98e): map label padding sits at the detector limit (cramped-padding,
   4 px for 12 px text); dark-theme ink-2/ink-3 on surface flagged gray-on-color (contrast 5.70-8.54:1, AA pass)
+- [x] T-071 qa-demo-engineer: block 4 (D-036) C5 gate GREEN at app 6917745 (e2e 317 passed + @perf 2 alone; new specs
+  welcome, setup-block4, alerts-channels; report docs/reports/qa/2026-11-15-1418.md)
+- [ ] T-072 product-designer (non-blocking, D-036): Welcome copy still lists the old imagery: Instructions "Map" step
+  (content.en.ts/es.ts:46 "Relief or True colour") and Technical details (:132 lists ASTER relief and MODIS only; add
+  Landsat WELD as the default Satellite and OpenStreetMap for Streets)
+- [ ] T-073 owner of docs/site (non-blocking, D-036): docs/site/Instructions.md:57 and the built Instructions.pdf say
+  "Imagery: Relief or True colour"; Satellite (default), Streets and Relief since 649d287; rebuild the PDF
 - [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
   guidance stated as general and not reviewed by a local agronomist (5 guides done 2026-11-15; learn-cards.md
   skipped, optional; <app URL> placeholder for Roberto; report docs/reports/instructor/2026-11-15-1400.md)
