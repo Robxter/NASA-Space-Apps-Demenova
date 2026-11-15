@@ -73,9 +73,9 @@ const es: WelcomeContent = {
     ],
     alertsTitle: 'Alertas por correo y Telegram',
     email:
-      'Correo: escribe tu correo y pide una alerta Severo de prueba. Durante la demo, la entrega funciona solo para la dirección del dueño del proyecto; la entrega a cualquier dirección es una actualización futura en desarrollo.',
+      'Correo: en **Alertas por correo**, en la pantalla Alertas, escribe tu correo y toca **Enviarme una alerta Severa de prueba**. Durante la demo, la entrega funciona solo para la dirección del dueño del proyecto; la entrega a cualquier dirección es una actualización futura en desarrollo.',
     telegram:
-      'Telegram: abre el bot de Demenova desde la pantalla Alertas e inícialo para recibir alertas Severo de la finca demo.',
+      'Telegram: en **Alertas por Telegram**, en la pantalla Alertas, toca **Abrir @DemenovaBot** y envía /start para recibir las alertas Severas de la finca demo; /stop para dejar de recibirlas.',
     telegramLink: { label: 'Abrir @DemenovaBot en Telegram', href: 'https://t.me/DemenovaBot?start' },
   },
   qa: {

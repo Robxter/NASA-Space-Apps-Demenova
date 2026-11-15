@@ -73,9 +73,9 @@ const en: WelcomeContent = {
     ],
     alertsTitle: 'Alerts by email and Telegram',
     email:
-      "Email: type your email and request a test Severe alert. During the demo, delivery works only for the project owner's address; delivery to any address is a future update in development.",
+      "Email: in **Email alerts** on the Alerts screen, type your email and tap **Send me a test Severe alert**. During the demo, delivery works only for the project owner's address; delivery to any address is a future update in development.",
     telegram:
-      'Telegram: open the Demenova bot from the Alerts screen and start it to receive Severe alerts for the demo farm.',
+      'Telegram: in **Telegram alerts** on the Alerts screen, tap **Open @DemenovaBot** and send /start to receive Severe alerts for the demo farm; /stop stops them.',
     telegramLink: { label: 'Open @DemenovaBot in Telegram', href: 'https://t.me/DemenovaBot?start' },
   },
   qa: {

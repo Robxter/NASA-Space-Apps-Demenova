@@ -91,7 +91,7 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
       <Card title={h.whatTitle}>
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {h.what.map((line) => (
-            <li key={line} className="text-body text-ink">
+            <li key={line} className="max-w-[65ch] text-body text-ink">
               {line}
             </li>
           ))}
@@ -162,8 +162,8 @@ function InstructionsTab({ c }: { c: WelcomeContent }) {
 
       <Card title={s.alertsTitle}>
         <div className="flex flex-col gap-3">
-          <p className="m-0 max-w-[65ch] text-body text-ink">{s.email}</p>
-          <p className="m-0 max-w-[65ch] text-body text-ink">{s.telegram}</p>
+          <p className="m-0 max-w-[65ch] text-body text-ink">{rich(s.email)}</p>
+          <p className="m-0 max-w-[65ch] text-body text-ink">{rich(s.telegram)}</p>
           <a
             href={s.telegramLink.href}
             target="_blank"
@@ -209,7 +209,7 @@ function QaTab({ c }: { c: WelcomeContent }) {
         {q.tech.map((part) => (
           <Card key={part.title} title={part.title} headingLevel={3}>
             {part.items ? (
-              <ul className="m-0 flex flex-col gap-2 pl-5 text-callout text-ink">
+              <ul className="m-0 flex list-disc flex-col gap-2 pl-5 text-callout text-ink marker:text-ink-3">
                 {part.items.map((it) => (
                   <li key={it} className="max-w-[70ch]">
                     {it}
