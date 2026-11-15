@@ -60,6 +60,20 @@
   --dn-dur-flood: 700ms; /* water rises in the lot and in the core */
   --dn-dur-spill: 900ms; /* the one ring that leaves the lot */
   --dn-delay-spill: 560ms; /* starts just before the rise ends: one gesture, not two */
+  /* Block 5 (D-038): entrances, reveals and a gentle spring. --dn-ease-spring is a linear() spring (about 1 %
+     overshoot) where the browser supports it (see the @supports block below); here, the strong ease-out. */
+  --dn-ease-spring: cubic-bezier(0.23, 1, 0.32, 1);
+  --dn-dur-enter: 420ms; /* an element arrives: rise 12 px + fade */
+  --dn-dur-exit: 180ms; /* exits are faster than entrances */
+  --dn-dur-reveal: 600ms; /* a section reveals once as it scrolls into view */
+  --dn-stagger: 60ms; /* step between siblings; the group finishes under ~400 ms */
+  --dn-rise: 12px;
+  /* Chart tokens for uPlot (read with getComputedStyle): rain in Normal's blue-teal, fill fading to transparent. */
+  --dn-chart-rain: #3591a0;
+  --dn-chart-rain-fill: rgb(53 145 160 / 0.28);
+  --dn-chart-temp: #a65a1b;
+  --dn-chart-ndvi: #2a6343;
+  --dn-chart-grid: #d2dbd6;
   --dn-press-scale: 0.97; /* buttons and controls */
   --dn-press-scale-wide: 0.985; /* wide surfaces: the alert banner, list rows */
   --dn-sheet-offset: 100%; /* sheets enter from the bottom edge by this much */
@@ -112,6 +126,11 @@
   --dn-shadow-banner: 0 1px 2px rgb(3 10 19 / 0.4), 0 8px 20px rgb(3 10 19 / 0.28);
   --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
   --dn-selection: rgb(127 178 255 / 0.3);
+  --dn-chart-rain: #72ceda;
+  --dn-chart-rain-fill: rgb(114 206 218 / 0.24);
+  --dn-chart-temp: #ffb680;
+  --dn-chart-ndvi: #86cda2;
+  --dn-chart-grid: #233853;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -150,6 +169,11 @@
     --dn-shadow-banner: 0 1px 2px rgb(3 10 19 / 0.4), 0 8px 20px rgb(3 10 19 / 0.28);
     --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
     --dn-selection: rgb(127 178 255 / 0.3);
+    --dn-chart-rain: #72ceda;
+    --dn-chart-rain-fill: rgb(114 206 218 / 0.24);
+    --dn-chart-temp: #ffb680;
+    --dn-chart-ndvi: #86cda2;
+    --dn-chart-grid: #233853;
   }
 }
 
@@ -162,6 +186,17 @@
     --dn-press-scale: 1;
     --dn-press-scale-wide: 1;
     --dn-sheet-offset: 0px;
+    --dn-dur-enter: 0ms;
+    --dn-dur-reveal: 0ms;
+    --dn-stagger: 0ms;
+    --dn-rise: 0px;
+  }
+}
+
+/* The block 5 spring, where linear() exists (Chrome 113+, Safari 17.2+, Firefox 112+). */
+@supports (animation-timing-function: linear(0, 1)) {
+  :root {
+    --dn-ease-spring: linear(0, 0.0123, 0.0456 3%, 0.1683 6.5%, 0.3477 10.5%, 0.5469 15%, 0.7215 19.8%, 0.8458 24.6%, 0.9278 29.3%, 0.9765 34.1%, 1.0025 39%, 1.0118 44%, 1.0116 49.3%, 1.0061 56%, 1.0013 66%, 0.9996 79%, 1);
   }
 }
 

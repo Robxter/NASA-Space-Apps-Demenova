@@ -269,3 +269,151 @@
     scroll-behavior: auto;
   }
 }
+
+/*
+ * Block 5 motion utilities (D-038, design/components/Motion.md). Every one animates transform and opacity only,
+ * runs once unless it is an ambient illustration loop (orbit, rain, wave), and rests under prefers-reduced-motion
+ * (tokens.css drops the durations and distances to 0, and the loops stop below).
+ */
+@layer components {
+  /* An element arrives: rises 12 px and fades in on the spring. */
+  .dn-enter {
+    animation: dn-enter-up var(--dn-dur-enter) var(--dn-ease-spring) both;
+  }
+  .dn-enter-fade {
+    animation: dn-enter-fade var(--dn-dur-state) var(--dn-ease-out) both;
+  }
+  .dn-scale-in {
+    animation: dn-scale-in var(--dn-dur-enter) var(--dn-ease-spring) both;
+  }
+  /* Siblings arrive one after another: 60 ms steps, the ninth and later together (choreograph: total under 500 ms). */
+  .dn-stagger > * {
+    animation: dn-enter-up var(--dn-dur-enter) var(--dn-ease-spring) both;
+  }
+  .dn-stagger > :nth-child(2) { animation-delay: calc(1 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(3) { animation-delay: calc(2 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(4) { animation-delay: calc(3 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(5) { animation-delay: calc(4 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(6) { animation-delay: calc(5 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(7) { animation-delay: calc(6 * var(--dn-stagger)); }
+  .dn-stagger > :nth-child(n + 8) { animation-delay: calc(7 * var(--dn-stagger)); }
+
+  /*
+   * Reveal once on scroll (ui/Reveal.tsx). Content is never hidden without JavaScript: the hook adds
+   * .dn-reveal-pending only to an element still below the fold, then swaps it for .dn-reveal-in when it enters.
+   */
+  .dn-reveal-pending {
+    opacity: 0;
+    transform: translateY(calc(var(--dn-rise) * 2));
+  }
+  .dn-reveal-in {
+    animation: dn-enter-up var(--dn-dur-reveal) var(--dn-ease-spring) both;
+    --dn-rise: 24px;
+  }
+
+  /* Branded skeleton: the shimmer is a translated sheen (composited), not a moving background. */
+  .dn-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: var(--dn-skeleton);
+  }
+  .dn-skeleton::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--dn-surface) 55%, transparent), transparent);
+    transform: translateX(-100%);
+    animation: dn-shimmer 1.4s var(--dn-ease-in-out) infinite;
+  }
+
+  /* Ambient illustration loops (Welcome hero only). Paused when off screen by the page, still under reduced motion. */
+  .dn-orbit {
+    transform-box: view-box;
+    transform-origin: 50% 50%;
+    animation: dn-orbit 28s linear infinite;
+  }
+  .dn-rain {
+    animation: dn-rain 1.6s var(--dn-ease-in-out) infinite both;
+  }
+  .dn-wave {
+    animation: dn-wave 3.2s linear infinite;
+  }
+  .is-paused .dn-orbit,
+  .is-paused .dn-rain,
+  .is-paused .dn-wave {
+    animation-play-state: paused;
+  }
+
+  @keyframes dn-enter-up {
+    from {
+      opacity: 0;
+      transform: translateY(var(--dn-rise));
+    }
+  }
+  @keyframes dn-enter-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes dn-scale-in {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @keyframes dn-shimmer {
+    to {
+      transform: translateX(100%);
+    }
+  }
+  @keyframes dn-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes dn-rain {
+    0% {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    25% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+  }
+  @keyframes dn-wave {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/* Same-document view transitions (frontend-engineer may call document.startViewTransition between screens). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--dn-dur-state);
+  animation-timing-function: var(--dn-ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dn-reveal-pending {
+    opacity: 1;
+    transform: none;
+  }
+  .dn-skeleton::after,
+  .dn-orbit,
+  .dn-rain,
+  .dn-wave {
+    animation: none;
+  }
+  .dn-rain {
+    opacity: 0.8;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}

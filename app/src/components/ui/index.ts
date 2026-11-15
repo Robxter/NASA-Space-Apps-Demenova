@@ -7,6 +7,7 @@ export { EmptyState, type EmptyStateProps, type EmptyTone } from './EmptyState';
 export { List, ListRow, type ListProps, type ListRowProps } from './ListRow';
 export { MissingData, type MissingDataProps } from './MissingData';
 export { ReplayScrubber, type ReplayScrubberProps, type ScrubberDay } from './ReplayScrubber';
+export { Reveal, type RevealProps } from './Reveal';
 export { SeverityBadge, type SeverityBadgeProps } from './SeverityBadge';
 export { SeverityGlyph, type SeverityGlyphProps } from './SeverityGlyph';
 export { Value, type ValueProps } from './Value';

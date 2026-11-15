@@ -260,6 +260,28 @@ map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and o
   Why: "Spend boldness there; keep everything else quiet." (Roberto, role brief)
   <!-- 2026-11-15: Roberto approved learn-taste rule 2 ("APPROVE ALL"); source: "The memorable moment: a lot turning from calm to Severe on the map during the flood replay." -->
 
+## Motion, block 5
+
+Roberto, 15 Nov 2026: "Improve the frontend graphics and animations, doesnt matter if it makes it a little bit
+heavier" (D-038). This relaxes the One Moment Rule below (D-035 rule 2): the Flood stays the app's strongest motion,
+and more motion is now allowed when each piece has a purpose (Emil Kowalski's test: feedback, orientation,
+continuity, or a rare moment), a `prefers-reduced-motion` path, and animates transform and opacity only.
+
+Now allowed (tokens and utilities in `design/components/Motion.md`):
+- **Entrances** (`.dn-enter`, `.dn-scale-in`, `.dn-enter-fade`): rise 12 px and fade, 420 ms on a gentle spring
+  (`--dn-ease-spring`, a CSS `linear()` curve with about 1 % overshoot; strong ease-out where `linear()` is missing).
+- **Stagger** (`.dn-stagger`): 60 ms steps, the eighth child onwards together, so a group finishes under 500 ms.
+- **Reveal once on scroll** (`<Reveal>`): only content that starts below the fold, once, 600 ms; never hidden
+  without JavaScript.
+- **Branded skeleton** (`.dn-skeleton`): a translated sheen, not a moving background.
+- **View transitions** between screens: a 200 ms crossfade on the root.
+- **Ambient illustration loops** on the Welcome page only (`dn-orbit`, `dn-rain`, `dn-wave`): paused off screen,
+  still under reduced motion, never on data.
+
+Still never: a count-up or tweened number on a data value (an intermediate number is not data); motion on keyboard
+actions; generic Tailwind loops; invented imagery of farms or people (illustrations and abstract motifs only).
+Check: `app/src/styles/motion.test.ts` pins the approved keyframes.
+
 ## Do's and Don'ts
 
 ### Do:
