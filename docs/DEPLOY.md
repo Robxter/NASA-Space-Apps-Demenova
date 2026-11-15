@@ -28,7 +28,10 @@ Note: `EARTHDATA_TOKEN` is not read by `pipeline/ingest/auth.py`; use username a
 1. Render Dashboard > **New > Blueprint** > **Connect** next to the Demenova repository.
 2. Name the Blueprint, choose the branch (`main` once merged; `block/2-core` to try it now). Blueprint Path: leave default.
 3. Render prompts for every `sync: false` variable. Enter:
-   - `demenova-app` (Static Site): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (anon key only, never the service role).
+   - `demenova-app` (Static Site): `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY` (anon key only, never the service role),
+     `VITE_HCAPTCHA_SITEKEY` (D-032): hCaptcha dashboard > **Sites** > the site's **sitekey** (public; never the
+     hCaptcha secret). That site's allowed domains must include `demenova-app.onrender.com`.
+     The Blueprint already exists, so add it in demenova-app > **Environment**, then redeploy (it is build-time).
    - `demenova-api` (Web Service, free): `ADMIN_TOKEN`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, `SUPABASE_URL`,
      `SUPABASE_SERVICE_ROLE_KEY`, `APP_BASE_URL` (after step 4 you know the app URL; it may be left empty first).
 4. **Deploy Blueprint**. Wait for both services to go live; copy their `onrender.com` URLs.

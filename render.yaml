@@ -20,9 +20,12 @@ services:
       # CSP: own origin; Supabase REST + Realtime (https/wss *.supabase.co); NASA GIBS tiles as images, and in
       # connect-src because the service worker fetches and caches them (the SW runs under this policy too).
       # No inline script or style: React, Leaflet and uPlot set styles through the CSSOM, which CSP allows.
+      # hCaptcha (D-032, on-demand widget for Supabase anonymous sign-in): script-src, frame-src, style-src and
+      # connect-src include https://hcaptcha.com https://*.hcaptcha.com, exactly as docs.hcaptcha.com
+      # "Content Security Policy Settings" lists (checked 2026-11-15; no unsafe-inline/unsafe-eval needed).
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://gibs.earthdata.nasa.gov; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gibs.earthdata.nasa.gov; worker-src 'self'; manifest-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        value: "default-src 'self'; script-src 'self' https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' https://hcaptcha.com https://*.hcaptcha.com; img-src 'self' data: blob: https://gibs.earthdata.nasa.gov; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gibs.earthdata.nasa.gov https://hcaptcha.com https://*.hcaptcha.com; frame-src https://hcaptcha.com https://*.hcaptcha.com; worker-src 'self'; manifest-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
@@ -64,6 +67,9 @@ services:
       - key: VITE_SUPABASE_URL
         sync: false
       - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      # Public hCaptcha site key (D-032); never the hCaptcha secret, which lives only in Supabase Auth settings.
+      - key: VITE_HCAPTCHA_SITEKEY
         sync: false
 
   # Backend: FastAPI (email, protected re-runs). Free plan sleeps when idle; only background work depends on it.
