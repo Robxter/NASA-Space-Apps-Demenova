@@ -165,7 +165,9 @@ review queue, the flood candidates and the logo options.
 - [x] T-046 closed: won't do (team change, D-022)
 
 ## Freeze and submission (day 2, 15:00 → 20:00)
-- [~] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates (security review done,
+- [x] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates (all claims-review
+  blocker/major items fixed: guides 89dcdc9, README/project page f85b2eb, domain b176218; final run on b176218:
+  pytest 424, Vitest 67, e2e 149 passed + 2 perf, size gate OK, provenance OK) (security review done,
   fixes a46d5ae/f0635be; claims review docs/reports/science/2026-11-15-0617-claims.md: 1 blocker + 7 major, fixes
   routed to instructor, technical-writer, agronomist; size gate OK 41f1b34)
 - [ ] T-051 technical-writer: README, CITATIONS, CHANGELOG, SI-use description, project page (en); no naming of the

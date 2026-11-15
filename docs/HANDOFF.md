@@ -2,6 +2,27 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~07:00 - Main session (Claude Code) to Roberto: FEATURE-COMPLETE, ready for freeze
+State: all must-haves (D-028) built, reviewed and green on block/2-core (b176218 + this entry), pushed. Nothing live yet.
+Live links: app <app URL> (pending deploy) | backend <api URL> (pending) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: engine (T-020..T-024d, science-reviewed), email backend (T-028, security-reviewed), CI +
+Render blueprint + headers (T-029), app screens incl. Strategies, data levels 0–2, reliability sheet, level checks
+(T-026/T-027/T-042/T-066), contracts 1.2.0 (D-030), domain FIX2 mandate (T-040), guides (T-045), README, CITATIONS,
+project page draft, block-2 report (T-030/T-051 part), e2e suite (T-044), claims review fixes (T-050), name scrub (D-031).
+Checks: pytest 424; Vitest 67; e2e 149 passed + 2 perf (run alone); size gate 93.1 kB / 150 kB; provenance OK.
+Waiting on Roberto, in order:
+1. Open the PR block/2-core → main (https://github.com/Robxter/NASA-Space-Apps-Demenova/compare/main...block/2-core),
+   check CI is green, merge, tag v1.0.0. (block/0-skeleton and block/1-foundations are contained in block/2-core.)
+2. Deploy per docs/DEPLOY.md: GitHub Environment `production` (limited to main) with the 6 secrets; Render Blueprint
+   with the listed env vars (app gets only the Supabase anon key); apply the Supabase schema (supabase/README.md).
+3. Put the app URL into README.md, docs/project-page/project-page.md and docs/guide/judge-quickstart.md (`<app URL>`).
+4. docs/reports/qa/DEVICE_CHECKLIST.md on the iPhone 14 Pro and iPad Air M2; one Lighthouse run on the Render URL.
+5. 15:00–19:00 the 30 s video (honest story: no claim that the Feb 2026 flood was predicted; counts only).
+6. Submit by 20:00; SI-use description from docs/SI_USE_LOG.md; add a line on any AI video tools used.
+Open, accepted for v1: P-016 (email_log unique index, deferred); P-017/T-048 seasonal percentiles (post-hackathon);
+no in-app email sign-up (alerts go to ALERT_EMAIL_TO); live hourly ingest/score step is a TODO in pipeline.yml.
+Do not touch: .env and api keys.txt.
+
 ## 2026-11-15 07:30 - agronomist to main session
 State: T-040 done in domain/ (all yaml + review-queue.md + README.md); not committed (no shell). Report
 docs/reports/agronomist/2026-11-15-0730.md. Former agronomist no longer named in any domain yaml.
