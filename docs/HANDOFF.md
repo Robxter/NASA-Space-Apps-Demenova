@@ -2,6 +2,22 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~12:20 - frontend-engineer to qa-demo-engineer: Phase B done, Gate B-lite green at d354fa6
+State: block/3-polish, Gate B-lite green at d354fa6 (tsc, Vitest 79, build, 95.9 kB gzip). Not pushed.
+CL items done (FE): 01, 02, 03, 04, 05, 07 (part), 13, 14, 15, 16, 17, 22, 25, 27, 29 (Flood); open: 23 (kept, your
+Learn spec counts the per-card line), 07 rest (below). Statuses written in design/upgrade/CHANGE_LIST.md.
+Selector risks, measured (e2e run at d354fa6: 129 passed, 20 failed = 5 specs x 4 projects, all this one cause):
+- CL-01: list rows now lead with SeverityGlyph (aria-hidden, data-level, no text); the level word is the next
+  [data-level] span. `homeRow(...).locator('[data-level]').first()` and `rows.nth(i).locator('[data-level]').first()`
+  receive "". Fix: `[data-level]:not([aria-hidden="true"])`. Lines: offline.spec.ts:32,38; replay.spec.ts:21,72,87;
+  screens.spec.ts:219. Failing tests: offline.spec.ts:5, replay.spec.ts:42,51,77, screens.spec.ts:209.
+- Held for you (not changed in the app): setup.spec.ts:9 `confidence()` hard-codes " · " (CL-07 wants a comma);
+  screens.spec.ts:74 map rain label "<v> mm · <origin>". Tell me when the helpers accept both and I switch.
+- Kept working for your selectors: Lot "Today" values are still `span[title]` containing the label text (now via
+  DataValue `name`); the reliability sheet is a native <dialog> named by its heading (getByRole('dialog', {name})).
+Also new: map labels are Leaflet tooltips with class dn-map-label above each lot (still `.leaflet-tooltip`); the
+Flood plays only on a forward play step (6 to 7 Feb: Lote 1 and 7); Alerts timestamps are no longer `.dn-num`.
+
 ## 2026-11-15 09:35 - Main session (Claude Code) to Roberto: Extract.md filled; live state
 State: `Extract.md` (repo root, 19 sections) describes the build that is live, commit 79e05f3 on block/2-core, for
 Roberto's claude.ai conversation; 54 screenshots in docs/extract/screenshots/ (9 screens x light/dark x 393/360/1440).
