@@ -155,7 +155,8 @@ review queue, the flood candidates and the logo options.
   Edge, 4 viewports; 147 passed, 4 failed = T-066 on every viewport; replay acceptance green; perf Fast 4G + CPU 4×
   2.5 s, Slow 4G 4.4 s; report docs/reports/qa/2026-11-15-0607.md; open: T-066, Roberto fills DEVICE_CHECKLIST.md
   and the Lighthouse row on the Render URL)
-- [ ] T-066 frontend-engineer: Strategies soil/water scores show an origin badge but no timestamp (acceptance: no
+- [x] T-066 frontend-engineer (be4ba60; per-level checks on Lot detail and Home banner 3ccd75c; e2e 150 passed, the
+  Fast 4G perf test passes alone with --workers=1; size gate fixed 41f1b34): Strategies soil/water scores show an origin badge but no timestamp (acceptance: no
   number without origin and timestamp); pass strategies.json `generated_at` as `at` in Score (Strategies.tsx).
   Failing test: tests/e2e/specs/screens.spec.ts "every number on Strategies carries an origin badge and a timestamp"
 - [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
@@ -164,7 +165,9 @@ review queue, the flood candidates and the logo options.
 - [x] T-046 closed: won't do (team change, D-022)
 
 ## Freeze and submission (day 2, 15:00 → 20:00)
-- [ ] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates
+- [~] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates (security review done,
+  fixes a46d5ae/f0635be; claims review docs/reports/science/2026-11-15-0617-claims.md: 1 blocker + 7 major, fixes
+  routed to instructor, technical-writer, agronomist; size gate OK 41f1b34)
 - [ ] T-051 technical-writer: README, CITATIONS, CHANGELOG, SI-use description, project page (en); no naming of the
   former team agronomist (FIX2 §7, D-027). Done: CITATIONS e93d5d4, README f7f8fe1, project page draft 73226ac;
   open: app/video/repo URLs (Roberto), AI video tools line, final SI-use description at freeze
