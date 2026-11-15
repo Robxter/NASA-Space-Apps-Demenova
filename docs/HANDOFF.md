@@ -2,6 +2,26 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 11:15 - Main session (Claude Code) to Roberto: block 3 frontend upgrade COMPLETE, QA-green, not live
+State: block/3-polish, app code 2231e63 (head carries only docs and tests after it). QA verdict GREEN (C4,
+docs/reports/qa/2026-11-15-1110.md); main-session re-run on the final head agrees: Vitest 84, build 96.4 kB of 150 kB,
+size gate passed, e2e 213 passed / 0 failed / 15 skipped, speed tests alone 2 passed. Python side unchanged (pytest 424).
+Live links: app https://demenova-app.onrender.com/ (still the pre-upgrade build 79e05f3) | backend
+https://demenova-api.onrender.com/health | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done in block 3: four design tools set up (docs/DESIGN_TOOLS.md, D-033); coordinator briefs (docs/briefs/…); a
+32-item change list plus review items applied; "Flood" Severe moment; phone fixes; two-column Home from 1024 px;
+onboarding and empty-state actions; farmer-mode Home; new e2e specs csp, flood, a11y, last-pass; design rules approved
+by Roberto (D-035). Cut by plan: the About page (Taste gate OPEN 3 after 3 rounds; recoverable at fc3c12e).
+Reports: docs/reports/blocks/block-3.md; tool audit trail: docs/briefs/2026-11-15-frontend-upgrade/TOOL_LEDGER.md.
+Waiting on Roberto, in order: 1. Put the upgrade live: either say "ship it" (the main session fast-forwards
+block/2-core to the green head; then Manual Deploy on demenova-app in Render) or set demenova-app's branch to
+block/3-polish in Render and deploy. 2. P-019 Flood or Ripple (default Flood at the 15:00 freeze); P-020 two-column
+Lot detail (default: after submission). 3. Tick the hCaptcha box once on the live site. 4. DEVICE_CHECKLIST.md on the
+iPhone 14 Pro and iPad Air M2 (portrait and landscape now) and one Lighthouse run. 5. Merge to main + tag v1.0.0
+(open the PR from block/3-polish: it contains block/2-core). 6. Video, project page, submit by 20:00.
+After the upgrade is live: Extract.md sections 11 to 13 and docs/extract/screenshots describe the old build and can be
+refreshed on request.
+
 ## 2026-11-15 ~11:05 - product-designer to main session: stretch About page cut by plan
 Taste gate: OPEN 3 after 3 rounds (split-pair 1440, section-gaps 390, hero-maxchars 390); page removed in c22fd70,
 kept in history at fc3c12e. No CSP or devops change was needed (0 violations under the site CSP). For frontend-engineer
