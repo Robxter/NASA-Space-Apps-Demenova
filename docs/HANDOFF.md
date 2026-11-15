@@ -2,6 +2,10 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~16:00 - product-designer to main session: P-022 approved (rule 1 amended)
+Roberto answered "a" to P-022: Welcome illustrations may show the logo's own world around the soil core (orbit and
+satellites, the Earth's limb, rain over the catchment); the app's screens keep the core alone. Written into DESIGN.md
+(approved rule 1, with the date and his answer); P-022 marked approved. Please log it in DECISIONS.md (class A, Roberto).
 ## 2026-11-15 ~15:30 - product-designer to frontend-engineer and QA: block 5 motion (D-038)
 Commits bf9de60 (tokens, utilities, Reveal, DESIGN.md "Motion, block 5"), f66ff11 (Welcome showpiece), 180e5a7 (empty
 states, skeleton), plus docs. For frontend-engineer: use `.dn-enter`, `.dn-enter-fade` (key the element so it re-mounts),

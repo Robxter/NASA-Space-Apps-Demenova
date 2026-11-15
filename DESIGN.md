@@ -305,9 +305,10 @@ Check: `app/src/styles/motion.test.ts` pins the approved keyframes.
 - **New icons, illustrations and empty-state art are drawn from the soil core (rounded rectangle, water line, dashed
   when out of reach). Never a second motif: no leaf, globe, satellite or sparkle.**
   Why: the logo and the severity glyph are one idea, so one object carries brand and state.
-  Open question for Roberto (PENDING, 15 Nov): the block 5 Welcome hero and its "how it works" icon show satellites,
-  the Earth's limb and a rain cloud around the core. The logo itself has space and the Earth's limb; satellites and
-  the cloud go beyond this rule's letter. Keep them as the "orbit" half of "from orbit to the root zone", or remove them.
+  **Amended by Roberto (P-022, option a, 15 Nov 2026): Welcome illustrations may show the logo's own world around the
+  core: orbit and satellites, the Earth's limb, rain over the catchment. The app's screens keep the core alone.**
+  Why: it tells "from orbit to the root zone" from the pitch; the Core logo already contains space and the Earth's limb.
+  <!-- 2026-11-15: Roberto answered "a" to P-022 (keep the block 5 hero's satellites and cloud, amend rule 1). -->
   <!-- 2026-11-15: Roberto approved learn-taste rule 1; source: D-015, logo option 1 "Core" chosen over "Torn leaf" and "Nova D", reason "Logo and severity glyph are one idea". -->
 - **The theme follows the phone's light or dark setting (`prefers-color-scheme`) unless the user picks one in
   Settings. A screen never forces a theme.**
