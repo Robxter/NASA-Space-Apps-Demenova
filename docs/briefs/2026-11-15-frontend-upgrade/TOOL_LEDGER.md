@@ -100,3 +100,6 @@ The tool-use matrix in `00-plan.md` is audited against this table at the end of 
 | 10:42 | product-designer | Taste `gate.mjs app/public/about/index.html` round 1 | About | FAIL 8 (no-visual, copy-headings, text-contrast, section-gaps, hero-screen, section-air, row-lines x2); check.mjs did not run (no Chrome on PATH) |
 | 10:47 | product-designer | `pw_mcp.mjs about-look.json` on 5177 with the site CSP header | About 1440 + 390 | 0 console messages (no CSP violation from the kit) |
 | 10:52 | product-designer | Taste `gate.mjs` round 2 (CHROME_PATH = Edge) | About | FAIL 4 (hero-screen, split-pair, hero-lines, neighbour 390); fixed; 1 waiver (hero-lines: the check fills the h1 to 39 chars) |
+| 10:58 | product-designer | `pw_mcp.mjs about-probe.json` (evaluate) | About 1440 + 390 | h1 2 lines; hero picture ends 811 / 788 px; #limits at 3.000 screens at both widths |
+| 11:02 | product-designer | Taste `gate.mjs app/public/about/index.html` round 3 | About | GATE: OPEN 3 (rounds used up): split-pair 1440, section-gaps 390, hero-maxchars 390; 1 waiver (hero-lines) |
+| 11:03 | product-designer | Taste `gate.mjs --done "cut by plan (00-plan.md cut order 1)"` | About | GATE: OFF (the last round's OPEN had already closed the build); page cut: app/public/about removed (recoverable at fc3c12e) |
