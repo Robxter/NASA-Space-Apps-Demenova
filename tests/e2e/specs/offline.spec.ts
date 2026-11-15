@@ -1,5 +1,5 @@
 // Offline (ADR-004): load once, go offline, reload. The replay still works from the device copy and says so.
-import { card, expect, expectLevel, homeRow, open, scrubTo, shot, slider, t, test } from '../lib/app';
+import { card, expect, expectRowLevel, homeRow, open, scrubTo, shot, slider, t, test } from '../lib/app';
 import { DEMO_DAY, escalations, levelsOn, lotName, replayDays } from '../lib/demo';
 
 test('after one online visit the app reopens offline with the replay and "offline, data from …"', async ({ page, context }) => {
@@ -29,13 +29,13 @@ test('after one online visit the app reopens offline with the replay and "offlin
   await expect(slider(page)).toBeVisible({ timeout: 20_000 });
   await expect(page.getByRole('status').first()).toContainText(/Offline, showing data from \d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/);
   for (const [id, level] of Object.entries(levelsOn(DEMO_DAY)))
-    await expectLevel(homeRow(page, lotName(id)).locator('[data-level]').first(), level, 'en');
+    await expectRowLevel(homeRow(page, lotName(id)), level, 'en');
   await shot(page, 'offline-home');
 
   // The replay still scrubs offline.
   const c = escalations(DEMO_DAY)[0]!;
   await scrubTo(page, c.warning);
-  await expectLevel(homeRow(page, lotName(c.id)).locator('[data-level]').first(), 'warning', 'en');
+  await expectRowLevel(homeRow(page, lotName(c.id)), 'warning', 'en');
 
   // Lot detail (a lazy chunk) opens offline.
   await homeRow(page, lotName(c.id)).getByRole('button').click();

@@ -7,6 +7,8 @@
 import { defineConfig } from '@playwright/test';
 
 const PORT = Number(process.env.E2E_PORT ?? 4173);
+/** Second server: same build, with the render.yaml Content-Security-Policy header (serve.mjs --csp). */
+export const CSP_PORT = Number(process.env.E2E_CSP_PORT ?? 4174);
 
 const phone = { isMobile: true, hasTouch: true };
 
@@ -34,10 +36,19 @@ export default defineConfig({
     { name: 'ipad-air', use: { ...phone, viewport: { width: 820, height: 1180 }, deviceScaleFactor: 2 } },
     { name: 'desktop-1440', use: { viewport: { width: 1440, height: 900 } } },
   ],
-  webServer: {
-    command: `node serve.mjs ${PORT}`,
-    url: `http://127.0.0.1:${PORT}/index.html`,
-    reuseExistingServer: !process.env.CI,
-    timeout: 30_000,
-  },
+  webServer: [
+    {
+      command: `node serve.mjs ${PORT}`,
+      url: `http://127.0.0.1:${PORT}/index.html`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+    {
+      // The same build with the live site's CSP header from render.yaml (specs/csp.spec.ts).
+      command: `node serve.mjs ${CSP_PORT} --csp`,
+      url: `http://127.0.0.1:${CSP_PORT}/index.html`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+  ],
 });

@@ -1,6 +1,19 @@
 // Acceptance (blocks release): the replay 2026-01-20..2026-03-05 of the 22-23 Feb 2026 Buenavista flood.
 // Expected lots, levels and dates come from the committed snapshots (lib/demo.ts), never from a guess.
-import { card, expect, expectLevel, homeRow, numbersWithoutOrigin, open, scrubTo, shot, slider, t, test } from '../lib/app';
+import {
+  card,
+  expect,
+  expectRowLevel,
+  homeRow,
+  levelWord,
+  numbersWithoutOrigin,
+  open,
+  scrubTo,
+  shot,
+  slider,
+  t,
+  test,
+} from '../lib/app';
 import {
   bannerUnit,
   DEMO_DAY,
@@ -18,8 +31,9 @@ import type { Page } from '@playwright/test';
 
 async function expectDay(page: Page, date: string, lang: Lang, colours?: Map<Level, Set<string>>) {
   for (const [id, level] of Object.entries(levelsOn(date))) {
-    const badge = homeRow(page, lotName(id), lang).locator('[data-level]').first();
-    await expectLevel(badge, level, lang);
+    const row = homeRow(page, lotName(id), lang);
+    await expectRowLevel(row, level, lang);
+    const badge = levelWord(row); // colour is read from the element that shows the word
     if (colours) {
       const c = await badge.evaluate((el) => getComputedStyle(el).color);
       colours.set(level, (colours.get(level) ?? new Set()).add(c));
@@ -69,7 +83,7 @@ test.describe('Replay acceptance', () => {
     const c = chain[0]!;
     for (const stage of ['watch', 'warning', 'severe'] as const) {
       await scrubTo(page, c[stage]);
-      await expectLevel(homeRow(page, lotName(c.id)).locator('[data-level]').first(), stage, 'en');
+      await expectRowLevel(homeRow(page, lotName(c.id)), stage, 'en');
       await shot(page, `replay-${stage}-${c[stage]}`);
     }
   });
@@ -84,7 +98,7 @@ test.describe('Replay acceptance', () => {
     const c = escalations(DEMO_DAY)[0]!;
     for (const stage of ['watch', 'warning', 'severe'] as const) {
       await scrubTo(page, c[stage], 'es');
-      await expectLevel(homeRow(page, lotName(c.id), 'es').locator('[data-level]').first(), stage, 'es');
+      await expectRowLevel(homeRow(page, lotName(c.id), 'es'), stage, 'es');
     }
     await scrubTo(page, DEMO_DAY, 'es');
     await shot(page, 'replay-home-2026-02-23-es');

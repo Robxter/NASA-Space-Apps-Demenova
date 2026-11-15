@@ -77,6 +77,22 @@ export async function expectLevel(badge: Locator, level: Level, lang: Lang): Pro
   await expect(badge).toHaveText(LEVEL_WORDS[lang][level]);
 }
 
+/**
+ * The element that shows a level as a word (CL-01, D-033): rows lead with the soil-core glyph, which carries
+ * data-level but is aria-hidden and has no text; the word (in level ink) is the first data-level element that is
+ * not aria-hidden. Badges (LevelBadge) match too: their outer span holds the word, the glyph inside is aria-hidden.
+ */
+export const levelWord = (scope: Locator): Locator => scope.locator('[data-level]:not([aria-hidden="true"])').first();
+
+/** A list row shows its level as colour AND word: the word element (attribute, exact word) and the leading core. */
+export async function expectRowLevel(row: Locator, level: Level, lang: Lang): Promise<void> {
+  await expectLevel(levelWord(row), level, lang);
+  await expect(row.locator('[data-level][aria-hidden="true"]').first(), 'the leading core shows the same level').toHaveAttribute(
+    'data-level',
+    level,
+  );
+}
+
 /** Visible text of the page, without screen-reader-only text and without passages marked lang="en". */
 export async function visibleText(page: Page, opts: { dropEnglishQuotes?: boolean } = {}): Promise<string> {
   return page.evaluate((drop) => {
@@ -139,6 +155,9 @@ export async function numbersWithoutOrigin(page: Page): Promise<{ offenders: str
     return { offenders, tallies };
   });
 }
+
+/** Escapes text for use inside a RegExp. */
+export const escapeRe = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 /** Placeholders that must never stand in for a missing value. */
 export const PLACEHOLDERS = /\bNaN\b|\bundefined\b|\bnull\b|\bInfinity\b|\[object Object\]/;

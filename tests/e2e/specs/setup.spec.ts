@@ -1,12 +1,17 @@
 // Farm setup, data levels 0-2 (SPEC 18 Onboarding, SPEC Data modes): pin, outline with zones, lots typed and
 // imported from GeoJSON, with the confidence badge. Inputs are what a user would type in this throwaway browser
 // profile (origin provided); nothing leaves the machine (lib/app.ts aborts every non-local request).
-import { expect, shot, t, test } from '../lib/app';
+import { escapeRe, expect, shot, t, test } from '../lib/app';
 import { farm, fmt } from '../lib/demo';
 import type { Page } from '@playwright/test';
 
 const badge = (page: Page) => page.locator('header').getByText(/^Data level \d/);
-const confidence = (n: number, level: string) => `${t('en', 'setup.level', { n })} · ${t('en', 'setup.confidence', { level: t('en', `confidence.${level}`) })}`;
+// CL-07 (D-033) replaces the " · " join with a comma; until frontend-engineer switches the string, both exact
+// forms are accepted (nothing else): "Data level 0 · low confidence" or "Data level 0, low confidence".
+const confidence = (n: number, level: string) =>
+  new RegExp(
+    `^${escapeRe(t('en', 'setup.level', { n }))}(?: · |, )${escapeRe(t('en', 'setup.confidence', { level: t('en', `confidence.${level}`) }))}$`,
+  );
 
 async function tapMap(page: Page, dx: number, dy: number) {
   const map = page.getByRole('application', { name: t('en', 'setup.mapLabel') });

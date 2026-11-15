@@ -2,15 +2,32 @@
 // Static server for the e2e suite (T-044). Owner: qa-demo-engineer. Node built-ins only (no dependency).
 // Serves the production build app/dist with gzip, the way a static host (Render Static Site) would, so the
 // throttled runs measure compressed transfers. Unknown paths fall back to index.html (hash navigation needs none,
-// but a judge may open "/" with any path). Usage: node tests/e2e/serve.mjs [port]
+// but a judge may open "/" with any path). Usage: node tests/e2e/serve.mjs [port] [--csp]
+// --csp sends the exact Content-Security-Policy that render.yaml sets for path /* on the live site (read from the
+// file at start, never copied here), so specs/csp.spec.ts sees what a judge's browser enforces.
 import { createServer } from 'node:http';
 import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, extname, join, normalize, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', 'app', 'dist');
-const PORT = Number(process.argv[2] ?? process.env.E2E_PORT ?? 4173);
+const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const ROOT = join(REPO, 'app', 'dist');
+const ARGS = process.argv.slice(2);
+const PORT = Number(ARGS.find((a) => /^\d+$/.test(a)) ?? process.env.E2E_PORT ?? 4173);
+
+/** The CSP header value render.yaml sets on `/*` (the line after `name: Content-Security-Policy`). */
+function renderCsp() {
+  const lines = readFileSync(join(REPO, 'render.yaml'), 'utf-8').split(/\r?\n/);
+  for (let i = 0; i < lines.length; i++) {
+    if (!/^\s*name:\s*Content-Security-Policy\s*$/.test(lines[i])) continue;
+    const path = /^\s*-\s*path:\s*(\S+)/.exec(lines[i - 1] ?? '')?.[1];
+    const value = /^\s*value:\s*"(.*)"\s*$/.exec(lines[i + 1] ?? '')?.[1];
+    if (path === '/*' && value) return value;
+  }
+  throw new Error('render.yaml: no Content-Security-Policy value for path /*');
+}
+const CSP = ARGS.includes('--csp') ? renderCsp() : null;
 
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -56,6 +73,7 @@ createServer((req, res) => {
     'content-type': TYPES[ext] ?? 'application/octet-stream',
     'cache-control': rel.startsWith('/assets/') ? 'public, max-age=31536000, immutable' : 'no-cache',
   };
+  if (CSP) headers['content-security-policy'] = CSP;
   let body = readFileSync(file);
   if (COMPRESSIBLE.has(ext) && /\bgzip\b/.test(String(req.headers['accept-encoding'] ?? ''))) {
     if (!gzCache.has(file)) gzCache.set(file, gzipSync(body, { level: 9 }));
@@ -66,4 +84,6 @@ createServer((req, res) => {
   headers['content-length'] = body.length;
   res.writeHead(200, headers);
   res.end(req.method === 'HEAD' ? undefined : body);
-}).listen(PORT, '127.0.0.1', () => console.log(`e2e static server on http://127.0.0.1:${PORT} (${ROOT})`));
+}).listen(PORT, '127.0.0.1', () =>
+  console.log(`e2e static server on http://127.0.0.1:${PORT} (${ROOT})${CSP ? ' with the render.yaml CSP' : ''}`),
+);

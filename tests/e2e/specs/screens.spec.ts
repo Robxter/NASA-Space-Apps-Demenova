@@ -1,5 +1,5 @@
 // Screens of SPEC 18 on the replay's opening day. Every expected value is read from the snapshots (lib/demo.ts).
-import { card, expect, expectLevel, numbersWithoutOrigin, open, shot, t, test } from '../lib/app';
+import { card, escapeRe, expect, expectLevel, expectRowLevel, levelWord, numbersWithoutOrigin, open, shot, t, test } from '../lib/app';
 import {
   bannerUnit,
   DEMO_DAY,
@@ -71,8 +71,14 @@ test.describe('Map', () => {
     for (const u of lotUnits(DEMO_DAY)) {
       const v = u.features?.rain_local_mm;
       const o = originOf(u, 'rain_local_mm');
-      const label = typeof v === 'number' && o ? `${fmt(v, 1)} mm · ${t('en', `origin.${o}`)}` : t('en', 'common.noData');
-      await expect(page.locator(`path[aria-label="${lotName(u.unit_id)}: ${label}"]`)).toHaveCount(1);
+      // CL-07 (D-033): the " · " join becomes a comma; both exact forms are accepted until the string changes.
+      const label =
+        typeof v === 'number' && o
+          ? `${escapeRe(`${fmt(v, 1)} mm`)}(?: · |, )${escapeRe(t('en', `origin.${o}`))}`
+          : escapeRe(t('en', 'common.noData'));
+      const shape = page.locator(`path[aria-label^="${lotName(u.unit_id)}: "]`);
+      await expect(shape).toHaveCount(1);
+      await expect(shape).toHaveAttribute('aria-label', new RegExp(`^${escapeRe(lotName(u.unit_id))}: ${label}$`));
     }
     await page.getByRole('radio', { name: t('en', 'map.layer.level') }).click();
 
@@ -80,7 +86,7 @@ test.describe('Map', () => {
     await shape.dispatchEvent('click');
     const sheet = page.locator('div.shadow-sheet', { has: page.getByRole('button', { name: t('en', 'map.openLot') }) });
     await expect(sheet.getByRole('heading', { level: 2 })).toHaveText(lotName(unit.unit_id));
-    await expectLevel(sheet.locator('[data-level]').first(), unit.alert.level, 'en');
+    await expectLevel(levelWord(sheet), unit.alert.level, 'en');
     await expect(sheet).toContainText(fmt(unit.alert.w!, 2));
     await shot(page, 'map-sheet');
     await sheet.getByRole('button', { name: t('en', 'map.openLot') }).click();
@@ -92,7 +98,7 @@ test.describe('Lot detail', () => {
   test('level, W, factors with shares, today values, charts, facts and strategies button', async ({ page }) => {
     await page.goto(`/#lot/${encodeURIComponent(unit.unit_id)}`);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(lotName(unit.unit_id));
-    await expectLevel(page.locator('header [data-level]').first(), unit.alert.level, 'en');
+    await expectLevel(levelWord(page.locator('header')), unit.alert.level, 'en');
     await expect(page.locator('header')).toContainText(t('en', 'lot.confidence', { n: unit.alert.confidence }));
     await expect(page.locator('main')).toContainText(fmt(unit.alert.w!, 2));
 
@@ -216,7 +222,7 @@ test.describe('Alerts', () => {
       await expect(rows.nth(i)).toContainText(
         t('en', 'alerts.change', { from: t('en', `level.${e.from_level}`), to: t('en', `level.${e.to_level}`) }),
       );
-      await expectLevel(rows.nth(i).locator('[data-level]').first(), e.to_level, 'en');
+      await expectRowLevel(rows.nth(i), e.to_level, 'en');
     }
     await shot(page, 'alerts');
     const { offenders } = await numbersWithoutOrigin(page);
