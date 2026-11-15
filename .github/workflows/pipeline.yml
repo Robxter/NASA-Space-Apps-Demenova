@@ -1,0 +1,87 @@
+# Demenova near-real-time pipeline (T-029). Owner: devops-engineer.
+# Hourly plus manual dispatch. Scheduled runs can start late or be dropped by GitHub; the demo replay
+# (app/public/data/demo, 22-23 Feb 2026) is committed static data and never depends on this workflow.
+# GitHub runs `schedule` only from the workflow file on the default branch; the "Run workflow" button
+# (workflow_dispatch) also appears only once this file is on the default branch.
+# Secrets come only from GitHub encrypted secrets and are never echoed (presence is tested, values are not printed).
+name: pipeline
+
+on:
+  schedule:
+    - cron: "17 * * * *" # hourly, off the top of the hour to avoid the busiest scheduling minute
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.11"
+          activate-environment: true
+          enable-cache: true
+      - name: uv sync --locked
+        run: uv sync --locked
+
+      - name: Which secrets are configured (names only)
+        id: secrets
+        env:
+          EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+          EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+        run: |
+          has() { [ -n "${!1}" ] && echo true || echo false; }
+          earthdata=false; [ "$(has EARTHDATA_USERNAME)" = true ] && [ "$(has EARTHDATA_PASSWORD)" = true ] && earthdata=true
+          publish=true
+          for name in SUPABASE_URL SUPABASE_SERVICE_ROLE_KEY RESEND_API_KEY ALERT_EMAIL_TO; do
+            if [ "$(has "$name")" = false ]; then publish=false; echo "::warning::secret $name is not set"; fi
+          done
+          echo "earthdata=$earthdata" >> "$GITHUB_OUTPUT"
+          echo "publish=$publish" >> "$GITHUB_OUTPUT"
+          echo "earthdata configured: $earthdata; publishing configured: $publish"
+
+      - name: Ingest - Earthdata login check
+        if: steps.secrets.outputs.earthdata == 'true'
+        env:
+          EARTHDATA_USERNAME: ${{ secrets.EARTHDATA_USERNAME }}
+          EARTHDATA_PASSWORD: ${{ secrets.EARTHDATA_PASSWORD }}
+        run: |
+          out="$(uv run python -m pipeline.ingest auth)"
+          echo "$out"
+          [ "$out" = "authenticated: True" ] || { echo "::error::Earthdata login failed"; exit 1; }
+
+      # TODO(T-029 follow-up, data-engineer + data-scientist): the live hourly entry points do not exist yet.
+      # `python -m pipeline.ingest` has only cached historical/replay steps and `python -m pipeline.engine` has
+      # only `kirpich | farm-rain | replay` (frozen window, writes app/public/data/demo), and nothing writes
+      # scores to Supabase. When a live ingest + score + Supabase-write command exists, replace `if: false`
+      # with `if: steps.secrets.outputs.earthdata == 'true' && steps.secrets.outputs.publish == 'true'`
+      # and put the command in `run`. Until then this step is skipped on purpose; it never fakes a run.
+      - name: TODO - live ingest, score and write to Supabase (entry point not built yet)
+        if: false
+        run: echo "not implemented"
+
+      - name: Publish - Severe email (once per unit per episode)
+        if: steps.secrets.outputs.publish == 'true'
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          ALERT_EMAIL_TO: ${{ secrets.ALERT_EMAIL_TO }}
+          ALERT_EMAIL_FROM_NAME: Demenova Alerts
+          APP_BASE_URL: ${{ vars.APP_BASE_URL }} # optional repository variable (public app URL), not a secret
+        run: uv run python -m backend.app.alerts

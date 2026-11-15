@@ -1,0 +1,63 @@
+# Demenova CI (T-029). Owner: devops-engineer.
+# Python: locked install, tests, Rule-zero provenance gate, contracts drift check.
+# App: locked install, type check, Vitest, build, size gate (initial JS and committed demo data).
+# Action versions verified on 2026-11-15 against the release pages:
+#   actions/checkout v7.0.1, actions/setup-node v7.1.0, astral-sh/setup-uv v10.3.3 (README pins this commit SHA).
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  python:
+    name: python (pytest, provenance, contracts)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          python-version: "3.11"
+          activate-environment: true
+          enable-cache: true
+      - name: uv sync --locked
+        run: uv sync --locked
+      - name: pytest
+        run: uv run pytest -q
+      - name: Provenance checker (Rule zero)
+        run: python scripts/check_provenance.py
+      - name: Contracts are in sync with pipeline/common/models.py
+        run: uv run python scripts/export_contracts.py --check
+
+  app:
+    name: app (typecheck, vitest, build, size gate)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+      - name: npm ci
+        run: npm ci --prefix app
+      - name: Type check (tsc, noEmit)
+        run: npm --prefix app run typecheck
+      - name: Vitest
+        run: npm --prefix app run test
+      - name: Build
+        run: npm --prefix app run build
+      - name: Size gate (initial JS <= 150 kB gzip; demo data <= 5 MB)
+        run: node scripts/check_bundle_size.mjs

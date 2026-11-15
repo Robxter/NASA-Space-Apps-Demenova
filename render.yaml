@@ -1,0 +1,85 @@
+# Demenova Render Blueprint (T-029). Owner: devops-engineer.
+# Field names checked on 2026-11-15 against https://render.com/docs/blueprint-spec and the Blueprint JSON Schema
+# (https://render.com/schema/render.yaml.json): static site headers {path,name,value}, buildFilter {paths},
+# envVars {key, value | sync: false}, autoDeployTrigger {off|commit|checksPass}, healthCheckPath (web services only).
+# Secrets are declared with `sync: false` and NO value: Render asks for them once, when the Blueprint is created.
+# Nothing a judge opens depends on the backend: the app is a static site that reads committed snapshots/Supabase.
+services:
+  # PWA: Vite build of app/, served from Render's CDN (does not sleep). Hash navigation, so no rewrite rules.
+  - type: web
+    name: demenova-app
+    runtime: static
+    buildCommand: npm --prefix app ci && npm --prefix app run build
+    staticPublishPath: app/dist
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - app/**
+    headers:
+      # Service worker and its registration must always be revalidated so app updates reach phones.
+      - path: /sw.js
+        name: Cache-Control
+        value: no-cache
+      - path: /registerSW.js
+        name: Cache-Control
+        value: no-cache
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+      - path: /manifest.webmanifest
+        name: Cache-Control
+        value: no-cache
+      # Demo snapshots change with each engine run (the service worker caches them NetworkFirst).
+      - path: /data/*
+        name: Cache-Control
+        value: no-cache
+      # Vite output under /assets has content hashes in the file names.
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    envVars:
+      - key: NODE_VERSION
+        value: 22.11.0
+      # Build-time, public by design (Supabase anon key under row-level security). Never the service role key.
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+
+  # Backend: FastAPI (email, protected re-runs). Free plan sleeps when idle; only background work depends on it.
+  - type: web
+    name: demenova-api
+    runtime: python
+    plan: free
+    buildCommand: uv sync --locked --no-default-groups --group backend
+    # --no-sync: a plain `uv run` would re-sync the default groups (pipeline stack) at start.
+    startCommand: uv run --no-sync uvicorn backend.app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeployTrigger: checksPass
+    buildFilter:
+      paths:
+        - backend/**
+        - pipeline/common/**
+        - config/**
+        - pyproject.toml
+        - uv.lock
+        - .python-version
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: PYTHONUTF8
+        value: "1"
+      - key: ALERT_EMAIL_FROM_NAME
+        value: Demenova Alerts
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: ALERT_EMAIL_TO
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: APP_BASE_URL
+        sync: false
