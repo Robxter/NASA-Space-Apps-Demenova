@@ -22,3 +22,17 @@ interpolated one.
 
 States: loading, ready, playing, at end (pressing play restarts from the first day; frontend resets `index`),
 offline (works, because the replay is a static snapshot), demo (always).
+
+## Update 2026-11-15 (D-033, B1, CHANGE_LIST CL-24)
+
+- Thumb: a 44 px wide hit area (iOS Safari drags only from the thumb) drawn as a 4 px playhead with a 14 px round
+  knob on top, both with a surface halo. Pressed: the knob grows to 20 px over `--dn-dur-press` (a state change, so
+  it stays under reduced motion). Tracking is native: 1:1 under the finger, one step per day, no easing while dragging.
+- Geometry: the range overhangs the bar strip by 16 px each side, so the thumb centre runs from 6 px to width - 6 px
+  and sits over bar i at index i. Bars are capped at 10 px and centred, so one or two days never clip at the edges
+  (frontend-engineer's break-ui finding). The play button sits above the overhang (`z-10`): its edge stays a button.
+- `touch-action: pan-y`: a vertical swipe that starts on the strip still scrolls the page.
+- Not applicable: rubber-banding and release springs (gestures, apple-design §9): a discrete native slider stops at
+  the first and last day, which is the honest boundary for a dated replay.
+- Checked with Playwright MCP `browser_drag` at 360 and 1440 (values 42 and 43 of 44 after dragging to the end label;
+  1 after dragging to the start label at 1440); the play button's right edge still hits the button.

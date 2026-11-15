@@ -37,7 +37,7 @@ missing, colour AND word, no data or contract change. Status: open unless marked
 ## P3
 
 - CL-23 P3 FE Learn: keep the page-level "General guidance, not yet reviewed" note and each card's origin badge; drop the repeated per-card caveat line only if the e2e Learn spec does not assert it (critique H10) - check `tests/e2e` Learn spec first; otherwise leave.
-- CL-24 P3 FE Replay scrubber edge bars (FE break-ui) go to PD in phase B1 with `ReplayScrubber.tsx` - check: B1.
+- CL-24 P3 PD Replay scrubber edge bars (FE break-ui) go to PD in phase B1 with `ReplayScrubber.tsx` - check: B1. Status: done (B1): bars inset 6 px and capped at 10 px; 44 px thumb.
 
 ## Severe moment (A4 pick, owner FE for the map, PD for ui)
 

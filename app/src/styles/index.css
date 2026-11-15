@@ -118,7 +118,12 @@
     }
   }
 
-  /* Replay scrubber: native range input, track drawn by the day strip underneath. */
+  /*
+   * Replay scrubber: native range input over the day strip (ReplayScrubber.tsx). The thumb is a 44 px wide hit
+   * area (iOS Safari drags only from the thumb) drawn as a 4 px playhead with a round knob on top, each with a
+   * surface halo so it reads over any bar. Pressed: the knob grows (state, not movement; kept in reduced motion).
+   * Tracking is the platform's: 1:1 under the finger, one step per day, no easing while dragging.
+   */
   .dn-range {
     -webkit-appearance: none;
     appearance: none;
@@ -127,6 +132,12 @@
     margin: 0;
     background: transparent;
     cursor: pointer;
+    touch-action: pan-y; /* a vertical swipe that starts here still scrolls the page */
+    --dn-knob: 14px;
+  }
+  .dn-range:active {
+    --dn-knob: 20px;
+    cursor: grabbing;
   }
   .dn-range::-webkit-slider-runnable-track {
     height: 48px;
@@ -139,22 +150,34 @@
   .dn-range::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 4px;
-    height: 48px;
-    border-radius: 2px;
-    background: var(--dn-ink);
-    box-shadow: 0 0 0 2px var(--dn-surface);
-  }
-  .dn-range::-moz-range-thumb {
-    width: 4px;
+    width: 44px;
     height: 48px;
     border: 0;
-    border-radius: 2px;
-    background: var(--dn-ink);
-    box-shadow: 0 0 0 2px var(--dn-surface);
+    background:
+      radial-gradient(closest-side, var(--dn-ink) 78%, transparent 84%) 50% 0 / var(--dn-knob) var(--dn-knob) no-repeat,
+      linear-gradient(var(--dn-ink), var(--dn-ink)) 50% 0 / 4px 100% no-repeat,
+      radial-gradient(closest-side, var(--dn-surface) 80%, transparent 86%) 50% -2px / calc(var(--dn-knob) + 4px) calc(var(--dn-knob) + 4px) no-repeat,
+      linear-gradient(var(--dn-surface), var(--dn-surface)) 50% 0 / 8px 100% no-repeat;
+    transition: background-size var(--dn-dur-press) var(--dn-ease-out);
+  }
+  .dn-range::-moz-range-thumb {
+    width: 44px;
+    height: 48px;
+    border: 0;
+    border-radius: 0;
+    background:
+      radial-gradient(closest-side, var(--dn-ink) 78%, transparent 84%) 50% 0 / var(--dn-knob) var(--dn-knob) no-repeat,
+      linear-gradient(var(--dn-ink), var(--dn-ink)) 50% 0 / 4px 100% no-repeat,
+      radial-gradient(closest-side, var(--dn-surface) 80%, transparent 86%) 50% -2px / calc(var(--dn-knob) + 4px) calc(var(--dn-knob) + 4px) no-repeat,
+      linear-gradient(var(--dn-surface), var(--dn-surface)) 50% 0 / 8px 100% no-repeat;
+    transition: background-size var(--dn-dur-press) var(--dn-ease-out);
+  }
+  .dn-range:disabled {
+    cursor: default;
   }
   .dn-range:focus-visible {
-    outline-offset: 4px;
+    outline-offset: 2px;
+    border-radius: 10px;
   }
 
   /*

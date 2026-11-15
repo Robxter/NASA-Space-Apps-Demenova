@@ -28,7 +28,14 @@ export interface ReplayScrubberProps {
   className?: string;
 }
 
-const THUMB = 4; // px, must match .dn-range thumb width in index.css
+// Geometry (CHANGE_LIST B1, CL-24). The range thumb is a 44 px hit area (iOS drags only from the thumb) with a
+// 4 px visible playhead. The input overhangs the bar strip by HIT/2 - INSET on each side, so the thumb's centre
+// travels exactly from INSET to (width - INSET): bar i sits under the thumb at index i. Bars are capped at
+// BAR_MAX px and centred, so with INSET >= BAR_MAX/2 + 1 no bar is clipped, even with one or two days.
+const HIT = 44; // px, must match .dn-range thumb width in index.css
+const INSET = 6; // px, side inset of the bar strip
+const BAR_MAX = 10; // px
+const OVERHANG = HIT / 2 - INSET; // 16 px
 
 function PlayIcon({ playing }: { playing: boolean }) {
   return playing ? (
@@ -58,7 +65,7 @@ export function ReplayScrubber({
   const copy = UI_COPY[lang];
   const n = Math.max(days.length, 1);
   const last = Math.max(n - 1, 1);
-  const barWidth = `calc((100% - ${THUMB}px) / ${n} - 2px)`;
+  const barWidth = `min(calc((100% - ${2 * INSET}px) / ${n} - 2px), ${BAR_MAX}px)`;
   const first = days[0];
   const end = days[days.length - 1];
 
@@ -69,7 +76,7 @@ export function ReplayScrubber({
         onClick={onTogglePlay}
         disabled={loading || !onTogglePlay}
         aria-label={playing ? copy.pause : copy.play}
-        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary dn-press disabled:opacity-45"
+        className="relative z-10 flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary dn-press disabled:opacity-45"
       >
         <PlayIcon playing={playing} />
       </button>
@@ -92,7 +99,7 @@ export function ReplayScrubber({
               const level = day?.level ?? null;
               const ratio = level ? SEVERITY_WATER[level] : 0;
               const height = loading ? 12 : level === null ? 6 : 8 + ratio * 26;
-              const left = `calc(${THUMB / 2}px + (100% - ${THUMB}px) * ${i / last})`;
+              const left = `calc(${INSET}px + (100% - ${2 * INSET}px) * ${n === 1 ? 0 : i / last})`;
               // Days after the playhead keep their height (the shape of the event) but stay neutral until reached.
               const ahead = !loading && i > index;
               const skin = loading
@@ -106,7 +113,7 @@ export function ReplayScrubber({
                 <span
                   key={i}
                   data-level={level ?? undefined}
-                  className={`absolute bottom-2 rounded-[2px] transition-colors duration-200 ease-standard ${skin}`}
+                  className={`absolute bottom-2 rounded-[2px] transition-colors duration-state ease-out ${skin}`}
                   style={{ left, width: barWidth, height, transform: 'translateX(-50%)' }}
                 />
               );
@@ -115,7 +122,8 @@ export function ReplayScrubber({
           {!loading ? (
             <input
               type="range"
-              className="dn-range relative"
+              className="dn-range absolute inset-y-0 w-auto"
+              style={{ left: -OVERHANG, right: -OVERHANG, width: `calc(100% + ${2 * OVERHANG}px)` }}
               min={0}
               max={n - 1}
               step={1}
