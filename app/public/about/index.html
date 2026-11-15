@@ -51,8 +51,8 @@
     <div class="wrap"><div class="hero-text">
       <div class="hero__c">
         <a class="pill" href="#how"><span>Demo replay, 20 Jan to 5 Mar 2026</span><span class="muted">See how it works</span></a>
-        <h1 id="hero-h">Flood alerts for banana farms in El Oro</h1>
-        <p class="hero__lead">Demenova turns open, global Earth observations into waterlogging and flood alerts, field history and soil-management strategies for each lot of a banana farm.</p>
+        <h1 id="hero-h">Flood alerts for banana farms</h1>
+        <p class="hero__lead">Demenova turns open, global Earth observations into waterlogging and flood alerts, field history and soil-management strategies for each lot of a banana farm in coastal El Oro, Ecuador.</p>
         <div class="btn-row"><a class="btn btn--primary" href="/">Open the app</a><a class="btn btn--secondary" href="#limits">Read the limits</a></div>
       </div>
       <div class="hero__window">
@@ -64,20 +64,20 @@
   <section class="section" id="how" data-moment="pinned-chapters" aria-labelledby="how-h">
     <div class="wrap mo-pc__grid">
       <div class="mo-pc__text">
-        <h2 id="how-h">How a lot gets its level</h2>
+        <h2 id="how-h">The alert index for each lot</h2>
         <ol class="mo-pc__steps">
           <li class="mo-pc__step">
-            <h3>Five factors make one index</h3>
+            <h3>Alert index W from five factors</h3>
             <p>Each lot gets an alert index W from 0 to 1, built from upstream rain over the river's catchment, soil saturation, terrain wetness, local rain and the 7-day water balance.</p>
             <figure class="mo-pc__visual"><img src="img/app-lot.jpg" alt="Lot detail for Lote 1 of the demo farm: index W 0.96, Severe, and the factors behind it" width="1280" height="800"></figure>
           </li>
           <li class="mo-pc__step">
-            <h3>Four levels, in colour and in words</h3>
+            <h3>Risk map with four levels in colour and words</h3>
             <p>W maps to four levels, always shown as colour and word: Normal, Watch, Warning and Severe. The map shows every lot for the replay day.</p>
             <figure class="mo-pc__visual"><img src="img/app-map.jpg" alt="Risk map of the demo farm on 23 February 2026: two lots Severe and six Warning, each labelled with its level" width="1280" height="800"></figure>
           </li>
           <li class="mo-pc__step">
-            <h3>Open data from orbit</h3>
+            <h3>Data from NASA and Sentinel-2 satellites</h3>
             <p>Rain from GPM IMERG, weather from NASA POWER, terrain from SRTM, vegetation from Sentinel-2 and map imagery from NASA GIBS.</p>
             <figure class="mo-pc__visual"><img src="img/gibs-viirs-el-oro-2025-09-03.jpg" alt="NASA VIIRS true-colour image of the El Oro coast and the Gulf of Guayaquil on 3 September 2025, partly cloudy" width="1200" height="1080"></figure>
           </li>
@@ -89,15 +89,19 @@
 
   <section class="section" id="limits" aria-labelledby="limits-h">
     <div class="wrap">
-      <div class="section-head"><h2 id="limits-h">Limits of the demo</h2></div>
-      <ul class="limits">
-        <li>The demo farm and its 8 lots are synthetic, and every screen marks them "Demo".</li>
-        <li>In the farm's catchment in 2026 the alerts counted 1 hit, 0 misses and 4 false alarms.</li>
-        <li>Demenova gave no flood-specific lead time for the February 2026 flood: the wettest demo lots were already Severe from earlier storms.</li>
-        <li>The weights and the Severe threshold (W of 0.90 or more) are design choices, chosen after the 2026 floods were seen.</li>
-        <li>Agronomic guidance is general and not yet reviewed by a local agronomist. The app supports the agronomist's judgment.</li>
-        <li>Alerts run only for the demo farm; a new farm needs an engine run for its location.</li>
-      </ul>
+      <div class="grid">
+        <div class="span-7 stack-5">
+          <h2 id="limits-h">Demo farm limits</h2>
+          <ul class="limits">
+            <li>The demo farm and its 8 lots are synthetic, and every screen marks them "Demo".</li>
+            <li>In the farm's catchment in 2026 the alerts counted 1 hit, 0 misses and 4 false alarms.</li>
+            <li>Demenova gave no flood-specific lead time for the February 2026 flood: the wettest demo lots were already Severe from earlier storms.</li>
+            <li>The weights and the Severe threshold (W of 0.90 or more) are design choices, chosen after the 2026 floods were seen.</li>
+            <li>Agronomic guidance is general and not yet reviewed by a local agronomist. The app supports the agronomist's judgment.</li>
+          </ul>
+        </div>
+        <figure class="span-5 limits__visual"><img src="img/levels.svg" alt="The four alert levels as soil cores: water at a quarter for Normal, half for Watch, three quarters for Warning and full for Severe, each with its word" width="560" height="300"></figure>
+      </div>
     </div>
   </section>
 </main>
@@ -113,12 +117,12 @@
     </div>
     <div class="closing__links">
       <div class="grid">
-        <div class="span-4 stack-4">
+        <div class="span-6 stack-4">
           <a class="nav__logo footer__logo" href="#top"><img src="img/demenova-core.svg" alt="Demenova" width="90" height="32"></a>
           <p class="footer__lede">Satellite water alerts for banana farms in coastal El Oro, Ecuador.</p>
         </div>
-        <div class="span-2 footer__col"><h3>App</h3><ul><li><a href="/">Open the app</a></li><li><a href="#how">How it works</a></li></ul></div>
-        <div class="span-2 footer__col"><h3>Project</h3><ul><li><a href="#limits">Limits</a></li><li><a href="#top">Top</a></li></ul></div>
+        <div class="span-3 start-7 footer__col"><h3>App</h3><ul><li><a href="/">Open the app</a></li><li><a href="#how">How it works</a></li></ul></div>
+        <div class="span-3 footer__col"><h3>Project</h3><ul><li><a href="#limits">Limits</a></li><li><a href="#top">Top</a></li></ul></div>
       </div>
       <div class="footer__legal">
         <span>&copy; 2026 Demenova. Built with NASA Earth observations; an independent project, not endorsed by NASA.</span>

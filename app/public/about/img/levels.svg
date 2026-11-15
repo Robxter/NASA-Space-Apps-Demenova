@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 300" role="img" aria-labelledby="t">
+  <title id="t">The four alert levels as soil cores: water at a quarter for Normal, half for Watch, three quarters for Warning and full for Severe, each with its word</title>
+  <!-- Drawn from the app's SeverityGlyph (design/components/SeverityGlyph.md): light-theme fill, ink and tint. -->
+  <rect width="560" height="300" rx="22" fill="#ffffff"/>
+  <g font-family="system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif" font-size="22" font-weight="600" text-anchor="middle">
+    <g transform="translate(70 48)">
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="#DCEEEE"/>
+      <rect x="10" y="114" width="50" height="36" rx="6" fill="#3591A0"/>
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="none" stroke="#0F5258" stroke-width="5"/>
+      <text x="35" y="206" fill="#0F5258">Normal</text>
+    </g>
+    <g transform="translate(190 48)">
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="#FAEFC2"/>
+      <rect x="10" y="80" width="50" height="70" rx="6" fill="#F0C63A"/>
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="none" stroke="#5C4100" stroke-width="5"/>
+      <text x="35" y="206" fill="#5C4100">Watch</text>
+    </g>
+    <g transform="translate(310 48)">
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="#FBE0CB"/>
+      <rect x="10" y="45" width="50" height="105" rx="6" fill="#D4560A"/>
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="none" stroke="#7F2E00" stroke-width="5"/>
+      <text x="35" y="206" fill="#7F2E00">Warning</text>
+    </g>
+    <g transform="translate(430 48)">
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="#F7DCE8"/>
+      <rect x="10" y="10" width="50" height="140" rx="8" fill="#93154F"/>
+      <rect x="0" y="0" width="70" height="160" rx="18" fill="none" stroke="#7E1046" stroke-width="5"/>
+      <text x="35" y="206" fill="#7E1046">Severe</text>
+    </g>
+  </g>
+</svg>
