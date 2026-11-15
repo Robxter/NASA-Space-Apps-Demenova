@@ -103,12 +103,12 @@ def _read_embedded(path: Path) -> list[dict]:
     return block if isinstance(block, list) else [block]
 
 
-def contract_lot_id(ingest_id: str) -> str:
-    """demo_lots.geojson writes lot_demo_el_oro_N; the contract id is lot_<farm slug>_<n> with slug demo-el-oro."""
-    m = re.fullmatch(r"lot_demo_el_oro_(\d+)", ingest_id) or re.fullmatch(rf"lot_{FARM_SLUG}_(\d+)", ingest_id)
+def lot_number(lot_id: str) -> int:
+    """n of a demo lot id lot_demo-el-oro_<n> (contract pattern, written by pipeline/ingest/lots.py since T-049)."""
+    m = re.fullmatch(rf"lot_{FARM_SLUG}_(\d+)", lot_id)
     if not m:
-        raise ValueError(f"unexpected demo lot id {ingest_id}")
-    return f"lot_{FARM_SLUG}_{m.group(1)}"
+        raise ValueError(f"unexpected demo lot id {lot_id}")
+    return int(m.group(1))
 
 
 # --------------------------------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ def terrain_units() -> tuple[list[Unit], dict]:
     res = float(transform.a)
     twi = tr.twi(upslope, tr.slope_tan(dem, res), contour_width_m=res)
     collection = json.loads((PROCESSED / "aoi" / "demo_lots.geojson").read_text(encoding="utf-8"))
-    feats = sorted(collection["features"], key=lambda f: int(contract_lot_id(f["properties"]["id"]).rsplit("_", 1)[1]))
+    feats = sorted(collection["features"], key=lambda f: lot_number(f["properties"]["id"]))
     utm_geoms = []
     for f in feats:
         ring = np.array(f["geometry"]["coordinates"][0])
@@ -200,7 +200,7 @@ def terrain_units() -> tuple[list[Unit], dict]:
     breaks = tr.tercile_breaks(twi[farm_mask])
     units: list[Unit] = []
     for k, (f, s) in enumerate(zip(feats, stats), start=1):
-        u = Unit(contract_lot_id(f["properties"]["id"]), "lot", f["properties"]["name"], labels == k, f["geometry"],
+        u = Unit(f["properties"]["id"], "lot", f["properties"]["name"], labels == k, f["geometry"],
                  s["mean"], s["max"], s["min"], s["n_cells"], s["n_undefined"], props=f["properties"])
         u.tercile = tr.tercile_of(u.twi_mean, breaks)
         units.append(u)
@@ -648,7 +648,7 @@ def write_farm(units: list[Unit], farm: dict, generated_at: str, in_recs: list[d
     farm_rec = _mine(record(
         f"prov-engine-demo-farm-{FARM_SLUG}", aoi=AOI_ID, time_range=None,
         processing=["farm fields from docs/spec/19 (Demo farm data: name, crop, Pasaje along the Buenavista river); variety = questionnaire default kept as estimated (D-023)",
-                    "lots: geometry and area from processed/aoi/demo_lots.geojson (synthetic, D-005), ids mapped to lot_demo-el-oro_<n>; twi_mean/twi_max/twi_tercile from pipeline/engine/terrain.py",
+                    "lots: geometry, ids and area from processed/aoi/demo_lots.geojson (synthetic, D-005); twi_mean/twi_max/twi_tercile from pipeline/engine/terrain.py",
                     "location = mean of the lot centres; no outline (the demo farm is its lots); unknown lot attributes are null (pending)"],
         notes="Synthetic demo farm (Finca Demo El Oro), shown with a visible Demo label; to_be_redefined_by future-local-agronomist (D-026)."))
     lots_rec = [r for r in in_recs if r["id"] == ids["lots"]]

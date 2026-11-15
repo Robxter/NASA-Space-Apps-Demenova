@@ -46,11 +46,11 @@ def test_severe_days_and_compare():
     assert diff == {"same_units": False, "same_days": False, "units_gained": ["b"], "units_lost": [], "units_with_shifted_days": ["a"]}
 
 
-def test_contract_lot_ids():
-    assert R.contract_lot_id("lot_demo_el_oro_3") == "lot_demo-el-oro_3"
-    assert R.contract_lot_id("lot_demo-el-oro_12") == "lot_demo-el-oro_12"
-    with pytest.raises(ValueError):
-        R.contract_lot_id("lot_other_1")
+def test_demo_lot_ids_follow_the_contract():
+    assert R.lot_number("lot_demo-el-oro_12") == 12
+    for bad in ("lot_demo_el_oro_3", "lot_other_1"):
+        with pytest.raises(ValueError):
+            R.lot_number(bad)
 
 
 def test_ulid_is_deterministic_valid_and_time_ordered():
