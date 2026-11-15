@@ -2,7 +2,7 @@
 // Static server for the e2e suite (T-044). Owner: qa-demo-engineer. Node built-ins only (no dependency).
 // Serves the production build app/dist with gzip, the way a static host (Render Static Site) would, so the
 // throttled runs measure compressed transfers. Unknown paths fall back to index.html (hash navigation needs none,
-// but a judge may open "/" with any path). Usage: node tests/e2e/serve.mjs [port] [--csp]
+// but a judge may open "/" with any path). Usage: node tests/e2e/serve.mjs [port] [--csp] [--root <dir>]
 // --csp sends the exact Content-Security-Policy that render.yaml sets for path /* on the live site (read from the
 // file at start, never copied here), so specs/csp.spec.ts sees what a judge's browser enforces.
 import { createServer } from 'node:http';
@@ -12,8 +12,10 @@ import { fileURLToPath } from 'node:url';
 import { gzipSync } from 'node:zlib';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
-const ROOT = join(REPO, 'app', 'dist');
 const ARGS = process.argv.slice(2);
+// --root <dir> serves another build folder (the e2e captcha build, see global-setup.mjs); default app/dist.
+const rootArg = ARGS.indexOf('--root');
+const ROOT = rootArg >= 0 && ARGS[rootArg + 1] ? resolve(ARGS[rootArg + 1]) : join(REPO, 'app', 'dist');
 const PORT = Number(ARGS.find((a) => /^\d+$/.test(a)) ?? process.env.E2E_PORT ?? 4173);
 
 /** The CSP header value render.yaml sets on `/*` (the line after `name: Content-Security-Policy`). */
@@ -41,10 +43,15 @@ const TYPES = {
   '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.txt': 'text/plain; charset=utf-8',
+  '.pdf': 'application/pdf',
+  '.csv': 'text/csv; charset=utf-8',
+  '.jpg': 'image/jpeg',
+  '.webp': 'image/webp',
 };
-const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.json', '.geojson', '.webmanifest', '.svg', '.txt']);
+const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.json', '.geojson', '.webmanifest', '.svg', '.txt', '.csv']);
 
-if (!existsSync(join(ROOT, 'index.html'))) {
+// With --root the folder may still be building (global-setup.mjs): files are read per request, so start anyway.
+if (rootArg < 0 && !existsSync(join(ROOT, 'index.html'))) {
   console.error(`No build at ${ROOT}. Run: npm --prefix app run build`);
   process.exit(1);
 }

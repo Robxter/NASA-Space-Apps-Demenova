@@ -29,6 +29,16 @@ test('every screen runs under the render.yaml CSP with no violation', async ({ p
   expect(response?.headers()['content-security-policy'], 'the server sends the render.yaml CSP').toMatch(/script-src 'self'/);
   await expect(slider(page)).toBeVisible();
 
+  // Welcome (block 4): the three tabs, with site.json pointing at a video so the youtube-nocookie frame is created.
+  await page.route('**/site.json', (r) =>
+    r.fulfill({ contentType: 'application/json', body: JSON.stringify({ intro_video_url: 'https://www.youtube.com/watch?v=QAtestId_01' }) }),
+  );
+  for (const h of ['/', '/#welcome/instructions', '/#welcome/qa', '/#welcome']) {
+    await page.goto(h);
+    await expect(page.getByTestId('welcome-app-access').first()).toBeVisible();
+  }
+  await expect(page.getByTestId('welcome-video').locator('iframe')).toHaveCount(1);
+
   // Map: layers, then a played forward step 6 -> 7 Feb 2026 (the Flood), then the lot sheet.
   await page.goto('/#map?d=2026-02-06');
   await page.reload(); // the replay day is read from the hash on load
@@ -39,6 +49,10 @@ test('every screen runs under the render.yaml CSP with no violation', async ({ p
   await expect(slider(page)).toHaveValue(String(replayDays().indexOf('2026-02-07')), { timeout: 5000 });
   await page.waitForTimeout(1600); // flood 700 ms + spill until 1460 ms
   await page.getByRole('button', { name: t('en', 'replay.pause') }).click();
+  // Imagery: Streets (OpenStreetMap tiles) and back to Satellite (NASA GIBS).
+  await page.getByRole('combobox', { name: t('en', 'map.base') }).selectOption({ label: t('en', 'map.base.streets') });
+  await page.waitForTimeout(500);
+  await page.getByRole('combobox', { name: t('en', 'map.base') }).selectOption({ label: t('en', 'map.base.satellite') });
   await page.locator('path.leaflet-interactive').first().dispatchEvent('click');
   await expect(page.getByRole('button', { name: t('en', 'map.openLot') })).toBeVisible();
 
@@ -53,6 +67,11 @@ test('every screen runs under the render.yaml CSP with no violation', async ({ p
   await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3);
   await page.getByText(t('en', 'strategies.details')).first().click();
   await open(page, '#alerts');
+  // Alerts form (block 4): this build has no hCaptcha site key, so the card answers "not configured"; the full flow
+  // with the widget and the API runs under the same CSP in alerts-channels.spec.ts (port 4175).
+  await page.locator('input[type=email]').fill('qa@example.org');
+  await page.getByRole('button', { name: t('en', 'alerts.email.send') }).click();
+  await expect(page.getByText(t('en', 'alerts.email.notConfigured'))).toBeVisible();
   await page.goto('/#learn');
   await expect(page.getByText(t('en', 'learn.datasets'))).toBeVisible();
 

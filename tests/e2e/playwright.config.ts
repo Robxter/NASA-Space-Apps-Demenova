@@ -9,11 +9,14 @@ import { defineConfig } from '@playwright/test';
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 /** Second server: same build, with the render.yaml Content-Security-Policy header (serve.mjs --csp). */
 export const CSP_PORT = Number(process.env.E2E_CSP_PORT ?? 4174);
+/** Third server: the build with a placeholder hCaptcha site key (global-setup.mjs, serve.mjs --root). */
+export const CAPTCHA_PORT = Number(process.env.E2E_CAPTCHA_PORT ?? 4175);
 
 const phone = { isMobile: true, hasTouch: true };
 
 export default defineConfig({
   testDir: './specs',
+  globalSetup: './global-setup.mjs',
   outputDir: './test-results',
   fullyParallel: true,
   workers: process.env.CI ? 2 : 4,
@@ -47,6 +50,14 @@ export default defineConfig({
       // The same build with the live site's CSP header from render.yaml (specs/csp.spec.ts).
       command: `node serve.mjs ${CSP_PORT} --csp`,
       url: `http://127.0.0.1:${CSP_PORT}/index.html`,
+      reuseExistingServer: !process.env.CI,
+      timeout: 30_000,
+    },
+    {
+      // The same source built with a placeholder hCaptcha site key (global-setup.mjs), with the CSP: the email-alert
+      // tests (specs/alerts-channels.spec.ts). Readiness by port: the folder may still be building.
+      command: `node serve.mjs ${CAPTCHA_PORT} --csp --root .build-captcha`,
+      port: CAPTCHA_PORT,
       reuseExistingServer: !process.env.CI,
       timeout: 30_000,
     },

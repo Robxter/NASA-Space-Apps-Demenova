@@ -71,7 +71,7 @@ test('levels 0 to 2 from Settings: pin, outline, typed lot, GeoJSON import, conf
       { type: 'Feature', properties: { name: 'not a polygon' }, geometry: { type: 'Point', coordinates: [lon, lat] } },
     ],
   };
-  await page.locator('input[type=file]').setInputFiles({
+  await page.locator('input[type=file][accept*="geojson"]').setInputFiles({
     name: 'qa-lots.geojson',
     mimeType: 'application/geo+json',
     buffer: Buffer.from(JSON.stringify(geojson)),
@@ -89,7 +89,7 @@ test('levels 0 to 2 from Settings: pin, outline, typed lot, GeoJSON import, conf
   await expect(page.getByRole('listitem').filter({ hasText: 'QA typed lot' })).toBeVisible();
 
   // Bad file: a clear message, nothing added.
-  await page.locator('input[type=file]').setInputFiles({ name: 'bad.geojson', mimeType: 'application/json', buffer: Buffer.from('{not json') });
+  await page.locator('input[type=file][accept*="geojson"]').setInputFiles({ name: 'bad.geojson', mimeType: 'application/json', buffer: Buffer.from('{not json') });
   await expect(page.getByText(t('en', 'setup.importNotJson'))).toBeVisible();
 
   // Reset to the demo farm.
