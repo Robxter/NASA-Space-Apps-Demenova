@@ -16,6 +16,26 @@ services:
       paths:
         - app/**
     headers:
+      # Security headers on every response (security review M3).
+      # CSP: own origin; Supabase REST + Realtime (https/wss *.supabase.co); NASA GIBS tiles as images, and in
+      # connect-src because the service worker fetches and caches them (the SW runs under this policy too).
+      # No inline script or style: React, Leaflet and uPlot set styles through the CSSOM, which CSP allows.
+      - path: /*
+        name: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://gibs.earthdata.nasa.gov; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gibs.earthdata.nasa.gov; worker-src 'self'; manifest-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      # `/index.html` may not match a request for `/`, so the root gets its own rule.
+      - path: /
+        name: Cache-Control
+        value: no-cache
       # Service worker and its registration must always be revalidated so app updates reach phones.
       - path: /sw.js
         name: Cache-Control
