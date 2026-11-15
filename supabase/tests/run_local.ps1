@@ -4,16 +4,19 @@
 #   2. apply supabase/tests/local_shim.sql (Supabase roles, auth schema, default grants);
 #   3. apply the six migrations in ONE transaction exactly as supabase/README.md tells Roberto (begin; ... commit;),
 #      then a second time to prove they are re-runnable;
+#   3c. with -Seed: run supabase/seed/seed_demo.py --dsn twice (as service_role), check row counts and that a re-run
+#       keeps telegram_code and a backend-set email_sent flag;
 #   4. run supabase/tests/rls_test.sql and count the PASS notices;
 #   5. drop $Db, and the three API roles if this run created them (unless -KeepDb).
 # The password is read from LOCAL_PG_PASSWORD in .env into PGPASSWORD for this process only; it is never printed.
-# Usage (repo root):  powershell -ExecutionPolicy Bypass -File supabase/tests/run_local.ps1
+# Usage (repo root):  powershell -ExecutionPolicy Bypass -File supabase/tests/run_local.ps1 [-Seed] [-KeepDb]
 param(
   [string]$Psql = 'C:/Program Files/PostgreSQL/18/bin/psql.exe',
   [string]$PgHost = 'localhost',
   [int]$Port = 5432,
   [string]$User = 'postgres',
   [string]$Db = 'demenova_rls_test',
+  [switch]$Seed,
   [switch]$KeepDb
 )
 $ErrorActionPreference = 'Stop'
@@ -69,6 +72,48 @@ try {
   Assert-Ok (Invoke-Psql $Db @('-f', $bundle)) 'migrations run 1'
   Write-Host '3b. migrations, second run (re-runnable)'
   Assert-Ok (Invoke-Psql $Db @('-f', $bundle)) 'migrations run 2'
+
+  if ($Seed) {
+    # No password in the URL: psql (started by the seed) reads PGPASSWORD from this process.
+    $dsn = "postgresql://${User}@${PgHost}:${Port}/${Db}"
+    $env:PYTHONUTF8 = '1'
+    $q = "select (select telegram_code from public.farms where id = 'farm_demo-el-oro') || '|' || " +
+         "(select count(*) from public.alert_events where farm_id = 'farm_demo-el-oro' and email_sent)"
+    foreach ($run in 1, 2) {
+      Write-Host "3c. demo seed, run $run (service_role via psql)"
+      if ($run -eq 2) {
+        $before = (Invoke-Psql $Db @('-t', '-A', '-c', $q)).Output
+        # Simulate the backend having mailed one event: a re-run must not reset the flag.
+        Assert-Ok (Invoke-Psql $Db @('-c', "update public.alert_events set email_sent = true where id = (select min(id) from public.alert_events where farm_id = 'farm_demo-el-oro')")) 'flag one event'
+      }
+      $old = $ErrorActionPreference; $ErrorActionPreference = 'Continue'
+      $out = & uv run python (Join-Path $repo 'supabase/seed/seed_demo.py') --dsn $dsn --psql $Psql 2>&1 | ForEach-Object { "$_" }
+      $code = $LASTEXITCODE; $ErrorActionPreference = $old
+      $out | ForEach-Object { Write-Host "   $_" }
+      if ($code -ne 0) { throw "seed run $run failed (exit $code)" }
+    }
+    $after = (Invoke-Psql $Db @('-t', '-A', '-c', $q)).Output
+    $code1 = ("$before" -split '\|')[0]; $code2 = ("$after" -split '\|')[0]; $flags = ("$after" -split '\|')[1]
+    if ($code1 -ne $code2) { throw 'seed re-run changed the demo telegram_code' }
+    if ($flags -ne '1') { throw "seed re-run reset email_sent (flagged events after re-run: $flags, expected 1)" }
+    Write-Host '   re-run kept telegram_code and the backend-set email_sent flag'
+    Assert-Ok (Invoke-Psql $Db @('-c', "update public.alert_events set email_sent = false where farm_id = 'farm_demo-el-oro'")) 'unflag'
+
+    # anon reads the seeded demo through the app's views and cannot write it
+    $f = "farm_id = 'farm_demo-el-oro'"
+    $views = Invoke-Psql $Db @('-t', '-A', '-F', '=', '-c', ("set role anon; " +
+      "select 'v_farm_status', count(*) from public.v_farm_status where $f union all " +
+      "select 'v_lot_history_7d', count(*) from public.v_lot_history_7d where $f union all " +
+      "select 'v_lot_history_90d', count(*) from public.v_lot_history_90d where $f union all " +
+      "select 'v_alert_log', count(*) from public.v_alert_log where $f"))
+    Assert-Ok $views 'anon view read'
+    Write-Host "   anon reads: $(($views.Output | Where-Object { $_ -match '=' }) -join ', ')"
+    $w = Invoke-Psql $Db @('-c', "set role anon; update public.farms set name = 'x' where id = 'farm_demo-el-oro'")
+    if ($w.Code -eq 0) { throw 'anon could update the demo farm' }
+    $w = Invoke-Psql $Db @('-c', "set role authenticated; delete from public.alert_events where $f")
+    if ($w.Code -eq 0) { throw 'authenticated could delete demo alert events' }
+    Write-Host '   anon update and authenticated delete of demo rows refused'
+  }
 
   Write-Host '4. RLS and constraint tests'
   $t = Invoke-Psql $Db @('-f', (Join-Path $repo 'supabase/tests/rls_test.sql'))

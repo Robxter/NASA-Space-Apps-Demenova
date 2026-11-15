@@ -20,7 +20,8 @@ practices, strategies, provenance, email log, Telegram subscribers and user pref
 | `migrations/20261114000500_rls_policies.sql` | column-level client grants + RLS policies (here, not in `policies/`, so the CLI applies them) |
 | `migrations/20261114000600_views.sql` | `v_farm_status`, `v_lot_history_7d`, `v_lot_history_90d`, `v_alert_log` (`security_invoker`) |
 | `tests/rls_test.sql` | 79 checks (74 labelled `FAIL` checks + 5 positive owner writes) in one transaction that is rolled back |
-| `seed/` | empty: the demo farm is loaded from `app/public/data/demo/farm.json` by a follow-up task (no hand-typed values) |
+| `seed/seed_demo.py` | idempotent upsert of the synthetic demo farm from `app/public/data/demo/` (no hand-typed values); see "Seed the demo farm" |
+| `tests/test_seed_demo.py` | pytest for the snapshot-to-row mapping (no network): `uv run pytest supabase/tests/test_seed_demo.py` |
 
 Design: SI units; `timestamptz` (UTC); GeoJSON in EPSG:4326 as `jsonb` (no PostGIS: no spatial query runs in the
 database). Every `<field>_origin` of the contracts is a column; `origin` (OriginSpec) is `jsonb`. A null value has
@@ -62,8 +63,8 @@ to delete that farm's subscriptions first. `email_log` has no foreign key to `fa
 
 3. Dashboard > SQL Editor > New query: paste, **Run**. Expect "Success. No rows returned". On any error nothing is
    kept (run `rollback;` once, then report the error).
-4. Right away, before sharing the app URL: load the demo farm with the service role (follow-up task; its id should end
-   in a segment shorter than 6 characters, e.g. `farm_demo-el-oro`, so no user id can ever take it).
+4. Right away, before sharing the app URL: load the demo farm with the service role ("Seed the demo farm" below; its
+   id `farm_demo-el-oro` ends in a segment shorter than 6 characters, so no user id can ever take it).
 5. New query: paste `supabase/tests/rls_test.sql`, **Run**. Pass = "Success. No rows returned" (it rolls itself back).
    An error starting `FAIL` names the broken check; run `rollback;` once and report it. If the insert into
    `auth.users` is refused, report that too (the tests need two throw-away auth users).
@@ -71,13 +72,58 @@ to delete that farm's subscriptions first. `email_log` has no foreign key to `fa
 
 All files are idempotent: running them again is harmless. Never paste the service-role key anywhere in SQL.
 
+## Seed the demo farm (after the schema is applied)
+
+`supabase/seed/seed_demo.py` upserts the synthetic demo farm `farm_demo-el-oro` from the committed snapshots in
+`app/public/data/demo/`, validated against `pipeline/common/models.py` first. Values, nulls, every `origin` and every
+provenance id are copied as they are; it stops with `seed failed: ...` instead of guessing. Re-running is harmless.
+It uses the Supabase REST API with `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` from the environment or `.env`
+(never printed). Only httpx and pydantic, both already locked. From the repo root, in PowerShell:
+
+```powershell
+$env:PYTHONUTF8='1'; uv run python supabase/seed/seed_demo.py --dry-run   # validates, writes nothing
+$env:PYTHONUTF8='1'; uv run python supabase/seed/seed_demo.py             # writes to the project in .env
+```
+
+Expected output (the second number is what the database holds for the demo farm afterwards):
+
+```text
+demo seed: farm_demo-el-oro from app/public/data/demo (replay 2026-01-20..2026-03-05, alert states as of 2026-03-05)
+  provenance        13 rows upserted,   13 in the database
+  farms              1 rows upserted,    1 in the database
+  lots               8 rows upserted,    8 in the database
+  zones              3 rows upserted,    3 in the database
+  daily_features   495 rows upserted,  495 in the database
+  alert_states      11 rows upserted,   11 in the database
+  alert_events      18 rows upserted,   18 in the database
+done
+```
+
+What goes where: `alert_states` holds each unit's state on the last replay day (the frozen demo's "current" state);
+`alert_events` holds all 18 transitions of the replay; `daily_features` every unit-day of `replay/*.json`.
+Not sent, so the database keeps its own: `telegram_code`, `created_at`, `updated_at` (defaults) and `alert_email`
+(always null on the demo farm; the backend mails `ALERT_EMAIL_TO`). On a re-run `email_sent` / `telegram_sent` of an
+existing event are never reset. `side.experimental` is dropped from `alert_states.side` (the column accepts only
+`sigatoka` and `cold`; contract note in `models.SideIndicators`); the app still reads it from the snapshots.
+
+After seeding, the backend's Publish step (`python -m backend.app.alerts`, hourly in `pipeline.yml` when its secrets are
+set) finds 4 Severe transitions whose unit is still Severe in the same episode and mails each once to `ALERT_EMAIL_TO`
+(lot 1, lot 2, zone high, lot 7). `/email/test` uses the latest one (lot 7, 2026-02-25 04:00 UTC).
+
+Other targets: `--emit-sql <file>` writes the same upserts as one SQL transaction (`set local role service_role`, also
+pasteable in the SQL editor); `--dsn <postgres url>` runs that SQL through `psql` (no Python driver).
+
 ## Run locally (plain PostgreSQL 15+, throwaway database; never touches Supabase)
 
 Needs a local PostgreSQL (tested on 18.7) and `LOCAL_PG_PASSWORD=<postgres password>` in `.env`. From the repo root:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File supabase/tests/run_local.ps1            # add -KeepDb to inspect afterwards
+powershell -ExecutionPolicy Bypass -File supabase/tests/run_local.ps1 -Seed      # also seeds the demo farm twice
 ```
+
+With `-Seed`, the demo seed runs twice through `--dsn` (as `service_role`) before the RLS tests; the second run must keep
+`telegram_code` and a backend-set `email_sent`, anon must read the demo through the four views and must not write it.
 
 It drops and re-creates `demenova_rls_test`, applies `supabase/tests/local_shim.sql` (Supabase roles `anon`,
 `authenticated`, `service_role` with BYPASSRLS; `auth.users`, `auth.uid()`, `auth.jwt()`; Supabase's default grants on
