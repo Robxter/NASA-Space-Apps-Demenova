@@ -43,7 +43,7 @@ const en: WelcomeContent = {
       },
       {
         title: 'Map',
-        body: 'Risk map: lots coloured by level over NASA GIBS imagery. Layers: Alert level, Wetness, Rain 24 h. Imagery: Relief or True colour. Tap a lot, then **Open lot**.',
+        body: 'Risk map: lots coloured by level over NASA GIBS imagery. Layers: Alert level, Wetness, Rain 24 h. Imagery: Satellite (default), Streets, True colour or Relief. Tap a lot, then **Open lot**.',
       },
       {
         title: 'Lot detail',
@@ -129,7 +129,7 @@ const en: WelcomeContent = {
           'Weather for evapotranspiration: NASA POWER Daily API v2.10.3; hourly API v2.10.4 for the replay window.',
           'Terrain and catchment: NASA SRTM SRTMGL1 v003 (30 m), via OpenTopography.',
           'Greenness (NDVI): Copernicus Sentinel-2 L2A, Element 84 Earth Search STAC v1.',
-          'Map imagery: NASA GIBS (ASTER GDEM shaded relief, MODIS Terra true colour).',
+          'Map imagery: NASA GIBS (Landsat WELD annual true colour with reference roads and place names, MODIS Terra true colour, ASTER GDEM shaded relief) and OpenStreetMap streets (© OpenStreetMap contributors).',
           'River: OpenStreetMap contributors (ODbL).',
           'Evaluated, not used: SMAP SPL3SMP_E v006 (no recommended-quality retrieval over the farm in the replay; D-019) and GLDAS Noah 2.1 (downloaded for the replay window, not used by the index or shown in the app).',
         ],

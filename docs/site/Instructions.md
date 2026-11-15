@@ -54,7 +54,7 @@ reaches the index only after the overflow was reported. Demenova did not predict
 
 1. Tap **Map**. The **Risk map** colours each lot by level over NASA GIBS imagery.
 2. **Layer**: **Alert level**, **Wetness** (terrain-wetness tercile: Low, Middle, High) or **Rain 24 h**.
-3. **Imagery**: **Relief** or **True colour** (follows the replay day).
+3. **Imagery**: **Satellite** (default: NASA Landsat WELD true colour with reference roads and place names), **Streets** (OpenStreetMap), **True colour** (NASA MODIS, follows the replay day) or **Relief** (NASA ASTER). The same chooser is above the Farm setup map.
 4. Zoom in to label each lot. Tap a lot to see its level, then **Open lot**.
 
 [SCREENSHOT: Map, Alert level layer]

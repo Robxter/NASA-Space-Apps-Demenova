@@ -43,7 +43,7 @@ const es: WelcomeContent = {
       },
       {
         title: 'Mapa',
-        body: 'Mapa de riesgo: lotes coloreados por nivel sobre imágenes NASA GIBS. Capas: Nivel de alerta, Humedad, Lluvia 24 h. Imágenes: Relieve o Color real. Toca un lote y luego abre el lote.',
+        body: 'Mapa de riesgo: lotes coloreados por nivel sobre imágenes NASA GIBS. Capas: Nivel de alerta, Humedad, Lluvia 24 h. Imágenes: Satélite (predeterminada), Calles, Color real o Relieve. Toca un lote y luego abre el lote.',
       },
       {
         title: 'Detalle del lote',
@@ -129,7 +129,7 @@ const es: WelcomeContent = {
           'Clima para la evapotranspiración: NASA POWER Daily API v2.10.3; API horaria v2.10.4 para la ventana de la reproducción.',
           'Terreno y cuenca: NASA SRTM SRTMGL1 v003 (30 m), vía OpenTopography.',
           'Verdor (NDVI): Copernicus Sentinel-2 L2A, Element 84 Earth Search STAC v1.',
-          'Imágenes del mapa: NASA GIBS (relieve sombreado ASTER GDEM, color real MODIS Terra).',
+          'Imágenes del mapa: NASA GIBS (color real anual Landsat WELD con carreteras y nombres de lugares de referencia, color real MODIS Terra, relieve sombreado ASTER GDEM) y calles de OpenStreetMap (© colaboradores de OpenStreetMap).',
           'Río: colaboradores de OpenStreetMap (ODbL).',
           'Evaluados, no usados: SMAP SPL3SMP_E v006 (sin datos de calidad recomendada sobre la finca en la reproducción; D-019) y GLDAS Noah 2.1 (descargado para la reproducción, no lo usa el índice ni se muestra en la app).',
         ],
