@@ -37,7 +37,7 @@ export function OriginBadge({ origin }: { origin: Origin | null }) {
   if (origin === 'synthetic') return <DemoChip lang={prefs.language} />;
   const word = origin ? t(`origin.${origin}`) : t('origin.unknown');
   return (
-    <span className="inline-flex items-center whitespace-nowrap rounded-full border border-line-strong px-1.5 text-caption text-ink-2">
+    <span className="inline-flex items-center whitespace-nowrap rounded-full border border-line px-1.5 text-caption text-ink-2">
       {word}
     </span>
   );

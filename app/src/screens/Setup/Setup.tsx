@@ -424,7 +424,7 @@ export default function Setup() {
                 <Button variant="secondary" onClick={addTyped}>
                   {t('setup.typeLot')}
                 </Button>
-                <label className="inline-flex min-h-12 cursor-pointer touch-manipulation select-none items-center justify-center rounded-control bg-surface-2 px-5 text-body font-semibold text-ink transition-transform duration-[120ms] ease-standard focus-within:outline focus-within:outline-3 focus-within:outline-focus active:scale-[0.98]">
+                <label className="inline-flex min-h-12 dn-press cursor-pointer touch-manipulation select-none items-center justify-center rounded-control bg-surface-2 px-5 text-body font-semibold text-ink focus-within:outline focus-within:outline-3 focus-within:outline-focus">
                   {t('setup.importLots')}
                   <input
                     type="file"

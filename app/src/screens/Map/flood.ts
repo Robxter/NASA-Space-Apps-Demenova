@@ -67,10 +67,12 @@ export function flood(path: SVGPathElement, alive: () => boolean): void {
   for (const [k, v] of Object.entries({ x1: '0', y1: '1', x2: '0', y2: '0' })) g.setAttribute(k, v);
   const stops = (
     [
-      ['0', 'var(--dn-severe-fill)', '0.75'],
-      ['0', 'var(--dn-severe-fill)', '0.75'],
-      ['0', 'var(--dn-warning-fill)', '0.55'],
-      ['1', 'var(--dn-warning-fill)', '0.55'],
+      // Stop opacities are relative to the class fill-opacity (0.75 once data-level is severe): 1 keeps Severe at
+      // 0.75, and 0.733 gives Warning its own 0.55 (R-01: no dip at the start, no flash at the end).
+      ['0', 'var(--dn-severe-fill)', '1'],
+      ['0', 'var(--dn-severe-fill)', '1'],
+      ['0', 'var(--dn-warning-fill)', '0.733'],
+      ['1', 'var(--dn-warning-fill)', '0.733'],
     ] as const
   ).map(([o, c, op]) => {
     const s = document.createElementNS(NS, 'stop');
@@ -82,10 +84,11 @@ export function flood(path: SVGPathElement, alive: () => boolean): void {
   });
   defs.appendChild(g);
   path.style.fill = `url(#${g.id})`;
-  path.style.fillOpacity = '1';
+  // Only the stroke eases during the sweep; the fill and fill-opacity class transitions would run at both ends.
+  path.style.transitionProperty = 'stroke, stroke-width';
   const end = () => {
     path.style.fill = '';
-    path.style.fillOpacity = '';
+    path.style.transitionProperty = '';
     g.remove();
   };
   const t0 = performance.now();
@@ -115,11 +118,8 @@ function spill(path: SVGPathElement, alive: () => boolean): void {
   const remove = () => ring.remove();
   ring.addEventListener('animationend', remove, { once: true });
   window.setTimeout(remove, total + 100);
-  const check = window.setInterval(() => {
-    if (!alive()) {
-      remove();
-      window.clearInterval(check);
-    }
-  }, 100);
-  window.setTimeout(() => window.clearInterval(check), total + 200);
+  // R-06: one check when the ring would start; a newer day before then means it never shows.
+  window.setTimeout(() => {
+    if (!alive()) remove();
+  }, tokenMs('--dn-delay-spill', 560));
 }

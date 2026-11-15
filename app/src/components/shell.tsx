@@ -41,7 +41,7 @@ export function Segmented<T extends string>({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}
-            className={`min-h-11 flex-1 touch-manipulation select-none rounded-control px-2 text-callout font-semibold transition-[color,background-color,transform] duration-[120ms] ease-standard active:scale-[0.97] ${
+            className={`dn-press min-h-11 flex-1 touch-manipulation select-none rounded-control px-2 text-callout font-semibold ${
               on ? 'bg-surface text-ink shadow-banner' : 'text-ink-2'
             }`}
           >

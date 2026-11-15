@@ -147,6 +147,11 @@ export default function MapView() {
         labels.current.set(lot.id, label);
       }
       const { root, word } = label;
+      // R-02: is-flooding gives the core its rise for this one change (set before the level so it transitions).
+      if (flooding) {
+        root.classList.add('is-flooding');
+        window.setTimeout(() => root.classList.remove('is-flooding'), tokenMs('--dn-dur-flood', 700));
+      } else root.classList.remove('is-flooding');
       setLabelLevel(root, level);
       if (flooding) {
         window.setTimeout(() => {
@@ -228,7 +233,7 @@ export default function MapView() {
         </p>
         {sel || selected ? (
           // CL-27 (1): the sheet enters from the bottom edge (spatial continuity); reduced motion keeps only the fade.
-          <div className="w-full rounded-sheet bg-surface p-4 shadow-sheet transition-[translate,opacity] duration-[var(--dn-dur-sheet)] ease-standard starting:translate-y-full starting:opacity-0 motion-reduce:transition-opacity motion-reduce:starting:translate-y-0">
+          <div className="w-full rounded-sheet bg-surface p-4 shadow-sheet transition-[translate,opacity] duration-sheet ease-drawer starting:translate-y-full starting:opacity-0 motion-reduce:transition-opacity motion-reduce:starting:translate-y-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="m-0 truncate text-headline text-ink">{unitName(selected ?? '')}</h2>
@@ -238,7 +243,7 @@ export default function MapView() {
                 type="button"
                 onClick={() => setSelected(null)}
                 aria-label={t('common.close')}
-                className="flex size-12 shrink-0 touch-manipulation select-none items-center justify-center rounded-full bg-surface-2 text-ink-2 active:scale-[0.95] transition-transform duration-[120ms] ease-standard"
+                className="dn-press flex size-12 shrink-0 touch-manipulation select-none items-center justify-center rounded-full bg-surface-2 text-ink-2"
               >
                 <svg aria-hidden="true" viewBox="0 0 14 14" width="14" height="14">
                   <path d="M2 2l10 10M12 2 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
