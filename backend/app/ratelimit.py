@@ -42,3 +42,27 @@ class SlidingWindowLimiter:
     def reset(self) -> None:
         with self._lock:
             self._hits.clear()
+
+
+class GlobalWindowLimiter:
+    """One counter for the whole process: nothing to evict, so flooding other keys cannot reset it."""
+
+    def __init__(self, limit: int, window_s: float, clock: Callable[[], float] = time.monotonic) -> None:
+        self.limit, self.window_s, self._clock = limit, window_s, clock
+        self._hits: deque[float] = deque()
+        self._lock = threading.Lock()
+
+    def take(self) -> bool:
+        """Record one use and return True if it fits in the window; otherwise record nothing and return False."""
+        with self._lock:
+            now = self._clock()
+            while self._hits and now - self._hits[0] >= self.window_s:
+                self._hits.popleft()
+            if len(self._hits) >= self.limit:
+                return False
+            self._hits.append(now)
+            return True
+
+    def reset(self) -> None:
+        with self._lock:
+            self._hits.clear()

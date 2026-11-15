@@ -43,8 +43,9 @@ class FakeHCaptcha:
 def ctx():
     db, resend, hc = f.FakePostgrest(), f.FakeResend(), FakeHCaptcha()
     state = {"settings": f.settings(hcaptcha_secret=HC_SECRET), "hc": hc}
-    main.test_email_ip_limiter.reset()
-    main.test_email_address_limiter.reset()
+    for limiter in (main.test_email_ip_limiter, main.test_email_address_limiter,
+                    main.captcha_verify_limiter, main.test_email_send_limiter):
+        limiter.reset()
     main.app.dependency_overrides[main.get_settings] = lambda: state["settings"]
     main.app.dependency_overrides[main.get_db] = lambda: db.client()
     main.app.dependency_overrides[main.get_mailer] = (
@@ -55,8 +56,9 @@ def ctx():
     )
     yield TestClient(main.app), db, resend, state
     main.app.dependency_overrides.clear()
-    main.test_email_ip_limiter.reset()
-    main.test_email_address_limiter.reset()
+    for limiter in (main.test_email_ip_limiter, main.test_email_address_limiter,
+                    main.captcha_verify_limiter, main.test_email_send_limiter):
+        limiter.reset()
 
 
 def body(email: str = "someone@example.test", token: str = GOOD, lang: str = "en") -> dict:
@@ -182,3 +184,68 @@ def test_cors_preflight_and_response_scoped_to_allowed_origins(ctx):
     h = client.get("/health", headers={"Origin": APP_ORIGIN})
     assert "access-control-allow-origin" not in h.headers  # no CORS anywhere else
     assert client.options("/run", headers={"Origin": APP_ORIGIN}).status_code in (404, 405)
+
+
+
+# ------------------------------------------------------------------- security review block 4 regressions
+
+
+def test_client_ip_uses_the_right_most_valid_forwarded_entry():
+    from starlette.requests import Request
+
+    def req(xff: str | None) -> Request:
+        headers = [(b"x-forwarded-for", xff.encode())] if xff is not None else []
+        return Request({"type": "http", "headers": headers, "client": ("192.0.2.200", 1)})
+
+    assert main.client_ip(req("1.2.3.4, 5.6.7.8")) == "5.6.7.8"
+    assert main.client_ip(req("1.2.3.4, 5.6.7.8, junk")) == "5.6.7.8"
+    assert main.client_ip(req("junk")) == "192.0.2.200"
+    assert main.client_ip(req(None)) == "192.0.2.200"
+
+
+def test_rotating_the_forged_left_entry_does_not_escape_the_ip_limit(ctx):
+    """M1: the caller controls only the left-most entries."""
+    client, *_ = ctx
+    for i in range(10):
+        hdr = {"X-Forwarded-For": f"10.9.{i}.1, 203.0.113.50"}
+        client.post(PATH, json=body(email=f"user{i}@example.test"), headers=hdr)
+    r = client.post(PATH, json=body(email="new@example.test"), headers={"X-Forwarded-For": "10.99.0.1, 203.0.113.50"})
+    assert r.status_code == 429 and "network" in r.json()["detail"]
+
+
+def test_global_captcha_cap_stops_outbound_verifications(ctx):
+    """M1: at most CAPTCHA_VERIFY_PER_MINUTE siteverify calls per minute, whatever the IPs and addresses."""
+    client, _, _, state = ctx
+    cap = main.CAPTCHA_VERIFY_PER_MINUTE
+    for i in range(cap):
+        client.post(PATH, json=body(email=f"u{i}@example.test", token="forged"),
+                    headers={"X-Forwarded-For": f"198.51.{i // 200}.{i % 200 + 1}"})
+    r = client.post(PATH, json=body(email="last@example.test"), headers={"X-Forwarded-For": "192.0.2.77"})
+    assert r.status_code == 429 and "minute" in r.json()["detail"]
+    assert len(state["hc"].forms) == cap
+
+
+def test_global_send_cap_survives_key_eviction(ctx):
+    """M3: total Resend calls from the public endpoint are capped, even if the address key is reset or evicted."""
+    client, _, resend, _ = ctx
+    cap = main.TEST_EMAIL_SENDS_PER_HOUR
+    for i in range(cap):
+        main.test_email_address_limiter.reset()  # as if a flood had evicted the owner's address key
+        r = client.post(PATH, json=body(email=f.INBOX), headers={"X-Forwarded-For": f"203.0.113.{i + 1}"})
+        assert r.json() == {"status": "sent"}
+    main.test_email_address_limiter.reset()
+    r = client.post(PATH, json=body(email=f.INBOX), headers={"X-Forwarded-For": "203.0.113.99"})
+    assert r.status_code == 429 and "demo inbox" in r.json()["detail"]
+    assert len(resend.requests) == cap
+
+
+def test_oversized_or_unsized_bodies_are_rejected_before_any_work(ctx):
+    """M1 and L4: 4 KB cap with CORS headers kept, and no chunked bodies."""
+    client, _, resend, state = ctx
+    big = body(token="x" * 5000)
+    r = client.post(PATH, json=big, headers={"Origin": APP_ORIGIN})
+    assert r.status_code == 413 and r.headers["access-control-allow-origin"] == APP_ORIGIN
+    chunked = client.post(PATH, content=iter([b'{"email": "a@b.cc", ', b'"captcha_token": "t", "lang": "en"}']),
+                          headers={"Content-Type": "application/json"})
+    assert chunked.status_code == 411
+    assert state["hc"].forms == [] and resend.requests == []

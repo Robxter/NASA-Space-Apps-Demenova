@@ -22,7 +22,7 @@ class CaptchaUnavailable(RuntimeError):
 class HCaptchaVerifier:
     def __init__(self, secret: str, sitekey: str | None = None, client: httpx.Client | None = None) -> None:
         self._secret, self._sitekey = secret, sitekey
-        self._client = client or httpx.Client(timeout=8.0)
+        self._client = client or httpx.Client(timeout=5.0)
 
     def verify(self, token: str, remoteip: str | None = None) -> bool:
         form = {"secret": self._secret, "response": token}

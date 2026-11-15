@@ -25,14 +25,18 @@ Required: `ADMIN_TOKEN`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, `SUPABASE_URL`, `SU
 secret = webhook closed). Optional: `ALERT_EMAIL_FROM_NAME` (default "Demenova Alerts"), `APP_BASE_URL` (https; lot
 link in alerts), `HCAPTCHA_SITEKEY` (public site key; recommended by hCaptcha so tokens from another key fail).
 Never log them. `ADMIN_TOKEN` must be at least 32 characters, otherwise it counts as unset. Generate tokens with
-`python -c "import secrets;print(secrets.token_hex(32))"` (also valid for `TELEGRAM_WEBHOOK_SECRET`).
+`python -c "import secrets;print(secrets.token_hex(32))"`. `TELEGRAM_WEBHOOK_SECRET` should also be 32+ random
+characters (the same command works; Telegram allows only A-Z a-z 0-9 _ -).
 Sender: Resend's test sender `onboarding@resend.dev`, which reaches only the Resend account owner's inbox (accepted for
 the demo). Using an owned domain needs the product owner's approval (class A).
 
 ## Public test email (`POST /alerts/test-email`)
 Body `{"email", "captcha_token", "lang": "en"|"es"}`. After the captcha passes, only `ALERT_EMAIL_TO` receives the
 TEST email (`{"status": "sent"}`); any other address gets `{"status": "limited_demo"}` and Resend is not called.
-Limits per process: 10 attempts/hour per client IP, 3/hour per address. `/email/test` (admin) allows one per 60 s.
+Limits per process: 10 attempts/hour per client IP (right-most X-Forwarded-For entry), 3/hour per address, and
+global caps of 30 captcha checks/minute and 6 sent emails/hour; bodies over 4 KB get 413 (16 KB on the webhook) and
+POSTs without Content-Length get 411. `/email/test` (admin) allows one per 60 s. The bot caps the demo farm at 200
+active chats, and a Severe fan-out stops starting new sends after 60 s.
 
 ## Telegram bot
 Commands: `/start` (demo farm), `/start <telegram_code>`, `/stop`, `/help`, `/estado` or `/status`. After deploy, run

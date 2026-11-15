@@ -26,6 +26,8 @@ log = logging.getLogger("demenova.telegram")
 
 API_BASE = "https://api.telegram.org"
 MAX_TEXT = 4096
+# Security review block 4 (L5): /start without a code needs no secret, so the demo farm's list is capped.
+DEMO_SUBSCRIBER_CAP = 200
 CODE_RE = re.compile(r"^[A-Za-z0-9_-]{16,64}$")  # TelegramCode (pipeline/common/models.py)
 
 LEVEL_WORDS = {
@@ -40,6 +42,8 @@ TEXTS = {
         "subscribed": "Listo: recibirá aquí las alertas Severas de {farm}. Así se ve una alerta (prueba):",
         "subscribed_demo": "Listo: está suscrito a la finca DEMO {farm}. Así se ve una alerta (prueba):",
         "no_event": "Todavía no hay ningún episodio Severo para mostrar como prueba.",
+        "demo_full": ("La lista de la demostración está completa por ahora. Gracias por su interés; "
+                      "vuelva a intentarlo más tarde."),
         "unknown_code": "Código de finca no reconocido; no se cambió nada. Envíe /start para la finca de demostración.",
         "unavailable": "El servicio no está disponible ahora mismo. Inténtelo más tarde.",
         "stopped": "Listo: ya no recibirá alertas aquí. Envíe /start para volver a suscribirse.",
@@ -56,6 +60,7 @@ TEXTS = {
         "subscribed": "Done: Severe alerts for {farm} will arrive here. This is what an alert looks like (test):",
         "subscribed_demo": "Done: you are subscribed to the DEMO farm {farm}. This is what an alert looks like (test):",
         "no_event": "There is no Severe episode to show as a test yet.",
+        "demo_full": "The demonstration list is full for now. Thank you for your interest; please try again later.",
         "unknown_code": "Farm code not recognised; nothing changed. Send /start for the demonstration farm.",
         "unavailable": "The service is not available right now. Please try again later.",
         "stopped": "Done: you will no longer receive alerts here. Send /start to subscribe again.",
@@ -100,7 +105,7 @@ def render_telegram(mail: SevereEmail, lang: str = "both") -> str:
 class TelegramClient:
     def __init__(self, token: str, client: httpx.Client | None = None) -> None:
         self._token = token
-        self._client = client or httpx.Client(timeout=8.0)
+        self._client = client or httpx.Client(timeout=5.0)
 
     def call(self, method: str, payload: dict[str, Any]) -> dict[str, Any]:
         """Call a Bot API method. Returns the JSON reply, or {"ok": False} when unreachable. Never raises."""
@@ -159,6 +164,17 @@ def _farm_for(db: SupabaseRest, code: str | None) -> dict[str, Any] | None:
     else:
         rows = []
     return rows[0] if rows and rows[0].get("telegram_code") else None
+
+
+def demo_list_full(db: SupabaseRest, farm_id: str, chat: str) -> bool:
+    """True when the demo farm already has DEMO_SUBSCRIBER_CAP active chats and this chat is not one of them."""
+    mine = db.select("telegram_subscribers", {"select": "chat_id", "farm_id": f"eq.{farm_id}",
+                                              "chat_id": f"eq.{chat}", "active": "is.true", "limit": "1"})
+    if mine:
+        return False
+    active = db.select("telegram_subscribers", {"select": "chat_id", "farm_id": f"eq.{farm_id}",
+                                                "active": "is.true", "limit": str(DEMO_SUBSCRIBER_CAP)})
+    return len(active) >= DEMO_SUBSCRIBER_CAP
 
 
 def _test_alert(db: SupabaseRest, settings: Settings, farm: dict[str, Any], lang: str) -> str:
@@ -224,6 +240,9 @@ def handle_update(update: dict[str, Any], db: SupabaseRest | None, tg: TelegramC
     if farm is None:
         tg.send(chat_id, t["unknown_code"])
         return "unknown_code"
+    if farm.get("is_demo") is True and demo_list_full(db, farm["id"], str(chat_id)):
+        tg.send(chat_id, t["demo_full"])
+        return "demo_full"
     db.upsert("telegram_subscribers", {
         "chat_id": str(chat_id), "farm_id": farm["id"], "telegram_code": farm["telegram_code"],
         "started_at": dt.datetime.now(dt.UTC).isoformat().replace("+00:00", "Z"), "active": True,

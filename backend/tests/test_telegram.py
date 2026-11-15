@@ -284,3 +284,53 @@ def test_conditional_claim_prevents_a_second_fan_out():
     farm = db.tables["farms"][0]
     out = publish_telegram(db.client(), tg.client(), f.settings(), event, farm, STALE_H)
     assert out.result == "skipped:duplicate" and tg.calls == []
+
+
+
+# ------------------------------------------------------------------- security review block 4 regressions
+
+
+def test_webhook_body_size_cap(ctx):
+    """L4: the webhook takes any JSON object after the secret check, so it is capped at 16 KB."""
+    post, db, tg, _ = ctx
+    seed_demo(db)
+    big = update("/start")
+    big["padding"] = "x" * (17 * 1024)
+    assert post(big).status_code == 413 and tg.calls == []
+
+
+def test_demo_list_is_capped_but_members_and_coded_farms_are_not(ctx, monkeypatch):
+    """L5: /start needs no secret, so the demo farm takes at most DEMO_SUBSCRIBER_CAP active chats."""
+    from backend.app import telegram
+
+    monkeypatch.setattr(telegram, "DEMO_SUBSCRIBER_CAP", 2)
+    post, db, tg, _ = ctx
+    seed_demo(db)
+    post(update("/start", update_id=1, chat=11))
+    post(update("/start", update_id=2, chat=12))
+    post(update("/start", update_id=3, chat=13))
+    assert sorted(s["chat_id"] for s in db.tables["telegram_subscribers"]) == ["11", "12"]
+    assert "list is full" in tg.texts[-1]
+    post(update("/start", update_id=4, chat=12))  # already a member: still welcome
+    assert "list is full" not in tg.texts[-2]
+    post(update("/stop", update_id=5, chat=11))
+    post(update("/start", update_id=6, chat=13))  # a place was freed
+    assert {s["chat_id"] for s in db.tables["telegram_subscribers"] if s["active"]} == {"12", "13"}
+    db.tables["farms"].append({"id": "farm_other", "name": "Other", "is_demo": False,
+                               "telegram_code": "ffffffffffffffffffffffffffffffff"})
+    post(update("/start ffffffffffffffffffffffffffffffff", update_id=7, chat=14))
+    assert any(s["farm_id"] == "farm_other" for s in db.tables["telegram_subscribers"])
+
+
+def test_fan_out_stops_at_the_time_budget(monkeypatch):
+    """L5: a sequential fan-out never runs past TELEGRAM_FANOUT_BUDGET_S."""
+    from backend.app import alerts
+
+    ticks = iter([0.0, 1.0, alerts.TELEGRAM_FANOUT_BUDGET_S + 1.0] + [999.0] * 10)
+    monkeypatch.setattr(alerts, "_clock", lambda: next(ticks))
+    db, tg = f.FakePostgrest(), FakeTelegram()
+    seed_demo(db)
+    for chat in (2001, 2002, 2003):
+        subscribe(db, chat)
+    assert [o.result for o in fan_out(db, tg)] == ["sent"]
+    assert [p["chat_id"] for _, p in tg.calls] == ["2001"]

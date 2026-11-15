@@ -112,6 +112,9 @@ services:
       # Block 4 (api-engineer): public test-email captcha and the Telegram bot. Secrets: no value here.
       - key: HCAPTCHA_SECRET
         sync: false
+      # Public site key (same as the app's VITE_HCAPTCHA_SITEKEY); siteverify then rejects tokens of other keys.
+      - key: HCAPTCHA_SITEKEY
+        sync: false
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: TELEGRAM_WEBHOOK_SECRET

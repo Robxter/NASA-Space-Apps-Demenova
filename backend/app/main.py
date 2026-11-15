@@ -21,7 +21,7 @@ from backend.app.alerts import build_email, latest_demo_severe, publish_severe_a
 from backend.app.captcha import CaptchaUnavailable, HCaptchaVerifier
 from backend.app.email import ResendMailer, SevereEmail, hash_recipient
 from backend.app.ids import new_ulid
-from backend.app.ratelimit import SlidingWindowLimiter
+from backend.app.ratelimit import GlobalWindowLimiter, SlidingWindowLimiter
 from backend.app.settings import Settings, load_settings
 from backend.app.supabase import SupabaseError, SupabaseRest
 from backend.app.telegram import TelegramClient, UpdateDeduper, handle_update
@@ -62,6 +62,15 @@ TEST_EMAIL_PER_IP_PER_HOUR = 10
 TEST_EMAIL_PER_ADDRESS_PER_HOUR = 3
 test_email_ip_limiter = SlidingWindowLimiter(TEST_EMAIL_PER_IP_PER_HOUR, 3600.0)
 test_email_address_limiter = SlidingWindowLimiter(TEST_EMAIL_PER_ADDRESS_PER_HOUR, 3600.0)
+# Global, non-evictable caps (security review block 4, M1 and M3): forged IPs or flooded address keys cannot lift them.
+CAPTCHA_VERIFY_PER_MINUTE = 30  # each verify is a blocking outbound call in the thread pool
+TEST_EMAIL_SENDS_PER_HOUR = 6  # actual Resend calls from the public endpoint, in total
+captcha_verify_limiter = GlobalWindowLimiter(CAPTCHA_VERIFY_PER_MINUTE, 60.0)
+test_email_send_limiter = GlobalWindowLimiter(TEST_EMAIL_SENDS_PER_HOUR, 3600.0)
+
+# Request size caps for the public paths (review block 4, M1 and L4). Content-Length is required there; uvicorn
+# refuses a body longer than its Content-Length, so checking the header bounds what is read.
+BODY_LIMITS = {"/alerts/test-email": 4 * 1024, "/telegram/webhook": 16 * 1024}
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")  # same rule as EmailAddress in pipeline/common/models.py
 
 # CORS only for the public path, only for these origins (no wildcard).
@@ -75,6 +84,20 @@ CORS_ORIGINS = frozenset({
 app = FastAPI(title="Demenova backend", version="0.3.0", docs_url=None, redoc_url=None, openapi_url=None)
 
 
+@app.middleware("http")
+async def body_size_limit(request: Request, call_next: Any) -> Response:
+    limit = BODY_LIMITS.get(request.url.path)
+    if limit is None or request.method != "POST":
+        return await call_next(request)
+    length = request.headers.get("content-length")
+    if length is None:
+        return JSONResponse({"detail": "Content-Length is required."}, status_code=411)
+    if not length.isdigit() or int(length) > limit:
+        return JSONResponse({"detail": "Request body too large."}, status_code=413)
+    return await call_next(request)
+
+
+# Registered after body_size_limit, so it is the outer layer: size rejections still carry the CORS headers.
 @app.middleware("http")
 async def scoped_cors(request: Request, call_next: Any) -> Response:
     if request.url.path != CORS_PATH:
@@ -154,11 +177,19 @@ def get_captcha(settings: Annotated[Settings, Depends(get_settings)]) -> HCaptch
 
 
 def client_ip(request: Request) -> str:
-    """First X-Forwarded-For entry (Render's proxy adds it), else the socket peer. Only used for rate limits."""
-    forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
-    candidate = forwarded or (request.client.host if request.client else "")
+    """Right-most valid X-Forwarded-For entry, else the socket peer. Only used for rate limits.
+
+    The left-most entries are whatever the client sent (Render appends to the header rather than resetting it,
+    per community reports; Render's docs do not state it: UNVERIFIED), so only the right-most one, added by the
+    proxy in front of the service, cannot be forged by the caller (security review block 4, M1).
+    """
+    for entry in reversed(request.headers.get("x-forwarded-for", "").split(",")):
+        try:
+            return str(ipaddress.ip_address(entry.strip()))
+        except ValueError:
+            continue
     try:
-        return str(ipaddress.ip_address(candidate))
+        return str(ipaddress.ip_address(request.client.host if request.client else ""))
     except ValueError:
         return "unknown"
 
@@ -323,6 +354,8 @@ def alerts_test_email(
     address_key = hash_recipient(address)
     if not test_email_address_limiter.allowed(address_key):
         raise ApiError(429, "Too many test alerts for this address. Try again in an hour.")
+    if not captcha_verify_limiter.take():
+        raise ApiError(429, "Too many test alert requests right now. Try again in a minute.")
     try:
         human = captcha.verify(body.captcha_token, None if ip == "unknown" else ip)
     except CaptchaUnavailable:
@@ -337,6 +370,8 @@ def alerts_test_email(
         return {"status": "limited_demo"}
     if mailer is None:
         raise ApiError(503, "Email is not configured.")
+    if not test_email_send_limiter.take():
+        raise ApiError(429, "The demo inbox has received enough test alerts this hour. Try again later.")
     result = mailer.send(owner, build_test_mail(db, settings), first_lang=body.lang)
     if result.status != EmailStatus.sent:
         raise ApiError(502, "The email provider did not accept the message. Try again later.")

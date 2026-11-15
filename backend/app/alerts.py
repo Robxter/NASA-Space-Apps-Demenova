@@ -18,6 +18,7 @@ import datetime as dt
 import logging
 import re
 import sys
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -39,6 +40,10 @@ FARM_ID_RE = re.compile(r"^farm_[a-z0-9]+(?:-[a-z0-9]+)*$")
 EVENT_COLUMNS = ",".join([*AlertEvent.model_fields, "farm_id"])
 STATE_COLUMNS = ",".join(AlertState.model_fields)
 BATCH_LIMIT = 200
+# Security review block 4 (L5): the Telegram fan-out is sequential (5 s timeout per call); stop starting new sends
+# after this many seconds. Chats not reached are logged; there is no per-chat log to retry them (PENDING P-021).
+TELEGRAM_FANOUT_BUDGET_S = 60.0
+_clock = time.monotonic
 
 
 @dataclass(frozen=True)
@@ -244,8 +249,14 @@ def publish_telegram(db: SupabaseRest, tg: TelegramClient, settings: Settings, e
                                   {"telegram_sent": True})
     if not claimed:
         return out("skipped:duplicate")
-    delivered = 0
+    delivered = attempted = 0
+    deadline = _clock() + TELEGRAM_FANOUT_BUDGET_S
     for sub in subs:
+        if _clock() > deadline:
+            log.warning("telegram fan-out stopped at the time budget: unit=%s reached %d of %d",
+                        event.unit_id, attempted, len(subs))
+            break
+        attempted += 1
         try:
             delivered += tg.send(sub["chat_id"], text)
         except Exception as exc:  # noqa: BLE001 - one chat never stops the others
