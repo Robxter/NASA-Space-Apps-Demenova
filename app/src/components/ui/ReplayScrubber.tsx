@@ -84,7 +84,7 @@ export function ReplayScrubber({
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-between gap-2">
           {loading ? (
-            <span className="h-5 w-28 rounded-control bg-skeleton">
+            <span className="dn-skeleton h-5 w-28 rounded-control">
               <span className="sr-only">{copy.loading}</span>
             </span>
           ) : (
