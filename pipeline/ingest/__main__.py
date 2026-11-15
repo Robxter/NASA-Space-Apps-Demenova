@@ -4,7 +4,7 @@
 
 Steps: auth (login check, prints no secrets), aoi (SRTM + catchment), ndvi (composite), lots (synthetic demo lots),
 power (POWER daily [+ hourly for --replay]), imerg (catchment daily + top-15 72 h events; needs Earthdata),
-replay (harmonized stack for --replay, default 2026-02-15:2026-03-05). Every step is idempotent (cached downloads).
+replay (harmonized stack for --replay, default 2026-01-20:2026-03-05, D-029). Every step is idempotent (cached downloads).
 """
 
 from __future__ import annotations
@@ -14,7 +14,7 @@ import datetime as dt
 import json
 import sys
 
-DEFAULT_REPLAY = "2026-02-15:2026-03-05"
+DEFAULT_REPLAY = "2026-01-20:2026-03-05"  # D-029 (was 2026-02-15:2026-03-05)
 HISTORY_START = "2015-01-01"
 
 

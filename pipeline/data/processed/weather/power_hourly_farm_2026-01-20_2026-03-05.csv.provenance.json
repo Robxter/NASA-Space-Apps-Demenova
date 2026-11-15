@@ -1,0 +1,25 @@
+{
+ "provenance": {
+  "id": "prov-power-hourly-farm-2026-01-20-2026-03-05",
+  "dataset": "POWER Daily API",
+  "version": "v2.10.3",
+  "provider": "NASA POWER (Langley Research Center)",
+  "url": "https://power.larc.nasa.gov/docs/services/api/temporal/daily/",
+  "accessed": "2026-11-15T03:56:37Z",
+  "spatial_resolution": null,
+  "temporal_resolution": "daily (time_standard LST); an hourly API also exists",
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2026-01-20",
+   "2026-03-05"
+  ],
+  "processing": [
+   "POWER hourly API v2.10.4, time-standard UTC, point (-79.8400, -3.3750)",
+   "fill value -999.0 -> missing (empty cell); units in column suffix, as published"
+  ],
+  "code_commit": "5f0afd8+uncommitted",
+  "agent": "data-engineer",
+  "notes": "time_standard UTC. Columns: t2m_c: T2M [C]; rh2m_pct: RH2M [%]; prectotcorr_mm: PRECTOTCORR [mm/hour]; ws2m_ms: WS2M [m/s]; allsky_sfc_sw_dwn_mj_hr: ALLSKY_SFC_SW_DWN [MJ/hr]."
+ },
+ "origin": "sourced"
+}

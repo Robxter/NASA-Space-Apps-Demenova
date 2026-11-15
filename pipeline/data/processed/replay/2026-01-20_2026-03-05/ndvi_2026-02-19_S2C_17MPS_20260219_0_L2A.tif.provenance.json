@@ -1,0 +1,26 @@
+{
+ "provenance": {
+  "id": "prov-s2-ndvi-s2c_17mps_20260219_0_l2a",
+  "dataset": "sentinel-2-l2a",
+  "version": "Earth Search STAC API v1",
+  "provider": "Copernicus Sentinel-2 (ESA); Cloud-Optimized GeoTIFFs managed by Element 84 on AWS Open Data",
+  "url": "https://registry.opendata.aws/sentinel-2-l2a-cogs/",
+  "accessed": "2026-11-15T04:01:03Z",
+  "spatial_resolution": null,
+  "temporal_resolution": null,
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2026-02-19",
+   "2026-02-19"
+  ],
+  "processing": [
+   "per scene: reflectance = DN x 0.0001 + (0.0); earthsearch:boa_offset_applied = True, processing baseline 05.12 (T-049 scaling rule, config/datasets.yaml sentinel2); clear = SCL in {4,5,6} and both reflectances > 0",
+   "NDVI at 10 m; 30 m = mean of clear 10 m pixels when >= 5 of 9 clear, else missing",
+   "scene kept because >= 30% of the farm grid is clear"
+  ],
+  "code_commit": "94fdbbf+uncommitted",
+  "agent": "data-engineer",
+  "notes": "STAC item S2C_17MPS_20260219_0_L2A; clear fraction of the farm grid 0.489."
+ },
+ "origin": "sourced"
+}

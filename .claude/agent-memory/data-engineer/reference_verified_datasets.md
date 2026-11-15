@@ -16,6 +16,9 @@ Verified 2026-11-14 (details and URLs in config/datasets.yaml; re-check only if 
 - NASA POWER daily API v2.10.3, sources MERRA2/SYN1DEG/POWER, LST days, fill -999; hourly radiation unit "MJ/hr".
   Farm AOI lies in one POWER cell (centre + corners identical).
 - Sentinel-2 L2A: Earth Search v1 `sentinel-2-l2a`, anonymous; per-item raster:bands scale 0.0001 offset -0.1; AOI tile 17MPS.
+  TRAP (T-049, 2026-11-15): items with `earthsearch:boa_offset_applied: true` already have the offset in the DN; use scale
+  only (Element84/earth-search issue #41, maintainer 2025-05-15). Applying -0.1 gave NDVI median 1.4. Collection
+  `sentinel-2-c1-l2a` instead always needs scale AND offset.
 - OSM: Rio Buenavista = way 468343174. pysheds 0.5 needs an np.in1d shim on numpy 2.4.
 - Access (2026-11-14): Earthdata login OK from .env; GES DISC app approved by Roberto (P-008 resolved), NSIDC needs nothing extra.
   If GES DISC ever returns 403 "EULA Acceptance Failure", the fix is the approve_app link in the JSON error body.

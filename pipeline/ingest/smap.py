@@ -132,7 +132,16 @@ def locate_window(box, session, ea, probe_day: dt.date) -> tuple[tuple[int, int,
 
 def replay_layers(box, grid: Grid, dates: list[str], aoi: str, out_dir: Path) -> dict:
     ea, session = _session()
-    window, lat_c, lon_c = locate_window(box, session, ea, dt.date.fromisoformat(dates[0]))
+    # The probe granule's lat/lon arrays are fill where it has no retrieval, so a day with no swath over the AOI cannot
+    # locate it: try the window's days in order (the EASE grid is fixed; any covering granule gives the same cells).
+    for probe in dates:
+        try:
+            window, lat_c, lon_c = locate_window(box, session, ea, dt.date.fromisoformat(probe))
+            break
+        except (RuntimeError, IndexError):
+            continue
+    else:
+        raise RuntimeError("no SMAP granule in the window covers the AOI")
     ri, ci = nearest_index(grid, lat_c, lon_c)
     inside = (ri >= 0) & (ci >= 0)
     names = ["soil_moisture_am", "soil_moisture_pm", "retrieval_qual_flag_am", "retrieval_qual_flag_pm"]
