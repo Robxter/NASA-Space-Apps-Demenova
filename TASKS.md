@@ -160,10 +160,13 @@ review queue, the flood candidates and the logo options.
   number without origin and timestamp); pass strategies.json `generated_at` as `at` in Score (Strategies.tsx).
   Failing test: tests/e2e/specs/screens.spec.ts "every number on Strategies carries an origin badge and a timestamp"
 - [x] T-067 qa-demo-engineer: block 3 (D-033) C1 gate: GREEN at 712400a (e2e 197 passed + @perf 2 alone, CSP, Flood
-  and a11y specs new; report docs/reports/qa/2026-11-15-1005.md). C3 re-run follows any later app commit
-- [ ] T-068 frontend-engineer (non-blocking, D-033): CL-07 separators may switch now (e2e accepts " · " or ", " for
+  and a11y specs new; report docs/reports/qa/2026-11-15-1005.md). C3 GREEN: app d64b98e, tests aa5fa09
+  (docs/reports/qa/2026-11-15-1020.md)
+- [ ] T-070 frontend-engineer or product-designer (P3, R-11, D-033): at 360 px a neighbour's label covers up to 40 %
+  of Lote 2's outline on every replay day (its own label and word stay visible); not seen at 1440x900
+- [x] T-068 frontend-engineer (non-blocking, D-033; done bea116f, e2e tightened aa5fa09): CL-07 separators may switch now (e2e accepts " · " or ", " for
   the Setup badge and the map rain label); Strategies cards are h3 under h1 (detector skipped-heading: make them h2)
-- [ ] T-069 product-designer (non-blocking, D-033): map label padding sits at the detector limit (cramped-padding,
+- [x] T-069 product-designer (non-blocking, D-033; done d64b98e): map label padding sits at the detector limit (cramped-padding,
   4 px for 12 px text); dark-theme ink-2/ink-3 on surface flagged gray-on-color (contrast 5.70-8.54:1, AA pass)
 - [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
   guidance stated as general and not reviewed by a local agronomist (5 guides done 2026-11-15; learn-cards.md
