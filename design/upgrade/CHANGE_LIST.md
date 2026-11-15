@@ -149,3 +149,13 @@ Map 360 dark with the dev worst-case fixture). Accessory removed: the alert bann
   touch every row.
 Open for QA (to confirm on the release candidate): R-01 (fill-opacity jump), R-02 (`is-flooding`), R-04..R-09, CL-31;
 the scrubber thumb on a real iPhone (iOS drags only from the thumb; checked here with Playwright on Edge only).
+
+## T-069 (QA C1, product-designer)
+
+- `.dn-map-label` padding 2/8/2/6 -> 4/8 px (8-point steps), line-height 16 -> 14 px, so the label is 2 px taller,
+  not 4. Checked on the dev server at 360 and 1440, light and dark: each label clears its own lot. Status: done.
+- `gray-on-color` (12 flags, dark secondary text 5.70 / 7.31 / 8.54:1): no change. In the B4 and T-069 screenshots the
+  dark ink-2/ink-3 text on the navy surface reads clearly; the "colour" is the orbit-blue surface, not a hue.
+- R-11 P3 FE MapView label placement: at 1440 the map now opens at a tighter zoom, and the Warning label of the lot
+  below Lote 1 covers part of Lote 1's lower half (labels are checked against labels only); include lot bounds in the
+  collision test, or offset that label. Not a blocker: the shape keeps its colour, and the label keeps its word.
