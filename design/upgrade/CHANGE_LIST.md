@@ -130,3 +130,22 @@ Thesis: the soil core is the one object that shows the farm's state, from calm t
 measured Flood (no sound, haptics or extra flourish: delight.md "Protect the experience"; a replay is watched by
 judges in a room). Empty states: the Severe-free day gets a visible calm core.
 - CL-31 P2 FE Home `Home.tsx:113` all-Normal state: `tone="calm"` (new EmptyState tone, PD done in B3) - check: a day with all lots Normal shows a teal core with low water and the "Move the replay" body text.
+
+## B4 final look (product-designer)
+
+42 screenshots (7 routes at 360 and 1440, light and dark, en; 360 es dark; 1440 es light for Home, Map, Lot, Learn;
+Map 360 dark with the dev worst-case fixture). Accessory removed: the alert banner's drop shadow (PD, done).
+- R-03: resolved by frontend-engineer in d354fa6 (no onset on Lot open).
+- CL-28 P2 PD: Status: done (B4, reviewed, no change). The legend shows only when labels collide, pairs every colour
+  with its word and keeps "Out of date" dashed; checked at 360 dark with 40 lots.
+- R-08 P2 FE Home and Alerts rows: the subtitle "Top factor: Upstream rain" still truncates at 360 ("Top factor:
+  Upstrea..."); show the factor only ("Upstream rain" / "Lluvia aguas arriba") and keep "Top factor:" as screen-reader
+  text - check 360 en/es: the factor reads in full for every demo lot.
+- R-09 P2 FE Lot facts footer shows raw provenance text ("Synthetic demo farm (Finca Demo El Oro), shown with a visible
+  Demo label; to_be_redefined_by future..."); give it the short label pattern used for the guidance tables, full text
+  behind "Show the provenance note" - check 360: no snake_case word on screen.
+- R-10 P3 PD ListRow: a subtitle that wraps hangs under the end of the level word, so on Alerts the factor lines start
+  at different x for Warning and Severe rows (1440). Leave for after the demo; changing the subtitle layout now would
+  touch every row.
+Open for QA (to confirm on the release candidate): R-01 (fill-opacity jump), R-02 (`is-flooding`), R-04..R-09, CL-31;
+the scrubber thumb on a real iPhone (iOS drags only from the thumb; checked here with Playwright on Edge only).

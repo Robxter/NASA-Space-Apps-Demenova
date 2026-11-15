@@ -21,3 +21,5 @@ Never end it with "→". Wrap the banner in an `aria-live="polite"` region when 
 - Press: `.dn-press dn-press-wide`, scale 0.985 (a wide surface presses less).
 - The banner holds still when a lot turns Severe; `onset` only fills its core once. The bold moment is on the map
   (CHANGE_LIST "Severe moment"). Dark shadow is orbit-tinted (CL-18).
+- B4 (accessory removed): no drop shadow. The banner sits at the top of Home above the status card; the solid wine
+  (Severe) or the level tint (Warning) separates it from Mist without the extra weight.

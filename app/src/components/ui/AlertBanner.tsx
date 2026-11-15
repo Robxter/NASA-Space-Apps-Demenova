@@ -54,7 +54,7 @@ export function AlertBanner({
     </>
   );
 
-  const frame = `flex w-full items-start gap-3 rounded-group px-4 py-3.5 text-left shadow-banner ${skin} ${className}`;
+  const frame = `flex w-full items-start gap-3 rounded-group px-4 py-3.5 text-left ${skin} ${className}`;
 
   return onOpen ? (
     <button

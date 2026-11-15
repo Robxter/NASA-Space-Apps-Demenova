@@ -195,8 +195,9 @@ below. Desktop widens the column; it does not add decorative panels.
 
 Flat by default: hairlines and tonal surfaces separate, not shadows. Two shadows exist: **sheet**
 (`0 -1px 0 rgb(14 33 53 / .06), 0 -8px 24px rgb(14 33 53 / .08)`) for the bottom sheet and scrubber dock, and
-**banner** (`0 1px 2px rgb(14 33 53 / .08), 0 6px 16px rgb(14 33 53 / .1)`) so the alert banner reads above the list.
-In dark mode both are orbit-tinted (`rgb(3 10 19)`), never black.
+**banner** (`0 1px 2px rgb(14 33 53 / .08), 0 6px 16px rgb(14 33 53 / .1)`), now used only to lift the selected
+segment of a segmented control. In dark mode both are orbit-tinted (`rgb(3 10 19)`), never black. The alert banner
+itself is flat since B4 (the one accessory removed): its solid wine or level tint already separates it from Mist.
 
 Browser surfaces are themed too: text selection in focus-blue at 20% (30% dark), the caret in focus-blue, native
 controls in Leaf (`accent-color`), link underlines offset 0.18em.
