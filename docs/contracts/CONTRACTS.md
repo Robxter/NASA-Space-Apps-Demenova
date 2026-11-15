@@ -106,7 +106,7 @@ what, why, evidence[], benefits, gaps, risks, scores {soil, water, cost, labour}
 | `replay/<YYYY-MM-DD>.json` | AlertState for every unit + key DailyFeature values that day | 40 KB each |
 | `history/<unit_id>.json` | 90-day DailyFeature series for charts | 60 KB each |
 | `strategies.json` | strategies per lot with scores and approval status | 60 KB |
-| `verification.json` | events, hits, misses, false alarms, POD, FAR, CSI (counts first) | 10 KB |
+| `verification.json` | events, hits, misses, false alarms, POD, FAR, CSI (counts first); optional sensitivity (1.2.0) | 20 KB |
 
 Total committed demo data under 5 MB. Raw data never committed.
 
@@ -178,3 +178,14 @@ AlertEvent; `ndvi_date` on DailyFeature; `events` in `replay/<date>.json`; `orig
 never written by clients, who omit the key; read with the farm row by its owner, or by anyone for the demo farm) and
 TelegramSubscriber `telegram_code` (required: the code the chat subscribed with, equal to the farm's current code).
 Pattern `^[A-Za-z0-9_-]{16,64}$` mirrors the database check; the database default is 32 lowercase hex characters.
+
+1.2.0 deltas (D-030; P-013, P-015, D-025). All optional, so 1.1.0 files stay valid. VerificationFile `sensitivity`
+(T-024b): `delta`, `flood_days {start, end}`, `baseline_flood_day_units[]`, `variants[]` {`factor`, signed `delta`,
+optional `weights`, `same_units`, `same_days`, `units_gained[]`, `units_lost[]`, `units_with_shifted_days[]`,
+`flood_day_units[]`}, `stable` (every variant has `same_days`), `flood_day_core_units[]` (baseline and every variant),
+optional `flood_day_any_units[]` and `summary`; the model checks that these follow from the variants. SideIndicators
+`experimental` (strict bool; snapshot files only: Supabase `alert_states.side` accepts exactly sigatoka and cold).
+Practice, Strategy, ActionEntry, GlossaryTerm and every domain value: `reviewed_by[]` (non-blank, unique) and
+`human_review` (`none` | `local-agronomist`); Practice and Strategy have no Supabase columns for them yet (class A).
+`approved_by` and `to_be_redefined_by` are unchanged and now name a future local agronomist (D-022, D-026).
+`verification.json` budget 10 KB → 20 KB. openapi.yaml 0.2.0: 503 on `/run`; `APP_BASE_URL` in `.env.example`.

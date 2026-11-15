@@ -206,3 +206,139 @@ def test_telegram_code_follows_the_database_check(code):
         TypeAdapter(models.TelegramCode).validate_python(code)
     with pytest.raises(ValidationError):
         models.TelegramSubscriber.model_validate(_subscriber(telegram_code=code))
+
+
+# --------------------------------------------------------------------------------------------------------
+# Contract 1.2.0 (D-030): P-015 sensitivity and experimental flag, D-025 review tags. Every field is optional,
+# so files written for 1.1.0 stay valid. Fixtures are synthetic shapes: no number below is a result.
+# --------------------------------------------------------------------------------------------------------
+
+_U1, _U2, _U3 = "lot_fixture_1", "lot_fixture_2", "lot_fixture_3"
+
+
+def _variant(**changes) -> dict:
+    base = {
+        "factor": "upstream",
+        "delta": 0.25,
+        "same_units": True,
+        "same_days": True,
+        "units_gained": [],
+        "units_lost": [],
+        "units_with_shifted_days": [],
+        "flood_day_units": [_U1, _U2],
+    }
+    base.update(changes)
+    return base
+
+
+def _sensitivity(**changes) -> dict:
+    gained = _variant(delta=-0.25, same_units=False, same_days=False, units_gained=[_U3], flood_day_units=[_U1, _U3])
+    base = {
+        "delta": 0.25,
+        "flood_days": {"start": "2026-01-02", "end": "2026-01-03"},
+        "baseline_flood_day_units": [_U1, _U2],
+        "variants": [_variant(), gained],
+        "stable": False,
+        "flood_day_core_units": [_U1],
+        "flood_day_any_units": [_U1, _U2, _U3],
+        "summary": "synthetic test fixture",
+    }
+    base.update(changes)
+    return base
+
+
+def test_sensitivity_fixture_is_valid():
+    models.SensitivityResult.model_validate(_sensitivity())
+    models.SensitivityResult.model_validate_json(json.dumps(_sensitivity(flood_day_any_units=None, summary=None)))
+    five = {name.value: 0.2 for name in models.FactorName}
+    models.SensitivityResult.model_validate(_sensitivity(**_runs(_variant(weights=five), stable=True)))
+
+
+def test_committed_verification_file_is_valid_with_and_without_sensitivity():
+    path = REPO_ROOT / models.DEMO_DATA_DIR / "verification.json"
+    if not path.is_file():
+        pytest.skip("no committed verification.json")
+    data = json.loads(path.read_text(encoding="utf-8-sig"))
+    assert not models.VerificationFile.model_fields["sensitivity"].is_required()
+    models.VerificationFile.model_validate(data)
+    models.VerificationFile.model_validate({**data, "sensitivity": _sensitivity()})
+
+
+def _runs(*variants: dict, stable: bool) -> dict:
+    """Changes for variants whose flood-day units equal the baseline's, so only the intended rule can fail."""
+    return {"variants": list(variants), "stable": stable, "flood_day_core_units": [_U1, _U2], "flood_day_any_units": None}
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [
+        {"stable": True},
+        {"flood_day_core_units": [_U1, _U2]},
+        {"flood_day_any_units": [_U1, _U2]},
+        {"delta": 0},
+        {"delta": "0.25"},
+        {"stable": "false"},
+        {"variants": []},
+        _runs(_variant(), _variant(), stable=True),
+        _runs(_variant(delta=0.1), stable=True),
+        _runs(_variant(same_units=True, same_days=False, units_gained=[_U3]), stable=False),
+        _runs(_variant(same_days=True, units_with_shifted_days=[_U1]), stable=True),
+        _runs(_variant(weights={"upstream": 0.5}), stable=True),
+        {"summary": "UNVERIFIED"},
+    ],
+    ids=[
+        "stable-but-a-variant-differs", "core-not-in-every-run", "any-misses-a-unit", "zero-delta", "delta-as-text",
+        "stable-as-text", "no-variants", "duplicate-variant", "variant-delta-differs", "same-units-with-gain",
+        "same-days-with-shift", "weights-missing-factors", "unverified-summary",
+    ],
+)
+def test_sensitivity_block_must_follow_its_own_variants(changes):
+    with pytest.raises(ValidationError):
+        models.SensitivityResult.model_validate(_sensitivity(**changes))
+
+
+def test_side_indicators_experimental_flag_is_optional_and_strict():
+    field = models.SideIndicators.model_fields["experimental"]
+    assert not field.is_required() and field.default is None
+    models.AlertState.model_validate(_alert_state())
+    state = models.AlertState.model_validate(_alert_state(side={"sigatoka": None, "cold": None, "experimental": True}))
+    assert state.side.experimental is True
+    for text in ("true", 1):
+        with pytest.raises(ValidationError):
+            models.AlertState.model_validate(_alert_state(side={"sigatoka": None, "cold": None, "experimental": text}))
+
+
+_DOMAIN_ITEMS = [models.Practice, models.Strategy, models.ActionEntry, models.GlossaryTerm, models.DomainValue, models.NumericValue]
+
+
+@pytest.mark.parametrize("model", _DOMAIN_ITEMS, ids=lambda model: model.__name__)
+def test_domain_items_have_optional_review_fields(model):
+    for name in ("reviewed_by", "human_review"):
+        field = model.model_fields[name]
+        assert not field.is_required() and field.default is None, f"{model.__name__}.{name}"
+
+
+def _threshold(**changes) -> dict:
+    base = {"value": None, "origin": "pending", "reason": "synthetic test fixture"}
+    base.update(changes)
+    return base
+
+
+def test_fix2_review_tags_validate_also_from_yaml():
+    tags = {"reviewed_by": ["agronomist-agent", "scientist-reviewer"]}
+    assert models.DomainValue.model_validate(_threshold(**tags, human_review="none")).human_review == models.HumanReview.none
+    models.DomainValue.model_validate(_threshold(**tags, human_review="local-agronomist"))
+    text = "thresholds:\n  fixture_key:\n    value: null\n    origin: pending\n    reason: synthetic test fixture\n" \
+           "    reviewed_by: [agronomist-agent, scientist-reviewer]\n    human_review: none\n"
+    parsed = validate_text(models.ThresholdsFile, text, ".yaml")
+    assert parsed.thresholds["fixture_key"].human_review == models.HumanReview.none  # YAML 'none' is text, not null
+
+
+@pytest.mark.parametrize(
+    "changes",
+    [{"human_review": "yes"}, {"reviewed_by": []}, {"reviewed_by": ["a", "a"]}, {"reviewed_by": [" "]}, {"reviewed_by": "agronomist-agent"}],
+    ids=["unknown-review", "empty-list", "duplicate", "blank-name", "not-a-list"],
+)
+def test_review_tags_reject_malformed_values(changes):
+    with pytest.raises(ValidationError):
+        models.DomainValue.model_validate(_threshold(**changes))

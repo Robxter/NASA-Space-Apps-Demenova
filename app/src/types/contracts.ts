@@ -4,12 +4,12 @@
 // Regenerate:      uv run python scripts/export_contracts.py
 // Drift check:     uv run pytest tests/test_contracts.py
 
-export const CONTRACT_VERSION = "1.1.0";
+export const CONTRACT_VERSION = "1.2.0";
 
 /** Recommended action for one alert level in one mode (domain/actions.yaml). */
 export interface ActionEntry {
   origin: Origin;
-  /** URL that was opened, 'Tyson, <date>', or a calibration note id. */
+  /** URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id. */
   source?: string | null;
   /** Date the source URL was opened. */
   accessed?: string | null;
@@ -18,9 +18,14 @@ export interface ActionEntry {
   estimated_by?: string | null;
   /** TASKS.md item that replaces an estimated value. */
   task_id?: string | null;
+  /** Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'. */
   to_be_redefined_by?: string | null;
-  /** 'Tyson' once he approved it, else null. */
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by?: string | null;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
   level: AlertLevel;
   mode: Mode;
   text: LocalizedText | null;
@@ -260,10 +265,16 @@ export interface DatasetsConfig {
   datasets: DatasetEntry[];
 }
 
+/** First and last day (inclusive) of a span of dates. */
+export interface DayRange {
+  start: string;
+  end: string;
+}
+
 /** One value of a domain table with its origin metadata. */
 export interface DomainValue {
   origin: Origin;
-  /** URL that was opened, 'Tyson, <date>', or a calibration note id. */
+  /** URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id. */
   source?: string | null;
   /** Date the source URL was opened. */
   accessed?: string | null;
@@ -272,9 +283,14 @@ export interface DomainValue {
   estimated_by?: string | null;
   /** TASKS.md item that replaces an estimated value. */
   task_id?: string | null;
+  /** Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'. */
   to_be_redefined_by?: string | null;
-  /** 'Tyson' once he approved it, else null. */
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by?: string | null;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
   /** The value, or null while it is pending. */
   value: unknown;
   /** Unit of the value when it is a quantity. */
@@ -414,7 +430,7 @@ export interface GlossaryFile {
 /** One agronomic term (domain/glossary.yaml). */
 export interface GlossaryTerm {
   origin: Origin;
-  /** URL that was opened, 'Tyson, <date>', or a calibration note id. */
+  /** URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id. */
   source?: string | null;
   /** Date the source URL was opened. */
   accessed?: string | null;
@@ -423,9 +439,14 @@ export interface GlossaryTerm {
   estimated_by?: string | null;
   /** TASKS.md item that replaces an estimated value. */
   task_id?: string | null;
+  /** Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'. */
   to_be_redefined_by?: string | null;
-  /** 'Tyson' once he approved it, else null. */
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by?: string | null;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
   term_id: string;
   term: LocalizedText;
   definition: LocalizedText | null;
@@ -488,6 +509,10 @@ export interface HistorySeries {
   ndvi_date: (string | null)[];
 }
 
+/** Whether a human agronomist reviewed a domain item (contract 1.2.0, D-025, D-030). "none": reviewed by agents only (the app shows "Not yet reviewed by a local agronomist"). "local-agronomist": a local agronomist reviewed it; `approved_by` names them. */
+export const HUMAN_REVIEW_VALUES = ["none", "local-agronomist"] as const;
+export type HumanReview = (typeof HUMAN_REVIEW_VALUES)[number];
+
 /** Qualitative incidence level. */
 export const INCIDENCE_VALUES = ["low", "medium", "high"] as const;
 export type Incidence = (typeof INCIDENCE_VALUES)[number];
@@ -540,7 +565,7 @@ export interface Lot {
   twi_tercile: Tercile | null;
   /** Agent or person who defined the lot. */
   defined_by: string;
-  /** Who must redefine the lot; required while it is synthetic. */
+  /** Who must redefine the lot; required while it is synthetic. No team member redefines the demo lots (D-026): the value names a role, 'future-local-agronomist'. */
   to_be_redefined_by: string | null;
   origin: OriginSpec;
 }
@@ -558,7 +583,7 @@ export interface MultiPolygon {
 /** One numeric value of a domain table with its origin metadata. */
 export interface NumericValue {
   origin: Origin;
-  /** URL that was opened, 'Tyson, <date>', or a calibration note id. */
+  /** URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id. */
   source?: string | null;
   /** Date the source URL was opened. */
   accessed?: string | null;
@@ -567,9 +592,14 @@ export interface NumericValue {
   estimated_by?: string | null;
   /** TASKS.md item that replaces an estimated value. */
   task_id?: string | null;
+  /** Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'. */
   to_be_redefined_by?: string | null;
-  /** 'Tyson' once he approved it, else null. */
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by?: string | null;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
   value: number | null;
   unit?: string | null;
 }
@@ -604,7 +634,7 @@ export interface Polygon {
 /** [longitude, latitude] in EPSG:4326 (optional altitude in m). */
 export type Position = number[];
 
-/** One row of the practice table (domain/practices.yaml). */
+/** One row of the practice table (domain/practices.yaml). reviewed_by and human_review (1.2.0) have no Supabase column yet: writers to Supabase omit them until a class A migration adds them. */
 export interface Practice {
   practice_id: string;
   name_es: string;
@@ -616,7 +646,12 @@ export interface Practice {
   labour: DomainValue;
   risks: DomainValue;
   sources: SourceRef[];
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by: string | null;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
 }
 
 /** domain/practices.yaml. */
@@ -692,6 +727,46 @@ export interface ReplayWindow {
   end: string;
 }
 
+/** Weight sensitivity check (T-024b, D-024, FIX2 §4.2), the replacement for an expert AHP matrix. Each factor's weight is moved by +delta and by -delta in turn. `stable` is the strict test (same units at Severe on the same days in every variant); the flood-day lists say which units are Severe on the flood days. */
+export interface SensitivityResult {
+  /** Size of the weight change applied to each factor, with both signs. */
+  delta: number;
+  /** The flood days: the documented flood's dates widened by the verification window (config/alerts.yaml verification.days_before and verification.days_after). */
+  flood_days: DayRange;
+  /** Units at Severe on at least one flood day with the design weights. */
+  baseline_flood_day_units: string[];
+  variants: SensitivityVariant[];
+  /** True exactly when every variant has same_days. */
+  stable: boolean;
+  /** Units at Severe on the flood days in the baseline and in every variant. */
+  flood_day_core_units: string[];
+  /** Units at Severe on the flood days in the baseline or in at least one variant. */
+  flood_day_any_units?: string[] | null;
+  /** Plain-language summary for the app; the fields above are authoritative. */
+  summary?: string | null;
+}
+
+/** One variant of the weight sensitivity check (T-024b): one factor's weight moved by `delta`, the other four rescaled so the five still sum to 1, and the replay re-run (pipeline/engine/sensitivity.py). It is compared with the baseline run (the design weights) on which units reach Severe and on which days. */
+export interface SensitivityVariant {
+  factor: FactorName;
+  /** Signed change of that factor's weight, before clipping to 0..1. */
+  delta: number;
+  /** The five weights of this variant after rescaling (optional). */
+  weights?: Record<string, number> | null;
+  /** The same units reach Severe as in the baseline. */
+  same_units: boolean;
+  /** Same units, and each is Severe on exactly the same days (the strict test). */
+  same_days: boolean;
+  /** Units at Severe in this variant only. */
+  units_gained: string[];
+  /** Units at Severe in the baseline only. */
+  units_lost: string[];
+  /** Units at Severe in both runs, on different days. */
+  units_with_shifted_days: string[];
+  /** Units at Severe on at least one of the flood days in this variant. */
+  flood_day_units: string[];
+}
+
 /** The five alert states of a unit (CONTRACTS.md §2). `stale` means the newest rain data is too old. */
 export const SEVERITY_VALUES = ["normal", "watch", "warning", "severe", "stale"] as const;
 export type Severity = (typeof SEVERITY_VALUES)[number];
@@ -700,6 +775,8 @@ export type Severity = (typeof SEVERITY_VALUES)[number];
 export interface SideIndicators {
   sigatoka: Severity | null;
   cold: Severity | null;
+  /** Contract 1.2.0 (P-015, D-024, D-030). True when these side indicators are experimental (thresholds not sourced): the app shows an 'Experimental' badge. Null or absent: not stated. Snapshot files only for now: Supabase alert_states.side accepts exactly sigatoka and cold (private.is_side), so writers to Supabase omit this key until a class A migration adds it. */
+  experimental?: boolean | null;
 }
 
 /** Parameters of the Sigatoka side indicator. */
@@ -725,7 +802,7 @@ export type SoilMoistureSource = (typeof SOIL_MOISTURE_SOURCE_VALUES)[number];
 
 /** A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened. */
 export interface SourceRef {
-  /** Readable citation, for example 'Tyson, 14 Nov 2026' or an article title. */
+  /** Readable citation, for example 'team agronomist, 14 Nov 2026' (closed archive, D-023) or an article title. */
   citation: string;
   /** URL that was opened, or null for a personal communication. */
   url: string | null;
@@ -750,7 +827,7 @@ export interface StrategiesFile {
   strategies: Strategy[];
 }
 
-/** One soil-management strategy (domain/strategies.yaml and the app's strategies.json). */
+/** One soil-management strategy (domain/strategies.yaml and the app's strategies.json). reviewed_by and human_review (1.2.0) have no Supabase column yet: writers to Supabase omit them until a class A migration adds them. */
 export interface Strategy {
   strategy_id: string;
   /** Unit ids (lot, zone or farm) the strategy applies to; ["*"] marks a regional default for every unit. */
@@ -763,9 +840,13 @@ export interface Strategy {
   gaps: LocalizedText;
   risks: LocalizedText;
   scores: StrategyScores;
-  /** 'Tyson' once he approved the strategy, else null. */
+  /** Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it. */
   approved_by: string | null;
   origin: Origin;
+  /** Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated. */
+  reviewed_by?: string[] | null;
+  /** Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed. */
+  human_review?: HumanReview | null;
 }
 
 /** A = current management, B and C = the two alternatives. */
@@ -853,6 +934,8 @@ export interface VerificationFile {
   csi: number | null;
   origin: OriginSpec;
   notes: string | null;
+  /** Contract 1.2.0 (P-015, D-030). The weight sensitivity check on the replay (T-024b); its origin resolves through this file's origin map (key 'sensitivity', else '*'). Null or absent: not run, or kept in notes. */
+  sensitivity?: SensitivityResult | null;
 }
 
 /** Forecast-verification outcome of one event (docs/SPEC.md, Prediction science, method 14). */

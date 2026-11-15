@@ -73,6 +73,9 @@ review queue, the flood candidates and the logo options.
 - [x] T-015b lead-architect: contract addition (class B) — Farm and TelegramSubscriber gain `telegram_code`
   (random, server-generated) per P-002 (b) / database review; update schemas, models.py, contracts.ts, drift test
   (contract 1.1.0, D-020; Farm optional, subscriber required; 5 new tests; pytest 183 passed, export --check OK)
+- [x] T-015c lead-architect: contract 1.2.0 (class B, D-030): VerificationFile `sensitivity`, SideIndicators
+  `experimental`, `reviewed_by` / `human_review` on domain items, wording for a future local agronomist,
+  verification.json 20 KB, openapi 0.2.0 (503 on /run), `APP_BASE_URL` in .env.example (P-013, P-015, D-025)
 - [x] T-016 product-designer: BRIEF.md, three logos, severity palette, tokens, ui components (logo pick: P-006;
   next pass: Sheet, TabBar, chart frame; wordmark to paths after the pick)
 - [x] T-016b product-designer: PWA icons (192 px, 512 px, maskable) in app/public/icons, manifest `icons`, apple-touch-icon
@@ -106,6 +109,8 @@ review queue, the flood candidates and the logo options.
   and D-029 (Severe 0.90, replay 2026-01-20..03-05) (ee9d6e4, d70d7b2 + snapshot commit; catchment tally 1 hit, 0 misses,
   4 false alarms in 2026; sensitivity at 0.90 not stable 10/10, lots 1, 2 Severe on flood days in every variant)
 - [x] T-049b data-scientist: old replay stack 2026-02-15_2026-03-05 removed (git rm) after the engine moved to the new one
+- [ ] T-024d data-scientist: on the next snapshot run write the structured `sensitivity` block into verification.json and
+  `side.experimental: true` in replay snapshots (contract 1.2.0, D-030); not into Supabase alert_states (is_side check)
 - [ ] T-047 data-scientist: source or replace the engine's `estimated` values with opened sources (api_k NWS PDF,
   Sigatoka/leaf-wetness/heat-unit papers, Saaty's RI table for n = 5); agent work, no human expert (D-022)
 - [ ] T-048 data-scientist (post-hackathon, class A, P-017): seasonal (day-of-year window) percentiles for W, because

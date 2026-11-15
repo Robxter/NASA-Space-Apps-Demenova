@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "app-data/replay_day.schema.json",
   "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
-  "x-contract-version": "1.1.0",
+  "x-contract-version": "1.2.0",
   "$defs": {
     "AlertEvent": {
       "additionalProperties": false,
@@ -871,6 +871,18 @@
               "type": "null"
             }
           ]
+        },
+        "experimental": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Contract 1.2.0 (P-015, D-024, D-030). True when these side indicators are experimental (thresholds not sourced): the app shows an 'Experimental' badge. Null or absent: not stated. Snapshot files only for now: Supabase alert_states.side accepts exactly sigatoka and cold (private.is_side), so writers to Supabase omit this key until a class A migration adds it."
         }
       },
       "required": [

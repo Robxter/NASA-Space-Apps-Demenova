@@ -2,8 +2,40 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "app-data/verification.schema.json",
   "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
-  "x-contract-version": "1.1.0",
+  "x-contract-version": "1.2.0",
   "$defs": {
+    "DayRange": {
+      "additionalProperties": false,
+      "description": "First and last day (inclusive) of a span of dates.",
+      "properties": {
+        "start": {
+          "format": "date",
+          "type": "string"
+        },
+        "end": {
+          "format": "date",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ],
+      "title": "DayRange",
+      "type": "object"
+    },
+    "FactorName": {
+      "description": "The five indicators of the alert index W (docs/SPEC.md, Risk engine and weighted alerts).",
+      "enum": [
+        "upstream",
+        "saturation",
+        "terrain",
+        "local",
+        "balance"
+      ],
+      "title": "FactorName",
+      "type": "string"
+    },
     "Origin": {
       "description": "Where a value comes from (docs/DATA_POLICY.md §1). Every stored or displayed value carries exactly one.",
       "enum": [
@@ -268,12 +300,185 @@
       "title": "ProvenanceRef",
       "type": "object"
     },
+    "SensitivityResult": {
+      "additionalProperties": false,
+      "description": "Weight sensitivity check (T-024b, D-024, FIX2 §4.2), the replacement for an expert AHP matrix.\n\nEach factor's weight is moved by +delta and by -delta in turn. `stable` is the strict test (same units at\nSevere on the same days in every variant); the flood-day lists say which units are Severe on the flood days.",
+      "properties": {
+        "delta": {
+          "description": "Size of the weight change applied to each factor, with both signs.",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "type": "number"
+        },
+        "flood_days": {
+          "$ref": "#/$defs/DayRange",
+          "description": "The flood days: the documented flood's dates widened by the verification window (config/alerts.yaml verification.days_before and verification.days_after)."
+        },
+        "baseline_flood_day_units": {
+          "description": "Units at Severe on at least one flood day with the design weights.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "variants": {
+          "items": {
+            "$ref": "#/$defs/SensitivityVariant"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "stable": {
+          "description": "True exactly when every variant has same_days.",
+          "type": "boolean"
+        },
+        "flood_day_core_units": {
+          "description": "Units at Severe on the flood days in the baseline and in every variant.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "flood_day_any_units": {
+          "anyOf": [
+            {
+              "items": {
+                "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+                "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Units at Severe on the flood days in the baseline or in at least one variant."
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Plain-language summary for the app; the fields above are authoritative."
+        }
+      },
+      "required": [
+        "delta",
+        "flood_days",
+        "baseline_flood_day_units",
+        "variants",
+        "stable",
+        "flood_day_core_units"
+      ],
+      "title": "SensitivityResult",
+      "type": "object"
+    },
+    "SensitivityVariant": {
+      "additionalProperties": false,
+      "description": "One variant of the weight sensitivity check (T-024b): one factor's weight moved by `delta`, the other four\nrescaled so the five still sum to 1, and the replay re-run (pipeline/engine/sensitivity.py). It is compared with\nthe baseline run (the design weights) on which units reach Severe and on which days.",
+      "properties": {
+        "factor": {
+          "$ref": "#/$defs/FactorName"
+        },
+        "delta": {
+          "description": "Signed change of that factor's weight, before clipping to 0..1.",
+          "type": "number"
+        },
+        "weights": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "number"
+              },
+              "propertyNames": {
+                "$ref": "#/$defs/FactorName"
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The five weights of this variant after rescaling (optional)."
+        },
+        "same_units": {
+          "description": "The same units reach Severe as in the baseline.",
+          "type": "boolean"
+        },
+        "same_days": {
+          "description": "Same units, and each is Severe on exactly the same days (the strict test).",
+          "type": "boolean"
+        },
+        "units_gained": {
+          "description": "Units at Severe in this variant only.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "units_lost": {
+          "description": "Units at Severe in the baseline only.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "units_with_shifted_days": {
+          "description": "Units at Severe in both runs, on different days.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "flood_day_units": {
+          "description": "Units at Severe on at least one of the flood days in this variant.",
+          "items": {
+            "description": "The unit an alert or feature refers to: a lot id, a zone id, or the farm id itself when the farm is at data level 0 and has neither lots nor zones.",
+            "pattern": "^(?:lot_[a-z0-9]+(?:-[a-z0-9]+)*_[0-9]+|zone_[a-z0-9]+(?:-[a-z0-9]+)*_(?:low|mid|high)|farm_[a-z0-9]+(?:-[a-z0-9]+)*)$",
+            "type": "string"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "factor",
+        "delta",
+        "same_units",
+        "same_days",
+        "units_gained",
+        "units_lost",
+        "units_with_shifted_days",
+        "flood_day_units"
+      ],
+      "title": "SensitivityVariant",
+      "type": "object"
+    },
     "SourceRef": {
       "additionalProperties": false,
       "description": "A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened.",
       "properties": {
         "citation": {
-          "description": "Readable citation, for example 'Tyson, 14 Nov 2026' or an article title.",
+          "description": "Readable citation, for example 'team agronomist, 14 Nov 2026' (closed archive, D-023) or an article title.",
           "minLength": 1,
           "type": "string"
         },
@@ -472,6 +677,18 @@
           "type": "null"
         }
       ]
+    },
+    "sensitivity": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SensitivityResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Contract 1.2.0 (P-015, D-030). The weight sensitivity check on the replay (T-024b); its origin resolves through this file's origin map (key 'sensitivity', else '*'). Null or absent: not run, or kept in notes."
     }
   },
   "required": [

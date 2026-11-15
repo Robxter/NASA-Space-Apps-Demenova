@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "domain/glossary.schema.json",
   "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
-  "x-contract-version": "1.1.0",
+  "x-contract-version": "1.2.0",
   "$defs": {
     "GlossaryTerm": {
       "additionalProperties": false,
@@ -21,7 +21,7 @@
             }
           ],
           "default": null,
-          "description": "URL that was opened, 'Tyson, <date>', or a calibration note id."
+          "description": "URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id."
         },
         "accessed": {
           "anyOf": [
@@ -82,7 +82,8 @@
               "type": "null"
             }
           ],
-          "default": null
+          "default": null,
+          "description": "Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'."
         },
         "approved_by": {
           "anyOf": [
@@ -94,7 +95,36 @@
             }
           ],
           "default": null,
-          "description": "'Tyson' once he approved it, else null."
+          "description": "Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since 14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it."
+        },
+        "reviewed_by": {
+          "anyOf": [
+            {
+              "items": {
+                "pattern": "\\S",
+                "type": "string"
+              },
+              "minItems": 1,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed items [agronomist-agent, scientist-reviewer]. Null or absent: not stated."
+        },
+        "human_review": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/HumanReview"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not stated, shown as not reviewed."
         },
         "term_id": {
           "pattern": "^[a-z][a-z0-9_]*$",
@@ -122,6 +152,15 @@
       ],
       "title": "GlossaryTerm",
       "type": "object"
+    },
+    "HumanReview": {
+      "description": "Whether a human agronomist reviewed a domain item (contract 1.2.0, D-025, D-030).\n\n\"none\": reviewed by agents only (the app shows \"Not yet reviewed by a local agronomist\").\n\"local-agronomist\": a local agronomist reviewed it; `approved_by` names them.",
+      "enum": [
+        "none",
+        "local-agronomist"
+      ],
+      "title": "HumanReview",
+      "type": "string"
     },
     "LocalizedText": {
       "additionalProperties": false,

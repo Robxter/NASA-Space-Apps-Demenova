@@ -43,7 +43,9 @@ from pydantic import (
 )
 from typing_extensions import TypeAliasType
 
-CONTRACT_VERSION = "1.1.0"  # 1.1.0 (D-020): telegram_code on Farm and TelegramSubscriber
+# 1.1.0 (D-020): telegram_code on Farm and TelegramSubscriber.
+# 1.2.0 (D-030): VerificationFile.sensitivity, SideIndicators.experimental, reviewed_by and human_review on domain items.
+CONTRACT_VERSION = "1.2.0"
 
 # CONTRACTS.md §4 gives sizes in KB and MB; they are read here as 1 KB = 1024 bytes.
 KB = 1024
@@ -254,6 +256,17 @@ class VerificationEventKind(StrEnum):
     alert_without_flood = "alert_without_flood"
 
 
+class HumanReview(StrEnum):
+    """Whether a human agronomist reviewed a domain item (contract 1.2.0, D-025, D-030).
+
+    "none": reviewed by agents only (the app shows "Not yet reviewed by a local agronomist").
+    "local-agronomist": a local agronomist reviewed it; `approved_by` names them.
+    """
+
+    none = "none"
+    local_agronomist = "local-agronomist"
+
+
 # --------------------------------------------------------------------------------------------------------
 # Scalar types
 # --------------------------------------------------------------------------------------------------------
@@ -318,6 +331,8 @@ ConfigKey = Annotated[str, StringConstraints(pattern=r"^[a-z][a-z0-9_]*$")]
 Number = Annotated[float, Strict()]
 Count = Annotated[int, Strict()]
 Fraction = Annotated[float, Strict(), Field(ge=0, le=1)]
+# Booleans added since 1.2.0 are strict too: "true", "yes" and 1 are rejected (older bool fields stay lax).
+Flag = Annotated[bool, Strict()]
 
 # Text that holds a number ("45.2", "45,2", "1,234.5", "1e-3", "45.2mm"); same rule as scripts/check_provenance.py.
 _NUMBER_TEXT = re.compile(r"^\s*[+-]?(?:\d+(?:[ ,.'_]\d{3})*(?:[.,]\d+)?|[.,]\d+)(?:[eE][+-]?\d+)?(?:\s*[^\d\s]{1,6})?\s*$")
@@ -612,7 +627,10 @@ ProvenanceBlock = TypeAliasType(
 class SourceRef(Contract):
     """A source somebody actually opened (docs/DATA_POLICY.md §2.4). Never list one that nobody opened."""
 
-    citation: str = Field(min_length=1, description="Readable citation, for example 'Tyson, 14 Nov 2026' or an article title.")
+    citation: str = Field(
+        min_length=1,
+        description="Readable citation, for example 'team agronomist, 14 Nov 2026' (closed archive, D-023) or an article title.",
+    )
     url: str | None = Field(description="URL that was opened, or null for a personal communication.")
     accessed: dt.date | None = Field(description="Date the URL was opened.")
 
@@ -739,7 +757,12 @@ class Lot(Contract):
     twi_max: Number | None = Field(description="Maximum topographic wetness index of the lot (engine output).")
     twi_tercile: Tercile | None = Field(description="Terrain-wetness third of the lot within its farm.")
     defined_by: str = Field(min_length=1, description="Agent or person who defined the lot.")
-    to_be_redefined_by: str | None = Field(description="Who must redefine the lot; required while it is synthetic.")
+    to_be_redefined_by: str | None = Field(
+        description=(
+            "Who must redefine the lot; required while it is synthetic. No team member redefines the demo lots "
+            "(D-026): the value names a role, 'future-local-agronomist'."
+        )
+    )
     origin: OriginSpec
 
     @model_validator(mode="after")
@@ -839,6 +862,15 @@ class SideIndicators(Contract):
 
     sigatoka: Severity | None
     cold: Severity | None
+    experimental: Flag | None = Field(
+        default=None,
+        description=(
+            "Contract 1.2.0 (P-015, D-024, D-030). True when these side indicators are experimental (thresholds not "
+            "sourced): the app shows an 'Experimental' badge. Null or absent: not stated. Snapshot files only for now: "
+            "Supabase alert_states.side accepts exactly sigatoka and cold (private.is_side), so writers to Supabase "
+            "omit this key until a class A migration adds it."
+        ),
+    )
 
 
 class AlertState(Contract):
@@ -944,25 +976,56 @@ class UserPrefs(Contract):
 
 
 # --------------------------------------------------------------------------------------------------------
-# Domain tables (domain/, owned by the agronomist; Tyson approves)
+# Domain tables (domain/, owned by the agronomist agent; reviewed by agents until a local agronomist reviews them)
 # --------------------------------------------------------------------------------------------------------
+
+
+def _unique_reviewers(value: list[str]) -> list[str]:
+    if len(value) != len(set(value)):
+        raise ValueError("a reviewer is listed twice")
+    return value
+
+
+ReviewerName = Annotated[str, StringConstraints(pattern=r"\S")]  # not blank; same rule in the JSON Schema
+ReviewerList = Annotated[list[ReviewerName], Field(min_length=1), AfterValidator(_unique_reviewers)]
+_REVIEWED_BY = (
+    "Contract 1.2.0 (D-025, D-030). Who reviewed this item, agents or people, each once; FIX2 §5 tags agent-reviewed "
+    "items [agronomist-agent, scientist-reviewer]. Null or absent: not stated."
+)
+_HUMAN_REVIEW = (
+    "Contract 1.2.0 (D-025, D-030). 'none': no human agronomist reviewed it (the app shows 'Not yet reviewed by a "
+    "local agronomist'); 'local-agronomist': a local agronomist did, named in approved_by. Null or absent: not "
+    "stated, shown as not reviewed."
+)
+_APPROVED_BY = (
+    "Name or role of the local agronomist who approved it, else null. No human agronomist is on the team since "
+    "14 Nov 2026 (D-022): kept for a future local agronomist; human_review says whether one reviewed it."
+)
 
 
 class DomainMeta(Contract):
     """Origin metadata of one domain value, with the fields docs/DATA_POLICY.md §1 requires per origin.
 
-    Tyson's confirmed answers are `origin: sourced` with `source: "Tyson, <date>"` (DATA_POLICY.md §5);
-    there is no origin called 'tyson'.
+    The former team agronomist's confirmed answers are `origin: sourced` with
+    `source: "team agronomist, 14 Nov 2026"` (DATA_POLICY.md §5, D-023); there is no origin named after a person.
     """
 
     origin: Origin
-    source: str | None = Field(default=None, description="URL that was opened, 'Tyson, <date>', or a calibration note id.")
+    source: str | None = Field(
+        default=None,
+        description="URL that was opened, 'team agronomist, 14 Nov 2026' (closed archive, D-023), or a calibration note id.",
+    )
     accessed: dt.date | None = Field(default=None, description="Date the source URL was opened.")
     reason: str | None = Field(default=None, description="Why the value is estimated, a design choice, or still pending.")
     estimated_by: str | None = None
     task_id: TaskId | None = Field(default=None, description="TASKS.md item that replaces an estimated value.")
-    to_be_redefined_by: str | None = None
-    approved_by: str | None = Field(default=None, description="'Tyson' once he approved it, else null.")
+    to_be_redefined_by: str | None = Field(
+        default=None,
+        description="Who must redefine a synthetic value; a role since D-026, 'future-local-agronomist'.",
+    )
+    approved_by: str | None = Field(default=None, description=_APPROVED_BY)
+    reviewed_by: ReviewerList | None = Field(default=None, description=_REVIEWED_BY)
+    human_review: HumanReview | None = Field(default=None, description=_HUMAN_REVIEW)
 
     def _payload_missing(self) -> bool | None:
         """True or False when the entry carries a payload that can be missing; None when it does not."""
@@ -1027,7 +1090,11 @@ class LocalizedText(Contract):
 
 
 class Practice(Contract):
-    """One row of the practice table (domain/practices.yaml)."""
+    """One row of the practice table (domain/practices.yaml).
+
+    reviewed_by and human_review (1.2.0) have no Supabase column yet: writers to Supabase omit them until a
+    class A migration adds them.
+    """
 
     practice_id: ConfigKey
     name_es: str = Field(min_length=1)
@@ -1039,7 +1106,9 @@ class Practice(Contract):
     labour: DomainValue
     risks: DomainValue
     sources: list[SourceRef]
-    approved_by: str | None
+    approved_by: str | None = Field(description=_APPROVED_BY)
+    reviewed_by: ReviewerList | None = Field(default=None, description=_REVIEWED_BY)
+    human_review: HumanReview | None = Field(default=None, description=_HUMAN_REVIEW)
 
 
 class StrategyScores(Contract):
@@ -1052,7 +1121,11 @@ class StrategyScores(Contract):
 
 
 class Strategy(Contract):
-    """One soil-management strategy (domain/strategies.yaml and the app's strategies.json)."""
+    """One soil-management strategy (domain/strategies.yaml and the app's strategies.json).
+
+    reviewed_by and human_review (1.2.0) have no Supabase column yet: writers to Supabase omit them until a
+    class A migration adds them.
+    """
 
     strategy_id: ConfigKey
     lot_scope: list[str] = Field(
@@ -1067,8 +1140,10 @@ class Strategy(Contract):
     gaps: LocalizedText
     risks: LocalizedText
     scores: StrategyScores
-    approved_by: str | None = Field(description="'Tyson' once he approved the strategy, else null.")
+    approved_by: str | None = Field(description=_APPROVED_BY)
     origin: Origin
+    reviewed_by: ReviewerList | None = Field(default=None, description=_REVIEWED_BY)
+    human_review: HumanReview | None = Field(default=None, description=_HUMAN_REVIEW)
 
 
 class ActionEntry(DomainMeta):
@@ -1365,6 +1440,102 @@ class VerificationEvent(Contract):
         return self
 
 
+class DayRange(Contract):
+    """First and last day (inclusive) of a span of dates."""
+
+    start: dt.date
+    end: dt.date
+
+    @model_validator(mode="after")
+    def _ordered(self) -> "DayRange":
+        if self.start > self.end:
+            raise ValueError("start is after end")
+        return self
+
+
+class SensitivityVariant(Contract):
+    """One variant of the weight sensitivity check (T-024b): one factor's weight moved by `delta`, the other four
+    rescaled so the five still sum to 1, and the replay re-run (pipeline/engine/sensitivity.py). It is compared with
+    the baseline run (the design weights) on which units reach Severe and on which days."""
+
+    factor: FactorName
+    delta: Number = Field(description="Signed change of that factor's weight, before clipping to 0..1.")
+    weights: dict[FactorName, Fraction] | None = Field(
+        default=None, description="The five weights of this variant after rescaling (optional)."
+    )
+    same_units: Flag = Field(description="The same units reach Severe as in the baseline.")
+    same_days: Flag = Field(description="Same units, and each is Severe on exactly the same days (the strict test).")
+    units_gained: list[UnitId] = Field(description="Units at Severe in this variant only.")
+    units_lost: list[UnitId] = Field(description="Units at Severe in the baseline only.")
+    units_with_shifted_days: list[UnitId] = Field(description="Units at Severe in both runs, on different days.")
+    flood_day_units: list[UnitId] = Field(description="Units at Severe on at least one of the flood days in this variant.")
+
+    @model_validator(mode="after")
+    def _comparison_is_consistent(self) -> "SensitivityVariant":
+        for name in ("units_gained", "units_lost", "units_with_shifted_days", "flood_day_units"):
+            _unique(getattr(self, name), f"unit in {name}")
+        changed = set(self.units_gained) | set(self.units_lost)
+        if set(self.units_gained) & set(self.units_lost) or changed & set(self.units_with_shifted_days):
+            raise ValueError("a unit is gained, lost or shifted, never two of them")
+        if self.same_units != (not changed):
+            raise ValueError("same_units is true exactly when no unit is gained or lost")
+        if self.same_days != (self.same_units and not self.units_with_shifted_days):
+            raise ValueError("same_days is true exactly when same_units holds and no unit has shifted days")
+        if self.weights is not None and set(self.weights) != set(FactorName):
+            raise ValueError("weights lists all five factors")
+        return self
+
+
+class SensitivityResult(Contract):
+    """Weight sensitivity check (T-024b, D-024, FIX2 §4.2), the replacement for an expert AHP matrix.
+
+    Each factor's weight is moved by +delta and by -delta in turn. `stable` is the strict test (same units at
+    Severe on the same days in every variant); the flood-day lists say which units are Severe on the flood days.
+    """
+
+    delta: Annotated[float, Strict(), Field(gt=0, le=1)] = Field(
+        description="Size of the weight change applied to each factor, with both signs."
+    )
+    flood_days: DayRange = Field(
+        description=(
+            "The flood days: the documented flood's dates widened by the verification window "
+            "(config/alerts.yaml verification.days_before and verification.days_after)."
+        )
+    )
+    baseline_flood_day_units: list[UnitId] = Field(
+        description="Units at Severe on at least one flood day with the design weights."
+    )
+    variants: list[SensitivityVariant] = Field(min_length=1)
+    stable: Flag = Field(description="True exactly when every variant has same_days.")
+    flood_day_core_units: list[UnitId] = Field(
+        description="Units at Severe on the flood days in the baseline and in every variant."
+    )
+    flood_day_any_units: list[UnitId] | None = Field(
+        default=None, description="Units at Severe on the flood days in the baseline or in at least one variant."
+    )
+    summary: str | None = Field(
+        default=None, description="Plain-language summary for the app; the fields above are authoritative."
+    )
+
+    @model_validator(mode="after")
+    def _follows_the_variants(self) -> "SensitivityResult":
+        _unique([f"{v.factor.value} {v.delta!r}" for v in self.variants], "variant (factor and delta)")
+        for name in ("baseline_flood_day_units", "flood_day_core_units", "flood_day_any_units"):
+            _unique(getattr(self, name) or [], f"unit in {name}")
+        if any(not math.isclose(abs(v.delta), self.delta, abs_tol=1e-9) for v in self.variants):
+            raise ValueError("every variant moves its weight by +delta or -delta")
+        if self.stable != all(v.same_days for v in self.variants):
+            raise ValueError("stable is true exactly when every variant has same_days")
+        runs = [set(self.baseline_flood_day_units)] + [set(v.flood_day_units) for v in self.variants]
+        if set(self.flood_day_core_units) != set.intersection(*runs):
+            raise ValueError("flood_day_core_units must be the units Severe on the flood days in every run")
+        if self.flood_day_any_units is not None and set(self.flood_day_any_units) != set.union(*runs):
+            raise ValueError("flood_day_any_units must be the units Severe on the flood days in at least one run")
+        if _is_unverified(self.summary):
+            raise ValueError("an UNVERIFIED summary cannot ship")
+        return self
+
+
 def _ratio(numerator: int, denominator: int) -> float | None:
     return numerator / denominator if denominator else None
 
@@ -1387,6 +1558,13 @@ class VerificationFile(Contract):
     csi: Fraction | None
     origin: OriginSpec
     notes: str | None
+    sensitivity: SensitivityResult | None = Field(
+        default=None,
+        description=(
+            "Contract 1.2.0 (P-015, D-030). The weight sensitivity check on the replay (T-024b); its origin resolves "
+            "through this file's origin map (key 'sensitivity', else '*'). Null or absent: not run, or kept in notes."
+        ),
+    )
 
     @model_validator(mode="after")
     def _ratios_follow_counts(self) -> "VerificationFile":
@@ -1682,7 +1860,8 @@ DATA_FILE_CONTRACTS: tuple[DataFileContract, ...] = (
     DataFileContract(f"{_DEMO}/replay/*.json", ReplayDay, 40 * KB),
     DataFileContract(f"{_DEMO}/history/*.json", HistoryFile, 60 * KB),
     DataFileContract(f"{_DEMO}/strategies.json", StrategiesFile, 60 * KB),
-    DataFileContract(f"{_DEMO}/verification.json", VerificationFile, 10 * KB),
+    # 10 KB until 1.2.0; 20 KB since D-030 so the optional sensitivity block fits beside the notes.
+    DataFileContract(f"{_DEMO}/verification.json", VerificationFile, 20 * KB),
     DataFileContract("domain/farm.json", FarmFile),
     DataFileContract("domain/practices.yaml", PracticesFile),
     DataFileContract("domain/strategies.yaml", StrategiesDomainFile),

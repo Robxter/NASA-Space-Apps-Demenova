@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "app-data/zones.schema.json",
   "$comment": "GENERATED from pipeline/common/models.py by scripts/export_contracts.py. Do not edit by hand.",
-  "x-contract-version": "1.1.0",
+  "x-contract-version": "1.2.0",
   "$defs": {
     "LinearRing": {
       "description": "Closed ring of positions (GeoJSON, RFC 7946).",

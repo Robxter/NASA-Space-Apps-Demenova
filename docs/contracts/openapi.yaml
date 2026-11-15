@@ -4,14 +4,16 @@
 openapi: 3.1.0
 info:
   title: Demenova backend
-  version: 0.1.0
+  version: 0.2.0
   summary: Background work only - protected pipeline re-runs, Severe email via Resend, Telegram bot webhook.
   description: |
     FastAPI on Render (ADR-001). Free web services sleep when idle, so no user-facing screen may call this API.
     Secrets come from the environment only (`.env.example` lists the names): ADMIN_TOKEN, RESEND_API_KEY,
     ALERT_EMAIL_TO, ALERT_EMAIL_FROM_NAME, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET, SUPABASE_URL,
-    SUPABASE_SERVICE_ROLE_KEY. Never log a secret, a token or a full email address (email_log stores a hash).
-    Times are UTC ISO 8601 (ADR-002).
+    SUPABASE_SERVICE_ROLE_KEY. Optional, not secret: APP_BASE_URL (https only; the app URL used for the lot link in
+    the Severe email; unset means the email has no link). Never log a secret, a token or a full email address
+    (email_log stores a hash). Times are UTC ISO 8601 (ADR-002).
+    0.2.0 (D-030, P-013): 503 on /run; APP_BASE_URL named.
 servers:
   - url: /
     description: Relative; the Render URL is recorded by devops-engineer in HANDOFF.md, not here.
@@ -71,6 +73,14 @@ paths:
                 $ref: "#/components/schemas/Error"
         "422":
           $ref: "#/components/responses/ValidationError"
+        "503":
+          description: |
+            The database is not configured (missing environment variable) or unreachable, so no run was accepted.
+            The body names no secret.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
 
   /email/test:
     post:
