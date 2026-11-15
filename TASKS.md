@@ -161,8 +161,9 @@ review queue, the flood candidates and the logo options.
   Failing test: tests/e2e/specs/screens.spec.ts "every number on Strategies carries an origin badge and a timestamp"
 - [x] T-067 qa-demo-engineer: block 3 (D-033) C1 gate: GREEN at 712400a (e2e 197 passed + @perf 2 alone, CSP, Flood
   and a11y specs new; report docs/reports/qa/2026-11-15-1005.md). C3 GREEN: app d64b98e, tests aa5fa09
-  (docs/reports/qa/2026-11-15-1020.md)
-- [ ] T-070 frontend-engineer or product-designer (P3, R-11, D-033): at 360 px a neighbour's label covers up to 40 %
+  (docs/reports/qa/2026-11-15-1020.md). C4 GREEN: app 2231e63 (head b0634af), tests 66385b4
+  (docs/reports/qa/2026-11-15-1110.md)
+- [x] T-070 frontend-engineer or product-designer (P3, R-11, D-033; fixed 2231e63, e2e last-pass.spec.ts at 360 on 23 Feb): at 360 px a neighbour's label covers up to 40 %
   of Lote 2's outline on every replay day (its own label and word stay visible); not seen at 1440x900
 - [x] T-068 frontend-engineer (non-blocking, D-033; done bea116f, e2e tightened aa5fa09): CL-07 separators may switch now (e2e accepts " · " or ", " for
   the Setup badge and the map rain label); Strategies cards are h3 under h1 (detector skipped-heading: make them h2)
