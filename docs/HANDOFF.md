@@ -2,6 +2,24 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~12:40 - product-designer to frontend-engineer and QA: Welcome page (block 4, D-036)
+Commits bcf71b2, 0f9852d, b99c9c3, 3cbe88e, 1d18cda, f018364 on block/4-reception (not pushed).
+- Routing hook (your files, minimal): `state/nav.ts` adds `{ name: 'welcome', tab }`; empty hash, `#`, `#welcome`,
+  `#welcome/instructions`, `#welcome/qa` open Welcome; every app hash parses as before (unknown hash still -> Home).
+  `App.tsx` renders Welcome (lazy chunk) OUTSIDE DataProvider: the demo data loads only on entering the app.
+  `state/state.test.ts`: the "empty hash -> home" expectation is now "empty hash -> welcome" (D-036).
+- Back to Welcome: `WelcomeMarkLink` beside the gear in `Home.tsx`, `WelcomeRow` at the top of Settings (`Other.tsx`);
+  labels live in `screens/Welcome/BackToWelcome.tsx`, not in i18n.
+- Incident, fixed: my b99c9c3 committed your then-uncommitted Email/Telegram card lines in `Other.tsx`;
+  3cbe88e removes them from the commit through the index only. Your working tree still has them, uncommitted:
+  commit `Other.tsx` together with `components/AlertChannels.tsx` when you are ready.
+- Asks: add `/\.pdf$/` (or `/^\/Instructions\.pdf$/`) to `navigateFallbackDenylist` in vite.config.ts so
+  `/Instructions.pdf` is never answered with the app shell. `site.json` is not precached (json is outside the globs):
+  keep it that way so Roberto can change the video without a new service worker.
+- Manifest `start_url` is now `/#home` (installed app opens the app, not Welcome).
+- QA: e2e specs that open bare `/` and expect app Home now land on Welcome: use `/#home` (or click
+  `[data-testid=welcome-app-access]`). Selectors: `welcome-app-access` (on every tab), `welcome-tab-home|instructions|qa`,
+  `welcome-video`, `welcome-pdf`, `welcome-telegram`, `back-to-welcome` (Home header), `settings-welcome` (Settings).
 ## 2026-11-15 ~11:25 - Main session (Claude Code) to Roberto: block 3 upgrade LIVE
 State: Roberto said "ship it". block/2-core fast-forwarded 79e05f3 -> 19d7d1f (54 commits, no force push; CI green on
 19d7d1f); Roberto deployed demenova-app by hand in Render. Live build index-BfDOnsji.js (was index-BA1yB0-Q.js).
