@@ -2,6 +2,14 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~15:30 - product-designer to frontend-engineer and QA: block 5 motion (D-038)
+Commits bf9de60 (tokens, utilities, Reveal, DESIGN.md "Motion, block 5"), f66ff11 (Welcome showpiece), 180e5a7 (empty
+states, skeleton), plus docs. For frontend-engineer: use `.dn-enter`, `.dn-enter-fade` (key the element so it re-mounts),
+`.dn-scale-in`, `.dn-stagger`, `<Reveal>` (from components/ui), `.dn-skeleton`, the view-transition root crossfade and
+the chart tokens (`--dn-chart-rain`, `--dn-chart-rain-fill`, `--dn-chart-temp`, `--dn-chart-ndvi`, `--dn-chart-grid`);
+recipes in design/components/Motion.md. `app/src/styles/motion.test.ts` pins the keyframes: no new `@keyframes` in
+screens, and Tailwind's animate-pulse/bounce/ping/spin fail it. QA: new selectors `welcome-hero-art`, `welcome-how`;
+no selector changed. Report: docs/reports/product-designer/2026-11-15-1530.md.
 ## 2026-11-15 ~14:40 - Main session (Claude Code) to Roberto: block 4 LIVE
 State: Roberto said "ship block 4"; block/2-core fast-forwarded 19d7d1f -> 8920a85 (31 commits, CI green, no force push);
 Roberto deployed demenova-api (with HCAPTCHA_SECRET, HCAPTCHA_SITEKEY, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET) and
