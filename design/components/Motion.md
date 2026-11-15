@@ -19,3 +19,7 @@ Classes: `.dn-press`, `.dn-press-wide`, `.dn-core-water` (+ `.is-onset`), `.dn-l
 with `.dn-lvl-<level>`. The global "0.01 ms" reduced-motion kill was replaced by these token fallbacks (audit: it
 erased feedback, not only movement). Screens should use `duration-press ease-out` instead of `duration-[120ms]`.
 States: not applicable (tokens); the Severe moment's states are in `design/upgrade/CHANGE_LIST.md`.
+
+Update B2 (2026-11-15): `--dn-ease-flood` `cubic-bezier(.65,0,.35,1)` (easeInOutCubic, the map sweep's JS curve) drives
+the core's rise; the rise plays only under `.is-onset` or `.is-flooding`, never on ordinary day changes. Lot fills
+change over `--dn-dur-state`. `--dn-dur-onset`, `dn-lot-onset` and `.dn-ripple` are removed.

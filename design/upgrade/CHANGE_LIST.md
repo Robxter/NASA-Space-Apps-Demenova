@@ -85,3 +85,41 @@ Feel check: scrub the recording at 520-620 ms, where the rise ends and the ring 
 - CL-27 P2 FE Motion opportunities that passed find-animation-opportunities' gate (occasional, purpose = spatial continuity): (1) Map lot sheet enters from the bottom edge (`translateY(100%)`+`opacity` -> settled, `--dn-dur-sheet`, `--dn-ease-drawer`, `@starting-style`), exits the same edge; reduced motion: opacity only. (2) Reliability sheet as native `<dialog>` (focus trap, Escape; pick-ui-library mismatch "div dialog with manual focus") slides up on open, drag-to-dismiss per brief B4; reduced motion: 200 ms fade. Rejected (frequency or function): tab switches, Segmented thumb, Home list re-order while playing, W count-up (would need NumberFlow: class A), map layer switch, scrubber bars.
 - CL-28 P2 PD Map legend shown when lot labels collide (break-ui: 40 lots): today a row of small `SeverityBadge`s under the controls (`MapView.tsx`); review its look with CL-04/CL-05.
 - Note on CL-07: `learn.notReviewed` and the start of `learn.general` keep the D-026 wording with the em dash (coordinator's agreed text, asserted by `actions.test.ts`); the Setup badge separator " · " is asserted by QA in `tests/e2e/specs/setup.spec.ts:9` (`confidence()` helper), so QA updates that helper before the CL-07 separator change lands. The other 10 copy rows are applied (6210e77).
+
+## Review round (B2, product-designer, 2026-11-15)
+
+Commits reviewed: 377df53, 6210e77, adabfac, 35a08a2, 81c033a, 971c318, plus the uncommitted `app/src/screens/Map/flood.ts`
+and `MapView.tsx` working tree (CL-29). Tools: review-animations + STANDARDS.md, impeccable degraded motion-reviewer,
+improve-animations (dn-ripple, dn-lot-onset), remove-animations, quieter, polish. Evidence: an in-page sampler
+(Playwright MCP `browser_evaluate`, one sample per animation frame, 279 frames) of the 6 to 7 Feb step at 1440,
+normal and reduced motion. Screenshots at about 400 ms each could not resolve the sweep, so the measurements below are
+from the page itself. Impeccable `motion-capture` does not exist in engine 0.1.24.
+
+Measured (normal): the flood starts 1258 ms after Play (tick 1200 ms). Waterline 0, 0.43, 0.95, 1.00 at 0, 352, 559,
+704 ms. The label word swaps between 352 and 559 ms. The ring stays at opacity 0 until 560 ms, is at 0.47 and scale
+1.22 at 704 ms, 0.05 and 1.47 at 1002 ms, and is removed by 1457 ms. Reduced motion: no gradient, no ring (0 frames).
+Motion-reviewer disposition (degraded, single context): **fix** (R-01 is a material finding); keep the trigger rules,
+the timing and the cancel logic as they are.
+
+| Before | After | Why |
+| --- | --- | --- |
+| `flood.ts:95` `path.style.fillOpacity = '1'` with stop opacities 0.75 / 0.55 | Leave fill-opacity at the class value (0.75, data-level is already severe), set stop opacity 1 for the Severe stops and 0.733 (0.55 / 0.75) for the Warning stops, and set `path.style.transitionProperty = 'stroke, stroke-width'` for the sweep; clear all three inline styles in the same frame at the end | Measured fill-opacity 0.55, 0.91, 1, 0.765, 0.75: the class transition runs at both ends. The unflooded part dips to 0.30 effective at the start; the lot flashes to full opacity at the end and then fades (start-jump, end-jump) |
+| `MapView.tsx:151` label core rises through the always-on `.dn-core-water` transition | Add class `is-flooding` to the label root when `flooding`; remove it after `--dn-dur-flood` (or when `alive()` turns false) | B2 (PD) made the water snap on ordinary day changes, so scrubbing no longer animates 8 cores for 700 ms each; the rise now plays only inside the flood, on `--dn-ease-flood` (the same easeInOutCubic as `flood.ts:22`) |
+| `Lot.tsx:164` `onset={alert.level === 'severe'}` | `onset={false}`, or true only when the previous replay day's level for this lot was not Severe (as Home does after CL-25) | The core floods on every Lot open of an already-Severe lot: the CL-25/CL-29 rule ("never on Lot open") |
+| `MapView.tsx:231` sheet `duration-[var(--dn-dur-sheet)] ease-standard` | `duration-sheet ease-drawer` | Tokens exist (CL-19); a sheet uses the drawer curve (STANDARDS: `--ease-drawer`); 320 ms is within the sheet exception |
+| `shell.tsx:44`, `MapView.tsx:241`, `Setup.tsx:427` `transition-... duration-[120ms] ease-standard active:scale-[0.95..0.98]` | `dn-press` (drop the transition, duration, easing and scale classes) | One press: 0.97, 120 ms, strong ease-out, and no scale under reduced motion (the token is 1) |
+| `flood.ts:128` `setInterval` every 100 ms to watch `alive()` | Remove the ring where the epoch changes (MapView already holds `floodEpoch`), or check `alive()` in a single `setTimeout` at `--dn-delay-spill` | Polling is harmless at this size; the cancel is easier to read with one path |
+| `DataValue.tsx:40` origin badge `border-line-strong` (8 outlined pills in one list) | `border-line` (the text, ink-2, carries the word) | quieter.md: Home and Alerts read as rows of buttons; the badge is a label, not a control. Contrast of the word is unchanged |
+
+- R-01 P1 FE `flood.ts` fill-opacity fix as in row 1 - check: rerun the sampler; fillOp reads 0.75 in every sample from t=0 to the end.
+- R-02 P1 FE `is-flooding` on the label root during a flood (row 2) - check: the label core rises with the lot on 6 to 7 Feb; dragging the scrubber does not animate the cores.
+- R-03 P1 FE Lot badge onset only on a fresh transition (row 3) - check: open Lote 1 on 23 Feb; the core is still.
+- R-04 P2 FE sheet tokens (row 4); R-05 P2 FE `dn-press` in 3 places (row 5); R-06 P3 FE ring cancel (row 6); R-07 P2 FE origin badge border (row 7).
+- CL-26 P2 PD: Status: done (B2). The legacy `dn-lot-onset` keyframes, `.dn-lot-shape.is-onset` and the `.dn-ripple` reduced-motion rule are deleted (nothing references them). Day-to-day lot fill changes go from 600 to 200 ms (functional data on a high-frequency surface); the Flood is the only longer motion.
+- PD (done, B2): `--dn-ease-flood` (easeInOutCubic, `cubic-bezier(.65,0,.35,1)`) so the CSS core and the JS sweep share one curve. The CL-29 timeline's ease-in-out reads easeInOutCubic from here on.
+
+remove-animations, kept (purpose that saved each): the Flood (rare, the brief's one moment); sheet slide in (spatial
+continuity, occasional); press feedback (feedback); 200 ms level colour change (state). Deleted: the core water rise
+on every day change (functional data, high frequency), the 600 ms lot fill on every day change (reduced to 200 ms),
+the legacy map onset keyframes and the HTML ripple rule (no references). improve-animations: `dn-ripple` and
+`dn-lot-onset` were replaced by the Flood rather than improved; no plan files written (findings are in this table).

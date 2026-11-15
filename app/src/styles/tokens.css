@@ -53,10 +53,10 @@
   --dn-ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* answers a touch: press, state, entrances */
   --dn-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* something on screen changes in place: the flood */
   --dn-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* sheets and the scrubber dock */
+  --dn-ease-flood: cubic-bezier(0.65, 0, 0.35, 1); /* easeInOutCubic: the map sweep's JS curve, so lot and core rise together */
   --dn-dur-press: 120ms;
   --dn-dur-state: 200ms;
   --dn-dur-sheet: 320ms;
-  --dn-dur-onset: 600ms; /* map lot colour change (legacy .dn-lot-shape transition) */
   --dn-dur-flood: 700ms; /* water rises in the lot and in the core */
   --dn-dur-spill: 900ms; /* the one ring that leaves the lot */
   --dn-delay-spill: 560ms; /* starts just before the rise ends: one gesture, not two */
