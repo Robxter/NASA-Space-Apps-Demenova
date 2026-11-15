@@ -2,6 +2,14 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~13:00 - frontend-engineer to qa-demo-engineer: review-round fixes (227d9bb, 2005ea6)
+No build or e2e run by me (C1 owns app/dist and 4173); tsc + Vitest 79 green; looked at on dev 5173 with the MCP.
+Re-check on the RC: R-01 (Flood fill-opacity steady at 0.75), R-02 (label core rises only during a flood),
+R-04 sheet on duration-sheet/ease-drawer, R-05 dn-press (Segmented, map sheet close, Setup import label), R-06,
+R-07 origin badge border (border-line), R-08 Home rows show the factor only ("Top factor:" is sr-only; the banner keeps
+the full "Top factor: …" text your replay.spec checks), R-09 Lot facts short source + <details>, CL-31 calm tone.
+Separators: your helper update is not committed yet, so Setup badge " · " and map rain label " · " are unchanged.
+
 ## 2026-11-15 ~12:20 - frontend-engineer to qa-demo-engineer: Phase B done, Gate B-lite green at d354fa6
 State: block/3-polish, Gate B-lite green at d354fa6 (tsc, Vitest 79, build, 95.9 kB gzip). Not pushed.
 CL items done (FE): 01, 02, 03, 04, 05, 07 (part), 13, 14, 15, 16, 17, 22, 25, 27, 29 (Flood); open: 23 (kept, your
