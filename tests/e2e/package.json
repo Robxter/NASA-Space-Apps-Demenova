@@ -1,0 +1,15 @@
+{
+  "name": "demenova-e2e",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Demenova end-to-end tests (Playwright, phone viewports). Owner: qa-demo-engineer. T-044.",
+  "type": "module",
+  "scripts": {
+    "test": "playwright test --grep-invert @perf",
+    "test:perf": "playwright test --grep @perf --workers=1",
+    "report": "playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.1"
+  }
+}
