@@ -63,3 +63,4 @@ The tool-use matrix in `00-plan.md` is audited against this table at the end of 
 | 09:36 | product-designer | `improve-animations/SKILL.md` | `dn-ripple`, `dn-lot-onset` | both superseded by the Flood; deleted rather than improved; no plan files |
 | 09:36 | product-designer | `remove-animations/SKILL.md` | all motion in app/src | deleted 3 (core rise on day change, legacy onset keyframes, ripple rule), reduced 1 (lot fill 600 -> 200 ms), kept 4 |
 | 09:37 | product-designer | `impeccable/reference/quieter.md` + `polish.md` | Home, Map, ui | 1 quieter item for FE (origin badge border, R-07); polish: orphan token `--dn-dur-onset` removed, `--dn-ease-flood` aligns CSS and JS |
+| 09:40 | product-designer | `impeccable/reference/delight.md` | Severe moment, empty states | thesis: the core shows the farm's state; Flood unchanged (no sound/haptics/loop); new EmptyState tone `calm`; CL-31 FE |

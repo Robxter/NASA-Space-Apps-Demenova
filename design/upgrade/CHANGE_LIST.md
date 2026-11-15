@@ -123,3 +123,10 @@ continuity, occasional); press feedback (feedback); 200 ms level colour change (
 on every day change (functional data, high frequency), the 600 ms lot fill on every day change (reduced to 200 ms),
 the legacy map onset keyframes and the HTML ripple rule (no references). improve-animations: `dn-ripple` and
 `dn-lot-onset` were replaced by the Flood rather than improved; no plan files written (findings are in this table).
+
+## B3 delight (product-designer)
+
+Thesis: the soil core is the one object that shows the farm's state, from calm to Severe. The Severe moment keeps the
+measured Flood (no sound, haptics or extra flourish: delight.md "Protect the experience"; a replay is watched by
+judges in a room). Empty states: the Severe-free day gets a visible calm core.
+- CL-31 P2 FE Home `Home.tsx:113` all-Normal state: `tone="calm"` (new EmptyState tone, PD done in B3) - check: a day with all lots Normal shows a teal core with low water and the "Move the replay" body text.
