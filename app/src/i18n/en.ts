@@ -54,7 +54,7 @@ export const en = {
   'status.noSnapshot': 'The demo snapshot is not available yet',
   'status.noSnapshotBody': 'The replay files have not been published. Nothing is shown rather than invented values.',
   'status.loadError': 'Could not load the farm data',
-  'status.localOnly': 'Working on this device only; sign-in is unavailable.',
+  'status.localOnly': 'Working on this device only. Connect it to sync your farm.',
   'status.signedIn': 'Device connected for sync.',
   'status.unconfigured': 'Sync is not configured in this build; data stays on this device.',
   'status.identityPending': 'Connecting this device…',
@@ -277,6 +277,18 @@ export const en = {
   'records.note': 'The CSV keeps stored units (mm, °C, fractions) and the origin of every value.',
 
   'check.title': 'What to check',
+
+  'connect.button': 'Connect this device for sync',
+  'connect.help': 'Tick the box to show you are a person. This device then gets a private sync identity; no account or email.',
+  'connect.unconfigured': 'Sync is not configured on this build. Your data stays on this device.',
+  'connect.offline': 'No connection. Your data stays on this device; try again when you are online.',
+  'connect.captchaLoad': 'The check could not load. Your data stays on this device; try again later.',
+  'connect.captcha': 'The check failed. Tick the box to try again.',
+  'connect.captchaExpired': 'The check expired. Tick the box again.',
+  'connect.captchaClosed': 'The check was closed. Tick the box to try again.',
+  'connect.supabase': 'The sync service did not accept the connection. Your data stays on this device.',
+  'connect.done': 'This device is connected for sync.',
+  'setup.connectTitle': 'Sync',
 
   'settings.title': 'Settings',
   'settings.language': 'Language',

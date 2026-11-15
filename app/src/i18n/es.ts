@@ -56,7 +56,7 @@ export const es: Record<MessageKey, string> = {
   'status.noSnapshot': 'La instantánea de demostración aún no está disponible',
   'status.noSnapshotBody': 'Los archivos de reproducción no se han publicado. No se muestra nada antes que inventar valores.',
   'status.loadError': 'No se pudieron cargar los datos de la finca',
-  'status.localOnly': 'Funcionando solo en este dispositivo; el inicio de sesión no está disponible.',
+  'status.localOnly': 'Funcionando solo en este dispositivo. Conéctalo para sincronizar tu finca.',
   'status.signedIn': 'Dispositivo conectado para sincronizar.',
   'status.unconfigured': 'La sincronización no está configurada en esta versión; los datos quedan en este dispositivo.',
   'status.identityPending': 'Conectando este dispositivo…',
@@ -279,6 +279,18 @@ export const es: Record<MessageKey, string> = {
   'records.note': 'El CSV mantiene las unidades guardadas (mm, °C, fracciones) y el origen de cada valor.',
 
   'check.title': 'Qué revisar',
+
+  'connect.button': 'Conectar este dispositivo para sincronizar',
+  'connect.help': 'Marca la casilla para mostrar que eres una persona. Así este dispositivo recibe una identidad privada para sincronizar; sin cuenta ni correo.',
+  'connect.unconfigured': 'La sincronización no está configurada en esta versión. Tus datos quedan en este dispositivo.',
+  'connect.offline': 'Sin conexión. Tus datos quedan en este dispositivo; inténtalo cuando tengas conexión.',
+  'connect.captchaLoad': 'La verificación no pudo cargarse. Tus datos quedan en este dispositivo; inténtalo más tarde.',
+  'connect.captcha': 'La verificación falló. Marca la casilla para intentarlo de nuevo.',
+  'connect.captchaExpired': 'La verificación expiró. Marca la casilla otra vez.',
+  'connect.captchaClosed': 'Se cerró la verificación. Marca la casilla para intentarlo de nuevo.',
+  'connect.supabase': 'El servicio de sincronización no aceptó la conexión. Tus datos quedan en este dispositivo.',
+  'connect.done': 'Este dispositivo está conectado para sincronizar.',
+  'setup.connectTitle': 'Sincronización',
 
   'settings.title': 'Ajustes',
   'settings.language': 'Idioma',

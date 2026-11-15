@@ -22,6 +22,8 @@ interface DataValue {
   togglePlay: () => void;
   online: boolean;
   identity: Identity;
+  /** Set after an on-demand connect (D-032). */
+  setIdentity: (id: Identity) => void;
   lotById: (id: string) => Lot | null;
   unitById: (id: string) => ReplayUnit | null;
   /** Display name of a unit: lot name, zone tercile, else the unit id. */
@@ -81,7 +83,7 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
     };
   }, []);
 
-  // Identity after first paint, so supabase-js never delays the shell.
+  // Identity after first paint. Never signs in (D-032): only restores a stored session, without hCaptcha.
   useEffect(() => {
     let alive = true;
     const run = () => void initIdentity().then((id) => alive && setIdentity(id));
@@ -134,6 +136,7 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
       togglePlay,
       online,
       identity,
+      setIdentity,
       lotById: (id) => lots.get(id) ?? null,
       unitById: (id) => units.get(id) ?? null,
       unitName: (id) => {

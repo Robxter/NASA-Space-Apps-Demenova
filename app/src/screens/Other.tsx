@@ -9,6 +9,7 @@ import { useData } from '../state/data';
 import { usePrefs } from '../state/prefs';
 import { formatInstant } from '../time';
 import { recordsCsv, savedDays } from '../data/records';
+import { ConnectDevice } from '../components/ConnectDevice';
 import type { AlertEvent } from '../types/contracts';
 
 export function Alerts() {
@@ -153,6 +154,9 @@ export function Settings() {
         </Card>
         <Card title={t('settings.identity')}>
           <p className="m-0 text-callout text-ink-2">{identityText}</p>
+          <div className="mt-3">
+            <ConnectDevice />
+          </div>
         </Card>
         <p className="m-0 px-4 text-footnote text-ink-3">{t('app.credit')}</p>
       </div>

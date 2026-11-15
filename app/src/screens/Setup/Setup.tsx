@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import { Button, Card, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { ConnectDevice } from '../../components/ConnectDevice';
 import {
   addLot,
   bboxesOverlap,
@@ -455,6 +456,13 @@ export default function Setup() {
               </div>
             ) : null}
           </Step>
+        ) : null}
+
+        {rec && identity.status !== 'signed-in' ? (
+          <Card title={t('setup.connectTitle')}>
+            <p className="m-0 mb-3 text-callout text-ink-2">{t('status.localOnly')}</p>
+            <ConnectDevice />
+          </Card>
         ) : null}
 
         {rec ? (
