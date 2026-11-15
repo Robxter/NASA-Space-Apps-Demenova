@@ -15,3 +15,9 @@ States: closed (no banner), Warning, Severe, Severe with `onset` (ripple on the 
 "Demo,"; the screen header carries the DemoChip), stale (do not show a banner; show the lot as "Out of date").
 Copy: `reason` is one plain line from the engine's top factor, for example "Lluvia acumulada y suelo saturado".
 Never end it with "→". Wrap the banner in an `aria-live="polite"` region when it appears without user action.
+
+## Update 2026-11-15 (D-033, CHANGE_LIST CL-21, Severe moment)
+
+- Press: `.dn-press dn-press-wide`, scale 0.985 (a wide surface presses less).
+- The banner holds still when a lot turns Severe; `onset` only fills its core once. The bold moment is on the map
+  (CHANGE_LIST "Severe moment"). Dark shadow is orbit-tinted (CL-18).

@@ -69,7 +69,7 @@ export function ReplayScrubber({
         onClick={onTogglePlay}
         disabled={loading || !onTogglePlay}
         aria-label={playing ? copy.pause : copy.play}
-        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary transition-transform duration-[120ms] ease-standard active:scale-95 disabled:opacity-45"
+        className="flex size-12 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary dn-press disabled:opacity-45"
       >
         <PlayIcon playing={playing} />
       </button>

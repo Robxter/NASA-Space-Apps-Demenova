@@ -16,7 +16,7 @@ export function Button({ variant = 'primary', block = false, className = '', typ
   return (
     <button
       type={type}
-      className={`inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-5 text-body font-semibold transition-[transform,opacity] duration-[120ms] ease-standard active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-45 ${VARIANTS[variant]} ${block ? 'w-full' : ''} ${className}`}
+      className={`dn-press inline-flex min-h-12 items-center justify-center gap-2 rounded-control px-5 text-body font-semibold disabled:cursor-not-allowed disabled:opacity-45 ${VARIANTS[variant]} ${block ? 'w-full' : ''} ${className}`}
       {...rest}
     />
   );

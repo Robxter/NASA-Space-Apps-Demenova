@@ -61,7 +61,7 @@ export function AlertBanner({
       type="button"
       data-level={level}
       onClick={onOpen}
-      className={`${frame} min-h-12 transition-transform duration-[120ms] ease-standard active:scale-[0.99]`}
+      className={`${frame} dn-press dn-press-wide min-h-12`}
     >
       {body}
     </button>
