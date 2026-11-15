@@ -47,3 +47,10 @@ message was "continue"), and the reports in `docs/reports/` quote him only on pr
 - The hCaptcha and data-scope decisions (D-028, D-032): product and security, not taste.
 
 Say `write all` or `write 1, 3`, and answer the questions above.
+
+## Status
+
+Approved by Roberto on 2026-11-15 ("APPROVE ALL"): rules 1-4, both checks, the three recommendations, and keeping
+the D-025 badge wording with its dash. Written into DESIGN.md › Do's and Don'ts › "Approved by Roberto" and the
+Motion section. C1 implemented (`app/src/styles/motion.test.ts`, 0 flags). C2 is CL-32 (frontend-engineer, its
+dictionary path). The CLAUDE.md line is for the main session (`docs/HANDOFF.md`): product-designer does not own CLAUDE.md.

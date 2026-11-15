@@ -159,3 +159,10 @@ the scrubber thumb on a real iPhone (iOS drags only from the thumb; checked here
 - R-11 P3 FE MapView label placement: at 1440 the map now opens at a tighter zoom, and the Warning label of the lot
   below Lote 1 covers part of Lote 1's lower half (labels are checked against labels only); include lot bounds in the
   collision test, or offset that label. Not a blocker: the shape keeps its colour, and the label keeps its word.
+
+## Learn-taste rules approved by Roberto ("APPROVE ALL", 2026-11-15)
+
+Rules 1-4 and the em-dash ruling are in DESIGN.md under "Approved by Roberto". Check C1 is
+`app/src/styles/motion.test.ts` (PD, done: 2 tests, 0 flags).
+- CL-32 P2 FE Check C2: add `app/src/i18n/claims.test.ts`: no value in `en.ts` or `es.ts` matches
+  `/predic|predij|forecast|pron[oó]stic|anticip/i` (DESIGN.md rule: never claim the app predicted the Feb 2026 flood) - check: Vitest green; it flags 0 strings today.

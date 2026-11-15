@@ -254,6 +254,12 @@ map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and o
 
 **The One Moment Rule.** A second orchestrated motion needs Roberto's approval and a line here first.
 
+- **Only one orchestrated motion exists: the Flood (`dn-core-flood`, `dn-lot-spill`). Every other motion answers a
+  touch and lasts at most 320 ms, sheets included. Never add `@keyframes` or an `animate-*` class without Roberto's
+  approval.** Check: `app/src/styles/motion.test.ts`.
+  Why: "Spend boldness there; keep everything else quiet." (Roberto, role brief)
+  <!-- 2026-11-15: Roberto approved learn-taste rule 2 ("APPROVE ALL"); source: "The memorable moment: a lot turning from calm to Severe on the map during the flood replay." -->
+
 ## Do's and Don'ts
 
 ### Do:
@@ -268,3 +274,23 @@ map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and o
 - **Don't** use all-caps eyebrows, middle-dot meta strings, monospace data labels or arrows on buttons.
 - **Don't** add motion that answers no user action, except the one Severe onset.
 - **Don't** load external fonts or inline styles in HTML (CSP `'self'`).
+
+### Approved by Roberto (learn-taste, 2026-11-15):
+
+- **New icons, illustrations and empty-state art are drawn from the soil core (rounded rectangle, water line, dashed
+  when out of reach). Never a second motif: no leaf, globe, satellite or sparkle.**
+  Why: the logo and the severity glyph are one idea, so one object carries brand and state.
+  <!-- 2026-11-15: Roberto approved learn-taste rule 1; source: D-015, logo option 1 "Core" chosen over "Torn leaf" and "Nova D", reason "Logo and severity glyph are one idea". -->
+- **The theme follows the phone's light or dark setting (`prefers-color-scheme`) unless the user picks one in
+  Settings. A screen never forces a theme.**
+  Why: "Light and dark mode following the phone." (Roberto, role brief)
+  <!-- 2026-11-15: Roberto approved learn-taste rule 3. -->
+- **No screen, label or empty state says the app predicted, forecast or anticipated the 22-23 Feb 2026 flood
+  (Spanish: never "predijo", "pronosticó", "anticipó"). The Severe threshold is "a design choice", never "calibrated".**
+  Why: the demo lots escalated earlier, from earlier storms, and the threshold was chosen after the 2026 floods were seen (D-029).
+  Check: a Vitest test on the dictionaries (CHANGE_LIST CL-32, frontend-engineer).
+  <!-- 2026-11-15: Roberto approved learn-taste rule 4; source: D-029 "Never claim the engine predicted the Feb 2026 flood". -->
+- **Roberto's decision wording is kept exactly as written, punctuation included: the badge "General guidance — not
+  reviewed by an agronomist" keeps its dash, even though the copy rules ban dashes elsewhere.**
+  Why: it is Roberto's decision text (D-025, D-026), and a test asserts it.
+  <!-- 2026-11-15: Roberto approved the recommendation in learn-taste's conflict section ("APPROVE ALL"). -->

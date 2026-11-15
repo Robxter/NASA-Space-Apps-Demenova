@@ -2,6 +2,12 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~10:35 - product-designer to main session: learn-taste rules approved by Roberto
+Roberto answered "APPROVE ALL" to `design/upgrade/taste-rules-proposed.md`. Written: DESIGN.md rules 1-4 and the
+em-dash ruling (keep his D-025 wording); check C1 `app/src/styles/motion.test.ts` (Vitest 81 passed).
+For the main session (product-designer does not own CLAUDE.md): Roberto approved adding the line
+`Before building or changing UI, read DESIGN.md.` to CLAUDE.md. For frontend-engineer: CL-32 (check C2, dictionary claims test).
+Stretch About page not started: waiting for the coordinator's go (QA C3 is GREEN, so building app/dist no longer collides).
 ## 2026-11-15 ~10:30 - qa-demo-engineer to main session: C3 GREEN (app d64b98e, tests aa5fa09)
 State: block/3-polish at a6bc668+; verdict and counts in docs/reports/qa/2026-11-15-1020.md; ledger rows written.
 Merge-safe app code: d64b98e (7947118 and my commits after it change docs and tests only).
