@@ -8,7 +8,7 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
   Schemas, Pydantic models, TS types (drift-tested), `openapi.yaml`, config stubs (all null/pending), hardened provenance
   checker, Vite/React/TS/Tailwind PWA scaffold, ADR-001..005. SPEC diagrams transcribed by the main session (P-001).
 - **Domain** (agronomist, [report](../agronomist/2026-11-14-1930.md), 23660af): thresholds (22 keys), 4 practices, strategies
-  A/B/C, 8 actions es/en, 14 glossary terms, Spanish review queue Q-01..Q-19 for Tyson.
+  A/B/C, 8 actions es/en, 14 glossary terms, Spanish review queue Q-01..Q-19 for the team agronomist.
 - **Design** (product-designer, [report](../product-designer/2026-11-14-1932.md), 4295cf2): BRIEF, three logos, severity
   palette and tokens, presentational UI components, PWA icons.
 - **Data** (data-engineer, [report](../data-engineer/2026-11-14-1932.md), a1c5b4e, 8ae88e9, d22c638, 0a28769): datasets.yaml
@@ -22,7 +22,7 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
   D-012 FreeLLMAPI installer verified, not run; D-013 contracts v1 (class B). ADR-001..005 in DECISIONS.md.
 - Roberto approvals (commit f471eb3): D-014 Sigatoka/heat-unit values stay `estimated`; D-015 logo option 1 "Core";
   D-016 country/province/canton nullable; D-017 random per-farm `telegram_code`; D-018 schema T-015 approved;
-  D-019 no not-recommended SMAP in the replay. Class A still open: **P-007** demo flood date (Tyson/Roberto).
+  D-019 no not-recommended SMAP in the replay. Class A still open: **P-007** demo flood date (the team agronomist/Roberto).
 
 ## 3. Data used (identifiers and access dates in `config/datasets.yaml`, all accessed 2026-11-14)
 - Rain: GPM_3IMERGDE V07 (IMERG Early daily), 4,335 granules 2015-01-01..2026-11-13, none missing; V07B to 2026-03-03,
@@ -31,7 +31,7 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
   (OpenTopography open copy). Weather: POWER Daily API v2.10.3. NDVI: Sentinel-2 L2A (Earth Search STAC).
 - Non-NASA: OpenStreetMap Rio Buenavista (way 468343174), burned 10 m into the routing DEM.
 - `synthetic`: 8 demo lots (5.04-6.48 ha). `estimated`: 53 domain values (incl. Sigatoka thresholds, 14 °C base, D-014).
-  Only 10 domain values are approved by Tyson (2 days tolerance, 70 cm roots, repeated in thresholds and practices).
+  Only 10 domain values are approved by the team agronomist (2 days tolerance, 70 cm roots, repeated in thresholds and practices).
 
 ## 4. Reviews and checks
 - Phase 0 code review: 1 HIGH (CSV parsing) + 6 MEDIUM fixed, regression tests written first (37 red before the fix).
@@ -46,13 +46,13 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
 - agronomist had no shell; its six domain files are validated by the contract tests added in 23660af.
 
 ## 5. Open items and risks for block 2
-- P-007 flood date (Tyson): replay window 2026-02-15..03-05 rests on an unconfirmed date; 22-24 Feb 2026 is only rank 60.
+- P-007 flood date (the team agronomist): replay window 2026-02-15..03-05 rests on an unconfirmed date; 22-24 Feb 2026 is only rank 60.
 - Supabase not applied: Roberto runs `supabase/README.md` steps 1-6; hosted auth/JWT path is unverified locally.
 - PR `block/1-foundations` -> `main` not opened. T-015b contract addition (`telegram_code`) with lead-architect.
 - Engine (block 2) must calibrate only on the IMERG Early series; saturation from API/GLDAS, SMAP shown as missing.
-- Tyson's queue Q-01 (2 days vs more than 2) gates the engine's damage-day rule. Icons not precached by Workbox.
+- the team agronomist's queue Q-01 (2 days vs more than 2) gates the engine's damage-day rule. Icons not precached by Workbox.
 
-## 6. Resumen para Tyson
+## 6. Resumen para the team agronomist
 - Bloques 0 y 1 listos: estructura, archivos de dominio, diseño y logo "Core", datos NASA y base de datos.
 - La lluvia histórica se recalculó con un solo producto (IMERG Early); las cifras anteriores no valen.
 - SMAP no tiene ningún día de buena calidad en la ventana de la demo; no se usa (D-019).
