@@ -50,7 +50,7 @@ test('every screen runs under the render.yaml CSP with no violation', async ({ p
   await page.keyboard.press('Escape');
 
   await page.goto(`/#strategies/${LOT}`);
-  await expect(page.getByRole('heading', { level: 3 })).toHaveCount(3);
+  await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3);
   await page.getByText(t('en', 'strategies.details')).first().click();
   await open(page, '#alerts');
   await page.goto('/#learn');

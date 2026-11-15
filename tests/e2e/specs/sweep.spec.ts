@@ -41,7 +41,7 @@ const SCREENS: { name: string; hash: string; ready: (p: Page, l: Lang) => Promis
     name: 'strategies',
     hash: `#strategies/${LOT}`,
     ready: async (p) => {
-      await expect(p.getByRole('heading', { level: 3 })).toHaveCount(3);
+      await expect(p.getByRole('heading', { level: 2 })).toHaveCount(3);
       await expandAll(p);
     },
   },

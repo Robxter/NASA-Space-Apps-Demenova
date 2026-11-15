@@ -71,10 +71,10 @@ test.describe('Map', () => {
     for (const u of lotUnits(DEMO_DAY)) {
       const v = u.features?.rain_local_mm;
       const o = originOf(u, 'rain_local_mm');
-      // CL-07 (D-033): the " · " join becomes a comma; both exact forms are accepted until the string changes.
+      // CL-07 (D-033, T-068): value and origin are joined with a comma, e.g. "66.1 mm, Sourced".
       const label =
         typeof v === 'number' && o
-          ? `${escapeRe(`${fmt(v, 1)} mm`)}(?: · |, )${escapeRe(t('en', `origin.${o}`))}`
+          ? escapeRe(`${fmt(v, 1)} mm, ${t('en', `origin.${o}`)}`)
           : escapeRe(t('en', 'common.noData'));
       const shape = page.locator(`path[aria-label^="${lotName(u.unit_id)}: "]`);
       await expect(shape).toHaveCount(1);
@@ -170,7 +170,7 @@ test.describe('Strategies', () => {
       (a: any, b: any) => a.label.localeCompare(b.label),
     );
     expect(list.length, 'strategies.json offers three options for the lot').toBe(3);
-    const titles = page.getByRole('heading', { level: 3 });
+    const titles = page.getByRole('heading', { level: 2 });
     await expect(titles).toHaveCount(3);
     for (const [i, s] of list.entries()) await expect(titles.nth(i)).toContainText(t('en', `strategies.title.${s.label}`));
 
@@ -185,7 +185,7 @@ test.describe('Strategies', () => {
 
     await page.getByText(t('en', 'strategies.details')).first().click();
     for (const k of ['strategies.why', 'strategies.evidence', 'strategies.benefits', 'strategies.gaps', 'strategies.risks'])
-      await expect(page.getByRole('heading', { level: 4, name: t('en', k) }).first()).toBeVisible();
+      await expect(page.getByRole('heading', { level: 3, name: t('en', k) }).first()).toBeVisible();
 
     const footer = page.getByRole('note');
     await expect(footer).toHaveText(t('en', 'strategies.disclaimer'));
@@ -205,7 +205,7 @@ test.describe('Strategies', () => {
 
   test('every number on Strategies carries an origin badge and a timestamp', async ({ page }) => {
     await page.goto(`/#strategies/${encodeURIComponent(unit.unit_id)}`);
-    await expect(page.getByRole('heading', { level: 3 })).toHaveCount(3);
+    await expect(page.getByRole('heading', { level: 2 })).toHaveCount(3);
     const { offenders } = await numbersWithoutOrigin(page);
     expect(offenders).toEqual([]);
   });

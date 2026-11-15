@@ -6,11 +6,10 @@ import { farm, fmt } from '../lib/demo';
 import type { Page } from '@playwright/test';
 
 const badge = (page: Page) => page.locator('header').getByText(/^Data level \d/);
-// CL-07 (D-033) replaces the " · " join with a comma; until frontend-engineer switches the string, both exact
-// forms are accepted (nothing else): "Data level 0 · low confidence" or "Data level 0, low confidence".
+// CL-07 (D-033, T-068): the badge joins level and confidence with a comma, e.g. "Data level 0, low confidence".
 const confidence = (n: number, level: string) =>
   new RegExp(
-    `^${escapeRe(t('en', 'setup.level', { n }))}(?: · |, )${escapeRe(t('en', 'setup.confidence', { level: t('en', `confidence.${level}`) }))}$`,
+    `^${escapeRe(t('en', 'setup.level', { n }))}${escapeRe(', ')}${escapeRe(t('en', 'setup.confidence', { level: t('en', `confidence.${level}`) }))}$`,
   );
 
 async function tapMap(page: Page, dx: number, dy: number) {
