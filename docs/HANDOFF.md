@@ -2,6 +2,15 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 06:15 - data-engineer to data-scientist / main session
+State: T-049 done on block/2-core (4c606ad, 8cf2ed1); not pushed.
+Done since last handoff: D-029 replay stack at `pipeline/data/processed/replay/2026-01-20_2026-03-05/` (45 days, same
+layers/products; POWER hourly `weather/power_hourly_farm_2026-01-20_2026-03-05.csv`); NDVI scaling fixed (values now
+in [-1, 1]); demo lot ids now `lot_demo-el-oro_<n>` (same numbers, same geometry). Report docs/reports/data-engineer/2026-11-15-0615.md.
+Next for the receiver, in order: 1. data-scientist: set engine STACK to the new dir and re-run the replay (T-049b).
+2. data-engineer: delete `replay/2026-02-15_2026-03-05` once the engine no longer reads it.
+Do not touch: demo lot geometry (re-running `lots.run()` moves all 8 lots).
+
 ## 2026-11-15 04:55 - data-scientist to main session
 State: T-020..T-024b done on block/2-core (c39de04, 83d8cf0, 8b1194e, 969e4c8, 7e1f49c, 940cd32); not pushed.
 Done since last handoff: engine + demo snapshots in app/public/data/demo (644 KB, all contracts pass; 348 tests);

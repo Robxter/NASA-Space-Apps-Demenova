@@ -105,9 +105,11 @@ review queue, the flood candidates and the logo options.
 - [ ] T-047 data-scientist: source or replace the engine's `estimated` values with opened sources (api_k NWS PDF,
   Sigatoka/leaf-wetness/heat-unit papers, Saaty's RI table for n = 5); agent work, no human expert (D-022)
 - [ ] T-048 data-scientist: apply Roberto's answer to P-014 (W thresholds, earlier replay start) and re-run replay
-- [ ] T-049 data-engineer: NDVI layers invalid (19 Feb 2026 scene: 90 % of clear pixels > 1, median 1.40; the
-  2025–26 composite used for lot placement likewise; check the STAC raster:bands scale/offset); demo_lots.geojson
-  ids `lot_demo_el_oro_N` break the contract (`lot_demo-el-oro_N`); engine maps them meanwhile
+- [x] T-049 data-engineer: NDVI fixed (BOA offset applied twice on Earth Search items with
+  `earthsearch:boa_offset_applied`; range test), composite regenerated, lots kept in place, ids `lot_demo-el-oro_N`
+  (4c606ad); replay stack 2026-01-20..03-05 for D-029 in `processed/replay/2026-01-20_2026-03-05/` (8cf2ed1)
+- [ ] T-049b data-scientist: point the engine STACK at `replay/2026-01-20_2026-03-05`, drop the lot-id mapping
+  shim if wanted; then data-engineer deletes the old `replay/2026-02-15_2026-03-05` (pre-fix NDVI > 1)
 - [ ] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks
 - [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
