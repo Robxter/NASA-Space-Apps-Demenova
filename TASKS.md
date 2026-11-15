@@ -102,15 +102,20 @@ review queue, the flood candidates and the logo options.
 - [x] T-024b data-scientist: weight sensitivity check ±0.10 on the 22–23 Feb 2026 replay ->
   app/public/data/demo/verification.json (7e1f49c, 940cd32; strict test NOT stable in 9/10 variants at marginal
   lots 3, 6, 8; lots 1, 2, 4, 5, 7 Severe on the flood days in every variant; result in `notes`, P-015)
+- [x] T-024c data-scientist: review T-025 fixes (M1 latency, M2 per-episode tallies, M4 no cold level, M5 confirmations)
+  and D-029 (Severe 0.90, replay 2026-01-20..03-05) (ee9d6e4, d70d7b2 + snapshot commit; catchment tally 1 hit, 0 misses,
+  4 false alarms in 2026; sensitivity at 0.90 not stable 10/10, lots 1, 2 Severe on flood days in every variant)
+- [x] T-049b data-scientist: old replay stack 2026-02-15_2026-03-05 removed (git rm) after the engine moved to the new one
 - [ ] T-047 data-scientist: source or replace the engine's `estimated` values with opened sources (api_k NWS PDF,
   Sigatoka/leaf-wetness/heat-unit papers, Saaty's RI table for n = 5); agent work, no human expert (D-022)
-- [ ] T-048 data-scientist: apply Roberto's answer to P-014 (W thresholds, earlier replay start) and re-run replay
+- [ ] T-048 data-scientist (post-hackathon, class A, P-017): seasonal (day-of-year window) percentiles for W, because
+  annual percentiles keep wet-season days high for weeks (review T-025 M3); do not implement before Roberto approves
 - [x] T-049 data-engineer: NDVI fixed (BOA offset applied twice on Earth Search items with
   `earthsearch:boa_offset_applied`; range test), composite regenerated, lots kept in place, ids `lot_demo-el-oro_N`
   (4c606ad); replay stack 2026-01-20..03-05 for D-029 in `processed/replay/2026-01-20_2026-03-05/` (8cf2ed1)
 - [ ] T-049b data-scientist: point the engine STACK at `replay/2026-01-20_2026-03-05`, drop the lot-id mapping
   shim if wanted; then data-engineer deletes the old `replay/2026-02-15_2026-03-05` (pre-fix NDVI > 1)
-- [ ] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks
+- [x] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks (approve with changes; fixed in T-024c)
 - [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
 - [x] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles (2ea3983; Map = Leaflet + GIBS lazy,

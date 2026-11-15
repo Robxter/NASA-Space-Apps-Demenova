@@ -102,3 +102,14 @@ def test_snapshot_update_time_includes_latency_and_no_cold_level():
                 assert iso(alert["updated_at"]) - iso(alert["newest_rain_data_at"]) == dt.timedelta(hours=4)
         for event in day["events"]:
             assert iso(event["at"]).hour == 4
+
+
+@pytest.mark.skipif(not (R.DEMO / "manifest.json").exists(), reason="no committed snapshots yet")
+def test_committed_d029_results():
+    # D-029 (Severe >= 0.90, replay 2026-01-20..03-05), per-episode counts in the farm's catchment (review T-025 M2)
+    v = json.loads((R.DEMO / "verification.json").read_text(encoding="utf-8"))
+    assert (v["hits"], v["misses"], v["false_alarms"]) == (1, 0, 4)
+    assert [e["id"] for e in v["events"] if e["outcome"] == "hit"] == ["flood-2026-02-22-buenavista-pasaje"]
+    m = json.loads((R.DEMO / "manifest.json").read_text(encoding="utf-8"))
+    assert m["replay_window"] == {"start": "2026-01-20", "end": "2026-03-05"}
+    assert "3 of 3 documented El Oro floods on other rivers" in v["notes"] and "no flood-specific lead time" in v["notes"]
