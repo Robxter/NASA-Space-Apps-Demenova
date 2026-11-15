@@ -38,3 +38,12 @@ The tool-use matrix in `00-plan.md` is audited against this table at the end of 
 | 10:40 | frontend-engineer | `design/upgrade/CHANGE_LIST.md` (append) | FE findings from A2/A3 | 4 items added (CL-25..CL-28) + CL-07 note; CL-01/10/14/20/24 already carried the break-ui and mobile-native notes |
 | 10:55 | frontend-engineer | Gate A (typecheck, Vitest, build, check_bundle_size, e2e, e2e @perf alone) | 6210e77 | red: 4 failed (Alerts origin check, all projects): my alert timestamp carried `dn-num`; fixed in adabfac |
 | 11:10 | frontend-engineer | Gate A rerun | adabfac | GREEN: tsc ok, Vitest 79, initial JS 95.3 kB gzip, e2e 149 passed / 3 skipped, @perf 2 passed. Last green: adabfac |
+| 09:20 | product-designer | `impeccable/reference/craft-floor.md` | styles, ui | browser surfaces themed (selection, caret, accent-color, underline offset); 0 refused elements added |
+| 09:21 | product-designer | `impeccable/reference/typeset.md` (degraded: no separate scan) | type roles | scale kept (17/15/13/12 px); `text-wrap: balance` on h1-h3, `pretty` on p; ListRow titles 2 lines |
+| 09:21 | product-designer | `impeccable/reference/layout.md` | ListRow, Card | fixed 14 px core leading; footer lines instead of middle-dot joins |
+| 09:21 | product-designer | `impeccable/reference/colorize.md` (colour outside severity only) | tokens.css | severity hex unchanged; dark shadows orbit-tinted; selection tokens; map-label ink on surface measured 8.16-11.32:1 |
+| 09:21 | product-designer | `impeccable/reference/extract.md` | ui | 0 new components (no 2+ screen pattern needed one); motion repeated 6x -> tokens + `.dn-press`, `duration-*` utilities |
+| 09:22 | product-designer | `impeccable/reference/polish.md` + `degraded/finish-reviewer.md` (inline) | ui + styles | drift fixed: inline transition in SeverityGlyph, literal 120 ms in 4 ui files; finish-reviewer inline: disposition fix (screens' CL items open), ui scope ship |
+| 09:22 | product-designer | `impeccable/reference/animate.md`, `animate/SKILL.md`, Taste `references/motion.md` + `system.md`, `apple-design/SKILL.md` §14-15 | motion tokens | 3 curves, 7 durations, reduced-motion token fallbacks replace the global 0.01 ms kill |
+| 09:23 | product-designer | typecheck + Vitest | uncommitted A5 | tsc ok, 79 passed |
+| 09:24 | product-designer | `pw_mcp.mjs a5.json` | dev 5174: Home, Lot at 360 light/dark, 1440 dark | 6 shots, 0 errors; banner square ring gone; core water 25/50/75/100 % renders |

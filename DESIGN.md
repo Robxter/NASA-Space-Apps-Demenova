@@ -196,6 +196,10 @@ below. Desktop widens the column; it does not add decorative panels.
 Flat by default: hairlines and tonal surfaces separate, not shadows. Two shadows exist: **sheet**
 (`0 -1px 0 rgb(14 33 53 / .06), 0 -8px 24px rgb(14 33 53 / .08)`) for the bottom sheet and scrubber dock, and
 **banner** (`0 1px 2px rgb(14 33 53 / .08), 0 6px 16px rgb(14 33 53 / .1)`) so the alert banner reads above the list.
+In dark mode both are orbit-tinted (`rgb(3 10 19)`), never black.
+
+Browser surfaces are themed too: text selection in focus-blue at 20% (30% dark), the caret in focus-blue, native
+controls in Leaf (`accent-color`), link underlines offset 0.18em.
 
 **The Two Shadows Rule.** A third shadow needs a reason recorded here first.
 
@@ -209,7 +213,8 @@ is a rounded rectangle whose water line is the only fill.
 ### Buttons
 - **Shape:** gently curved (10px), at least 48px tall, verb labels ("Open lot"), no arrows.
 - **Primary:** Orbit fill, white text (inverted in dark). **Secondary:** surface with a strong-line border.
-- **Press:** Press feedback, scale 0.98 over 120ms ease-out. Focus: 3px focus-blue outline, 2px offset.
+- **Press:** Press feedback, scale 0.97 over 120ms strong ease-out (`.dn-press`). Focus: 3px focus-blue outline,
+  2px offset, never animated.
 
 ### Chips
 - **Severity badge:** level ink on level tint, fully round, glyph plus word; Severe may be solid.
@@ -218,20 +223,35 @@ is a rounded rectangle whose water line is the only fill.
 ### Cards / Containers
 - **Inset grouped list:** surface, 14px radius, no shadow, hairline inset 16px from the leading edge.
 
+### Lists
+- **Lot row:** fixed 14px core leading, lot name up to two lines, level word in level ink opening the subtitle,
+  value and origin at the trailing edge, chevron when it navigates. Rows never lead with a variable-width badge.
+
+### Map labels
+- Surface chip with a 1px level-ink border, 8px radius, glyph and level word in level ink, 12px semibold; sits
+  above its lot, never on it.
+
 ### Navigation
 - Bottom tab bar with four tabs; selected tab in Leaf. Rows that navigate end in a chevron (iOS convention).
 
 ### The Soil Core (signature)
-`SeverityGlyph`: water at 25/50/75/100% for Normal/Watch/Warning/Severe; dashed empty core for "Out of date". On
-Severe onset the water rises (600ms) and one **Ripple** runs out from the core, a **Loop** of two iterations, then
-still. On the map the lot's stroke swells and settles twice (`.dn-lot-shape.is-onset`).
+`SeverityGlyph`: water at 25/50/75/100% for Normal/Watch/Warning/Severe (a `scaleY` from the bottom); dashed empty
+core for "Out of date". A level change is the water rising or falling in place.
 
-### Motion vocabulary (Emil Kowalski's terms)
-- **Press / Tap feedback** 120ms, **state changes** 200ms, **Slide in** for the sheet 320ms; **Ease-out** curve
-  `cubic-bezier(.2,0,0,1)` for everything that answers a touch.
-- **Orchestration**: the Severe onset is the only motion that does not answer a touch.
-- **Reduced motion**: the ripple is removed and changes are instant; the level never depends on motion.
-- Not used: **Scroll reveal**, **Stagger** on page load, **Idle animation**, **Pulse** loops.
+**The Flood (the one orchestrated moment).** When a lot turns Severe in the replay, water rises inside the lot on the
+map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and one ring spills out of the lot
+(starts at 560ms, 900ms, scale 1 to 1.5, fading). Then still. Timeline and trigger rules: `design/upgrade/CHANGE_LIST.md`
+"Severe moment"; prototype `design/prototypes/severe-moment.html`.
+
+### Motion vocabulary (Emil Kowalski's terms; tokens in `design/components/Motion.md`)
+- **Press / Tap feedback**: scale 0.97 (0.985 on wide surfaces) over 120ms; **state changes** 200ms; **Slide in** for
+  sheets 320ms on the drawer curve; strong **Ease-out** `cubic-bezier(.23,1,.32,1)` for everything that answers a touch.
+- **Orchestration**: the Flood is the only motion that does not answer a touch; a **Sequence** with a 140ms overlap.
+- **Reduced motion**: no movement, no scale, no flood or ring; colour and opacity fades stay. The level never
+  depends on motion.
+- Not used: **Scroll reveal**, **Stagger** on page load, **Idle animation**, **Pulse** loops, **Ripple** on taps.
+
+**The One Moment Rule.** A second orchestrated motion needs Roberto's approval and a line here first.
 
 ## Do's and Don'ts
 
