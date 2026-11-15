@@ -132,7 +132,10 @@ export default function Lot({ id }: { id: string }) {
   const daySource = sourceLabel(resolveProvenance(day?.provenance, manifest));
   const featSource = unit?.features ? sourceLabel(provenanceByIds(unit.features.provenance_ids, manifest)) : null;
   const farmUpdated = demo?.farm?.farm.updated_at ?? null;
-  const farmSource = sourceLabel(resolveProvenance(demo?.farm?.provenance, manifest));
+  const farmRecords = resolveProvenance(demo?.farm?.provenance, manifest);
+  const farmSource = sourceLabel(farmRecords);
+  const farmDatasetBacked = farmRecords.some((r) => r.dataset);
+  const farmNote = farmRecords.find((r) => r.notes)?.notes ?? null;
   const isAgronomist = prefs.mode === 'agronomist';
   const when = (iso: string | null | undefined) => formatInstant(iso, prefs.units, prefs.language);
   const [reliabilityOpen, setReliabilityOpen] = useState(false);
@@ -263,7 +266,17 @@ export default function Lot({ id }: { id: string }) {
         </Card>
 
         {lot ? (
-          <Card title={t('lot.facts')} padded={false} footer={farmSource ? t('common.source', { source: farmSource }) : undefined}>
+          <Card
+            title={t('lot.facts')}
+            padded={false}
+            footer={
+              farmDatasetBacked ? (
+                <SourceLines source={farmSource} />
+              ) : (
+                <SourceLines guidanceNote={farmNote} label={t('common.sourceFarmRecord')} />
+              )
+            }
+          >
             <List>
               <ListRow title={t('lot.area')} trailing={<DataValue kind="ha" si={lot.area_ha} origin={resolveOrigin(lot, 'area_ha')} source={farmSource} at={farmUpdated} />} />
               <ListRow

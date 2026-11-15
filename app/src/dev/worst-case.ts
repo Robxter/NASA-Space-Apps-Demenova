@@ -6,8 +6,8 @@
 import type { DemoData } from '../data/demo';
 import type { AlertEvent, AppManifest, FactorName, FarmFile, Lot, Provenance, ReplayDay, ReplayUnit, Severity } from '../types/contracts';
 
-export type WorstKind = 'worst' | 'empty' | 'one' | 'offline';
-export const WORST_KINDS: readonly WorstKind[] = ['worst', 'empty', 'one', 'offline'];
+export type WorstKind = 'worst' | 'empty' | 'one' | 'offline' | 'calm';
+export const WORST_KINDS: readonly WorstKind[] = ['worst', 'empty', 'one', 'offline', 'calm'];
 
 const PROV: Provenance = {
   id: 'prov-dev-worst-case',
@@ -139,6 +139,11 @@ function unit(id: string, n: number, date: string): ReplayUnit {
   };
 }
 
+/** The all-Normal day (CL-31 calm state): every lot Normal with a low W. */
+function calmUnit(u: ReplayUnit): ReplayUnit {
+  return { ...u, alert: { ...u.alert, level: 'normal', w: 0.18, newest_rain_data_at: null } };
+}
+
 function events(lots: Lot[], date: string): AlertEvent[] {
   return lots.slice(0, 12).map((l, i) => ({
     id: `01JDEVWORST${String(i).padStart(15, '0')}`,
@@ -155,7 +160,7 @@ function events(lots: Lot[], date: string): AlertEvent[] {
 }
 
 export function worstCase(kind: WorstKind): DemoData {
-  const count = kind === 'empty' ? 0 : kind === 'one' ? 1 : 40;
+  const count = kind === 'empty' ? 0 : kind === 'one' ? 1 : kind === 'calm' ? 3 : 40;
   const lots = Array.from({ length: count }, (_, i) => lot(i + 1));
   const manifest: AppManifest = {
     schema_version: '1.2.0',
@@ -199,7 +204,7 @@ export function worstCase(kind: WorstKind): DemoData {
     replay[date] =
       d === 2
         ? null
-        : { date, generated_at: `${date}T04:00:00Z`, provenance: ref, units: lots.map((l, i) => unit(l.id, i + 1, date)), events: d === 3 ? events(lots, date) : [] };
+        : { date, generated_at: `${date}T04:00:00Z`, provenance: ref, units: lots.map((l, i) => (kind === 'calm' ? calmUnit(unit(l.id, i + 1, date)) : unit(l.id, i + 1, date))), events: d === 3 ? events(lots, date) : [] };
   });
   return {
     manifest,

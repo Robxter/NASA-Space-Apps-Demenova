@@ -45,6 +45,8 @@ export const es: Record<MessageKey, string> = {
   'common.source': 'Fuente: {source}',
   'common.sourceGuidance': 'Fuente: tabla de orientación de Demenova (no es un conjunto de datos)',
   'common.provenanceNote': 'Ver la nota de procedencia',
+  'home.topFactorLabel': 'Factor principal:',
+  'common.sourceFarmRecord': 'Fuente: registro de la finca demo (sintético, no es un conjunto de datos)',
   'common.retry': 'Reintentar',
   'common.experimental': 'Experimental',
   'zone.low': 'Zona de humedad baja',

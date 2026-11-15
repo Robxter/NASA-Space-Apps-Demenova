@@ -42,6 +42,18 @@ export default function Home() {
     return f ? t('home.topFactor', { factor: t(`factor.${f.name}`) }) : t('home.noFactors');
   };
   const isAgronomist = prefs.mode === 'agronomist';
+  /** Row subtitle (R-08): the factor alone so it fits at 360 px; the label stays for screen readers. */
+  const factorOnly = (u: ReplayUnit) => {
+    const f = topFactor(u.alert.factors);
+    return f ? (
+      <>
+        <span className="sr-only">{t('home.topFactorLabel')} </span>
+        {t(`factor.${f.name}`)}
+      </>
+    ) : (
+      t('home.noFactors')
+    );
+  };
 
   return (
     <div className="pb-4">
@@ -110,7 +122,7 @@ export default function Home() {
           </Card>
 
           {banner === null && units.length > 0 && units.every((u) => u.alert.level === 'normal') ? (
-            <EmptyState tone="empty" title={t('home.allNormal')} body={t('home.allNormalBody')} />
+            <EmptyState tone="calm" title={t('home.allNormal')} body={t('home.allNormalBody')} />
           ) : null}
 
           <Card title={t('home.lots')} padded={false}>
@@ -131,7 +143,7 @@ export default function Home() {
                     levelLabel={t(levelKey(u.alert.level))}
                     lang={prefs.language}
                     title={unitName(u.unit_id)}
-                    subtitle={reasonOf(u)}
+                    subtitle={factorOnly(u)}
                     trailing={
                       isAgronomist ? (
                         <DataValue

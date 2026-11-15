@@ -43,6 +43,8 @@ export const en = {
   'common.source': 'Source: {source}',
   'common.sourceGuidance': 'Source: Demenova guidance table (not a dataset)',
   'common.provenanceNote': 'Show the provenance note',
+  'home.topFactorLabel': 'Top factor:',
+  'common.sourceFarmRecord': 'Source: demo farm record (synthetic, not a dataset)',
   'common.retry': 'Try again',
   'common.experimental': 'Experimental',
   'zone.low': 'Low wetness zone',

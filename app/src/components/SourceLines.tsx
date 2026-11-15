@@ -8,6 +8,7 @@ export function SourceLines({
   source,
   at,
   guidanceNote,
+  label: shortLabel,
 }: {
   /** Dataset names, or null. Ignored when guidanceNote is set. */
   source?: string | null;
@@ -15,10 +16,17 @@ export function SourceLines({
   at?: string | null;
   /** Provenance note of a domain table: switches to the short guidance label with this note behind a disclosure. */
   guidanceNote?: string | null;
+  /** Short label replacing the guidance-table wording (e.g. the demo farm record), used with guidanceNote. */
+  label?: string;
 }) {
   const { prefs, t } = usePrefs();
   const updated = formatInstant(at, prefs.units, prefs.language);
-  const label = guidanceNote !== undefined && guidanceNote !== null ? t('common.sourceGuidance') : source ? t('common.source', { source }) : null;
+  const label =
+    guidanceNote !== undefined && guidanceNote !== null
+      ? (shortLabel ?? t('common.sourceGuidance'))
+      : source
+        ? t('common.source', { source })
+        : null;
   if (!label && !updated) return null;
   return (
     <>
