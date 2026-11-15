@@ -124,7 +124,8 @@ review queue, the flood candidates and the logo options.
 - [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
 - [x] T-027 frontend-engineer: Home, Map, Lot detail; units and language toggles (2ea3983; Map = Leaflet + GIBS lazy,
-  Lot charts uPlot lazy; open: run against real snapshots after T-024, map month view, prior-years comparison)
+  Lot charts uPlot lazy; re-checked on real snapshots in c5c2db4: D-029 window opens 23 Feb, lots-only lists,
+  experimental Sigatoka; open: map month view, prior-years comparison)
 - [x] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests (39 backend tests;
   open: real email from the replay once T-024 is in Supabase; security review; P-013)
 - [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate; CI must run
@@ -137,8 +138,11 @@ review queue, the flood candidates and the logo options.
 - [ ] T-040 agronomist: apply FIX2 §5 mandate (sourced or labelled, checks not prescriptions, reviewed_by /
   human_review fields, review-queue.md for a future local agronomist) (D-025)
 - [x] T-041 closed: won't do — no expert AHP matrix; replaced by T-024b sensitivity check (D-024); ahp.py kept unused
-- [ ] T-042 frontend-engineer: Strategies (badge "Not yet reviewed by a local agronomist"), Alerts, Learn, Farm setup
+- [x] T-042 frontend-engineer: Strategies (badge "Not yet reviewed by a local agronomist"), Alerts, Learn, Farm setup
   data levels 0–2 (level 3 is nice-to-have), data saver, sensitivity result in Lot detail or "How reliable is this?"
+  (a0067a9 Strategies, 613f4f5 setup levels 0–2 + sync, 029b64e reliability sheet, 0f1f9b2 Learn + records CSV;
+  61 Vitest tests; initial JS 92.6 kB gzip; open: domain/strategies.yaml still names the former agronomist
+  (scrubbed at copy time by app/scripts/build_domain_snapshots.py; fix at source in T-040), farmer toggle, level 3)
 - [ ] T-043 api-engineer: Telegram bot (nice-to-have)
 - [ ] T-044 qa-demo-engineer: e2e suite, replay acceptance, DEVICE_CHECKLIST.md (iPhone 14 Pro, iPad Air M2,
   Chrome DevTools Android emulation 360×780, CPU 4×, Slow 4G)

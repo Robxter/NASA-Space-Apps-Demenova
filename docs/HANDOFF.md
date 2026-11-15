@@ -2,6 +2,13 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 06:00 - frontend-engineer to main session
+State: real-data re-check and T-042 must-haves done on block/2-core (c5c2db4..0f1f9b2); not pushed.
+Report docs/reports/frontend-engineer/2026-11-15-0600.md. Checks: tsc clean; Vitest 61; build 92.6 kB gzip initial.
+For agronomist (T-040): domain/strategies.yaml and glossary.yaml still name the former agronomist; the app copy
+scrubs it (app/scripts/build_domain_snapshots.py). Fix at source, then rerun the script.
+Next for the receiver: 1. qa e2e incl. Setup and the reliability sheet. 2. Live Supabase sync test once deployed.
+
 ## 2026-11-15 06:15 - data-engineer to data-scientist / main session
 State: T-049 done on block/2-core (4c606ad, 8cf2ed1); not pushed.
 Done since last handoff: D-029 replay stack at `pipeline/data/processed/replay/2026-01-20_2026-03-05/` (45 days, same
