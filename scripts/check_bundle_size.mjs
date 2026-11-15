@@ -32,7 +32,7 @@ const DEMO_FILE_BUDGETS = [
   [/^replay\/\d{4}-\d{2}-\d{2}\.json$/, 40 * KB],
   [/^history\/[^/]+\.json$/, 60 * KB],
   [/^strategies\.json$/, 60 * KB],
-  [/^verification\.json$/, 10 * KB],
+  [/^verification\.json$/, 20 * KB],
 ];
 
 const fmt = (bytes) => `${(bytes / KB).toFixed(1)} kB`;

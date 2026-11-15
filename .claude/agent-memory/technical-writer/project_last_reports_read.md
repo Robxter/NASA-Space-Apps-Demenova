@@ -5,13 +5,13 @@ metadata:
   type: project
 ---
 
-Processed through 2026-11-14 23:24 Spain, HEAD f6c6edb (block/1-foundations), for block-0-1.md:
-lead-architect/2026-11-14-1844, agronomist/2026-11-14-1930, product-designer/2026-11-14-1932,
-data-engineer/2026-11-14-1932 (updated after science review), database-engineer/2026-11-14-2238, science/2026-11-14-2252.
-Decisions through D-019; PENDING: only P-007 open.
+Processed through 2026-11-15 14:30 Spain, block/2-core HEAD 886d9a9 (my commits after it: e93d5d4, 16088a2, f7f8fe1,
+73226ac, 328e359), for block-2.md: data-scientist 0450/0510, data-engineer 0615, frontend 2355 (14 Nov)/0600,
+api-engineer 0434, devops 0444, lead-architect 0536, agronomist 0730, instructor 1400, science 0356-t025-engine.
+Decisions through D-030; PENDING open: P-016, P-017 (QA added P-018 later, not read).
 
 **Why:** the agent file says read every new report since the last run.
-**How to apply:** next run, `git log f6c6edb..HEAD` and read only reports newer than these.
+**How to apply:** next run, `git log 328e359..HEAD` and read only newer reports (start with docs/reports/qa/).
 
-Source gaps noted: database-review counts (1 HIGH + 7 MEDIUM) came only from the main session's brief (no review file
-in repo); main-session model is not recorded anywhere, so SI log says "model not recorded". See [[si-log-conventions]].
+Source gaps: no security-review file (use commits a46d5ae, f0635be); Kirpich/Saaty URLs not recorded; former
+agronomist must never be named (D-027) — earlier SI log rows were anonymised. See [[si-log-conventions]].

@@ -1,2 +1,2 @@
-- [Last reports read](project_last_reports_read.md) — reports/commit processed for block-0-1 (HEAD f6c6edb); start next run after these
+- [Last reports read](project_last_reports_read.md) — reports/commits processed through block-2 (328e359); start next run after these
 - [SI log conventions](feedback_si_log_conventions.md) — time, model per period, counts only, owned files only, no commit
