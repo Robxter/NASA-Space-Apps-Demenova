@@ -3,6 +3,18 @@
 Owner: technical-writer (T-051). Newest first; one entry per merged build block.
 
 ## Unreleased
+### Block 3: frontend upgrade (79e05f3..143fb1a, branch `block/3-polish`, not pushed, not live)
+Report: `docs/reports/blocks/block-3.md`. QA GREEN on app code 2231e63 (D-033, D-034, D-035).
+- Design tools: Emil Kowalski skills, Impeccable 4.9.1, Taste 2.5.1 plus four classics, Playwright MCP 0.0.85;
+  Figma MCP excluded. No new npm dependency; no data, engine, contract or backend change.
+- App: change list of 32 items plus review items R-01..R-11. Severe moment "Flood" on the map; Home leads with banner
+  and status; map labels above their lots; reliability sheet as a native dialog; phone meta tags; two-column Home
+  from 1024 px; onboarding and empty-state actions; farmer Home distilled.
+- Design: PRODUCT.md and DESIGN.md; motion tokens; four design rules approved by Roberto (D-035).
+- Tests: new csp, flood, a11y and last-pass specs; e2e 213 passed, 0 failed, 15 skipped; Vitest 84; initial JS
+  96.4 kB of 150 kB; cold load 2.13-2.34 s on Fast 4G + CPU 4x.
+- Cut: stretch About page (Taste gate OPEN 3 after three rounds), kept in history at fc3c12e.
+
 ### Block 2: core (2ea3983..886d9a9, branch `block/2-core`, not pushed)
 Report: `docs/reports/blocks/block-2.md`.
 - Engine: TWI, API, FAO-56 ETo/ETc, alert index W with factor shares, state machine, verification counts, ±0.10 weight
