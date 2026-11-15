@@ -12,6 +12,7 @@ import { href, navigate } from '../../state/nav';
 import { useData } from '../../state/data';
 import { usePrefs } from '../../state/prefs';
 import { formatInstant } from '../../time';
+import { WelcomeMarkLink } from '../Welcome/BackToWelcome';
 import { SEVERITY_VALUES, type ReplayUnit } from '../../types/contracts';
 
 function GearLink() {
@@ -65,7 +66,7 @@ export default function Home() {
 
   return (
     <div className="pb-4">
-      <ScreenHeader title={farm?.name ?? t('home.title')} trailing={<GearLink />}>
+      <ScreenHeader title={farm?.name ?? t('home.title')} trailing={<div className="flex items-center"><WelcomeMarkLink /><GearLink /></div>}>
         <p className="m-0 mt-1 flex flex-wrap items-center gap-2 text-footnote text-ink-3">
           {farm?.is_demo ? <DemoChip lang={prefs.language} /> : null}
           <span>{updated ? t('common.updated', { time: updated }) : t('common.noData')}</span>
