@@ -41,7 +41,7 @@ Solo build from 15 Nov ~00:30 (FIX2.md): Roberto is the only human; the team agr
   Kirpich tc, Sigatoka (T-047, T-065). `pending`: CN, drainage D, strategy cost and labour. `calibrated`: lag 0 d (in-sample).
 
 ## 4. Tests and reviews
-- pytest 424 passed; Vitest 61 passed; provenance checker OK (main-session figures; see the writer report for the re-run).
+- pytest 424 passed (re-run by technical-writer, 15 Nov); Vitest 61 passed (frontend-engineer report, not re-run); provenance checker OK.
 - Science review T-025 ([report](../science/2026-11-15-0356-t025-engine.md)): approve with changes; M1, M2, M4, M5 and
   minors fixed in ee9d6e4; M3 kept as a known limit (P-017).
 - Security review (ECC, backend and deploy; no separate file in the repo): M1, L1-L4 fixed in a46d5ae (10 regression
