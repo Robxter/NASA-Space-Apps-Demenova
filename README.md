@@ -14,7 +14,7 @@ Built with NASA Earth observations. Demenova is an independent project; it is no
 
 ## What it does
 Each lot gets an alert index W (0 to 1) built from five factors: upstream rain over the river's catchment, soil
-saturation, terrain wetness, local rain and the daily water balance. W maps to four levels, always shown as colour and
+saturation, terrain wetness, local rain and the 7-day water balance (rain minus crop evapotranspiration). W maps to four levels, always shown as colour and
 word: Normal, Watch, Warning, Severe. The demo replays 20 Jan to 5 Mar 2026 around the 22-23 Feb Buenavista river
 flood (Pasaje, El Oro) on a synthetic demo farm, from committed snapshots, with no live download.
 
@@ -27,11 +27,12 @@ NASA + partner data (global only)
   -> app/public/data   JSON snapshots for the replay and offline use
   -> app/              PWA: Home, Map, Lot, Strategies, Alerts, Learn, Setup
   -> backend/          FastAPI on Render: Severe email (Resend), protected re-runs
-  -> .github/workflows CI and the hourly pipeline
+  -> .github/workflows CI and an hourly pipeline workflow (live ingest and scoring not built yet)
 ```
-Data: GPM IMERG Early daily (rain), NASA POWER (weather for FAO-56 evapotranspiration), SRTM (terrain), Sentinel-2
-L2A (NDVI), NASA GIBS (map imagery), OpenStreetMap (river). GLDAS is in the replay stack but not in W; SMAP was
-evaluated and not used (D-019).
+Data: GPM_3IMERGDE V07 (V07B to 3 Mar 2026, V07C after; rain), NASA POWER Daily API v2.10.3 (weather for FAO-56
+evapotranspiration), SRTMGL1 v003 (terrain), Sentinel-2 L2A (NDVI), NASA GIBS (map imagery), OpenStreetMap (river).
+GLDAS is in the replay stack but not in W and not shown in the app; SMAP was evaluated and not used (D-019).
+The Severe email goes to the operator's address set at deploy; there is no email sign-up in the app yet.
 
 ## Run locally (PowerShell or any shell)
 ```
@@ -53,10 +54,13 @@ reported as counts only.
 ## Limits
 - The demo farm and its 8 lots are synthetic.
 - The weights and the Severe threshold (W ≥ 0.90) are design choices, not a calibration: "It is not fitted or
-  validated; the 2026 floods were seen when choosing it" (D-029).
-- In the farm's catchment in 2026: 1 hit, 0 misses, 4 false alarms. The demo lots were already Severe from earlier
-  storms; Demenova gave no flood-specific lead time for the February 2026 flood.
-- The weight check is not stable in 10 of 10 variants, although lots 1 and 2 are Severe on the flood days in every run.
+  validated; the 2026 floods were seen when choosing it" (D-029). The Severe exit point (W < 0.80) is a main-session
+  default kept from the SPEC.
+- In the farm's catchment in 2026: 1 hit, 0 misses, 4 false alarms. The wettest demo lots (1 and 2) were already
+  Severe from earlier storms (since 5 and 7 Feb); Demenova gave no flood-specific lead time for the February 2026 flood.
+- The weight check is not stable in 10 of 10 runs (which lots are Severe on which days changes), but on the flood days
+  (21-24 Feb) lots 1 and 2 are Severe in every run.
+- Alerts run only for the demo farm; a new farm needs an engine run for its location. Only the El Oro area has been run.
 - W uses whole-year percentiles, so wet-season days stay high for weeks.
 - Agronomic guidance is general and not yet reviewed by a local agronomist; the app supports, never replaces, the
   agronomist's judgment.

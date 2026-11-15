@@ -12,7 +12,7 @@ Dates are 2026. "Data pulled" is the download time in the provenance record (UTC
 | --- | --- | --- | --- | --- |
 | GPM IMERG Early Run, daily | `GPM_3IMERGDE` V07 (granules V07B to 03-03, V07C from 03-04), DOI 10.5067/GPM/IMERGDE/DAY/07 | NASA GES DISC | https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDE&version=07 (14 Nov); latency "4 hours" on https://gpm.nasa.gov/data/imerg (14 Nov) | Only rain product end to end: catchment-mean and farm-cell daily rain 2015-01-01..2026-11-13 (4,335 granules, 0 missing), 72 h upstream rain, local rain. Data pulled 14 Nov 22:08 and 15 Nov 03:44-04:03 |
 | GLDAS Noah Land Surface Model L4, 3-hourly 0.25° | `GLDAS_NOAH025_3H` 2.1, DOI 10.5067/E7TYRXPJKWOQ | NASA GES DISC | https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GLDAS_NOAH025_3H&version=2.1 (14 Nov) | Four soil-moisture layers in the replay stack 2026-01-20..03-05 (pulled 15 Nov 04:04). Not read by the alert index in this version; saturation comes from the antecedent precipitation index |
-| NASA POWER | Daily API v2.10.3, community AG; hourly CSV for the replay window | NASA Langley Research Center | https://power.larc.nasa.gov/docs/services/api/temporal/daily/ (14 Nov) | Temperature, humidity, wind at 2 m, solar radiation for FAO-56 ETo; daily heat units. Pulled 14 Nov 22:00 and 15 Nov 03:56-04:01 |
+| NASA POWER | Daily API v2.10.3, community AG; hourly API v2.10.4 (UTC) for the replay window | NASA Langley Research Center | https://power.larc.nasa.gov/docs/services/api/temporal/daily/ (14 Nov) | Temperature, humidity, wind at 2 m, solar radiation for FAO-56 ETo; daily heat units. Pulled 14 Nov 22:00 and 15 Nov 03:56-04:01 |
 | SRTM 1 arc second (~30 m) | `SRTMGL1` v003, DOI 10.5067/MEASURES/SRTM/SRTMGL1.003 | NASA LP DAAC (archive); downloaded from the OpenTopography open copy (NASA SRTM v3, voids filled) | https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=SRTMGL1&version=003 and https://portal.opentopography.org/raster?opentopoID=OTSRTM.082015.4326.1 (14 Nov) | Terrain, D8 flow, TWI zones, Río Buenavista catchment (253.8 km²), Kirpich inputs. Pulled 14 Nov 21:55 |
 | Sentinel-2 Level-2A | Earth Search STAC API v1, collection `sentinel-2-l2a` (Copernicus, ESA partner data) | Copernicus Sentinel-2 (ESA); COGs by Element 84 on AWS Open Data | https://registry.opendata.aws/sentinel-2-l2a-cogs/ (14 Nov); endpoint https://earth-search.aws.element84.com/v1 | NDVI on the replay scenes of 14 and 19 Feb 2026 and the 2025-11-01..2026-11-13 composite. Pulled 15 Nov 03:55-04:01 |
 | NASA GIBS (WMTS) | Layers `ASTER_GDEM_Greyscale_Shaded_Relief` and `MODIS_Terra_CorrectedReflectance_TrueColor`, checked in GetCapabilities | NASA Global Imagery Browse Services | https://nasa-gibs.github.io/gibs-api-docs/access-basics/ (14 Nov) | Map base imagery in the app (tiles fetched live, cached by the PWA) |
@@ -36,7 +36,6 @@ Dates are 2026. "Data pulled" is the download time in the provenance record (UTC
 | FAO-56 Penman-Monteith ETo and crop coefficient Kc (Allen et al. 1998, FAO Irrigation and Drainage Paper 56) | https://www.fao.org/4/x0490e/x0490e0b.htm, Table 12 (14 Nov; re-checked by scientist-reviewer, T-025) | `pipeline/engine`, `config/alerts.yaml` kc_banana 1.10 (estimated) |
 | Sentinel-2 scaling: offset not re-applied when `earthsearch:boa_offset_applied` is true | https://github.com/Element84/earth-search/issues/41 (15 Nov) | `pipeline/ingest` NDVI fix (4c606ad) |
 | Kirpich (1940) time of concentration | Kirpich pages opened by scientist-reviewer in T-025 (15 Nov); URLs not recorded in the repo | First travel-time estimate only, used far outside its calibration range |
-| Saaty (1990) AHP, EJOR 48: 9-26 | Tables used for tests of the unused `ahp.py`; URL not recorded | Not used for weights (D-024) |
 
 Other formulas (D8, TWI, API, SCS-CN) follow the SPEC method table (`docs/spec/09`). Their original papers were not
 opened by an agent, so they are not cited here.
@@ -47,13 +46,15 @@ opened by an agent, so they are not cited here.
   este 23 de febrero": https://www.eluniverso.com/noticias/ecuador/inundaciones-en-machala-y-desbordamientos-de-rios-paralizan-parte-de-el-oro-el-23-de-febrero-nota/
   (14 Nov). Río Buenavista overflow at the Buenavista-Pasaje road; the demo replay event, in the farm's catchment.
 - Teleamazonas, SNGR table to Monday 12 Oct 2026, 07:00: https://www.teleamazonas.com/actualidad/noticias/ecuador/seis-rios-esteros-desbordados-tres-provincias-lunes-12-octubre-130196/
-  (15 Nov). Río Chico and Río Caluguro, Santa Rosa; regional context, outside the catchment.
+  (15 Nov). SNGR cut-off 07:00 on 12 Oct 2026 listing the Río Chico and Río Caluguro as overflowed (Santa Rosa);
+  no overflow dates given; regional context, outside the catchment.
 - Extra, 26 Oct 2026: https://www.extra.ec/noticia/ecuador/oro-tendales-inunda-segunda-vez-desbordamiento-rio-chaguana-166024.html
   (15 Nov). Chaguana river overflows on 19 and 26 Oct 2026, Tendales, El Guabo; regional context.
 - Primicias, Alexander García, updated 1 Mar 2026, "Las inundaciones comprometen contención del Fusarium en El Oro":
   https://www.primicias.ec/economia/fusarium-inundaciones-contencion-hongo-eloro-lluvias-muro-contencion-quemado-116973/
-  (agronomist 14 Nov; technical-writer 15 Nov). Rain on 23-24 Feb 2026 overtopped part of a containment wall built
-  for Fusarium TR4, detected in December 2025 at a farm in El Quemado, Santa Rosa. Used in the project page only.
+  (agronomist 14 Nov; technical-writer 15 Nov). Producers say the rains of 23-24 Feb 2026 overtopped part of a
+  containment wall around a farm in El Quemado, Santa Rosa, where Fusarium TR4 was officially confirmed in December
+  2025; an Agrocalidad official quoted there says water can carry the fungus, especially in floods. Project page only.
 
 ## 5. Agronomy and context
 
@@ -76,5 +77,5 @@ opened by an agent, so they are not cited here.
 ## 6. Named in the SPEC but not opened, so not cited
 
 Kohler & Linsley 1951 (API k), Sentelhas et al. 2008 (leaf wetness), TEC Costa Rica, Atena and CORBANA PDFs
-(Sigatoka, heat units; P-004), APS Sigatoka lesson and Phytopathology 1992 (HTTP 403), Bebber 2019 (captcha), FAO
+(Sigatoka, heat units; P-004), Saaty 1990 AHP (UNVERIFIED: no URL recorded; only the tests of the unused `ahp.py` use it), APS Sigatoka lesson and Phytopathology 1992 (HTTP 403), Bebber 2019 (captcha), FAO
 banana page (404), Costa Rica MAG bulletin (404), FAO GAEZ (UNVERIFIED).
