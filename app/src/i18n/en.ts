@@ -42,6 +42,10 @@ export const en = {
   'common.dataFrom': 'Data from {time}',
   'common.source': 'Source: {source}',
   'common.retry': 'Try again',
+  'common.experimental': 'Experimental',
+  'zone.low': 'Low wetness zone',
+  'zone.mid': 'Middle wetness zone',
+  'zone.high': 'High wetness zone',
   'common.comingSoon': 'Coming in a later build block.',
 
   'status.offline': 'Offline, showing data from {time}',
@@ -125,7 +129,6 @@ export const en = {
   'lot.strategies': 'See strategies for this lot',
   'lot.side': 'Side indicators',
   'lot.sigatoka': 'Sigatoka weather',
-  'lot.cold': 'Cold stress',
   'lot.confidence': 'Confidence {n} of 3',
   'drainage.good': 'Good',
   'drainage.moderate': 'Moderate',

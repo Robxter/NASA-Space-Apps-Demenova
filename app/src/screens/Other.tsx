@@ -11,13 +11,14 @@ import { formatInstant } from '../time';
 import type { AlertEvent } from '../types/contracts';
 
 export function Alerts() {
-  const { status, demo, date, unitName } = useData();
+  const { status, demo, date, unitName, lotById } = useData();
   const { prefs, t } = usePrefs();
+  const hasLots = (demo?.farm?.lots.length ?? 0) > 0;
   const events: AlertEvent[] = [];
   if (demo && date) {
     for (const d of demo.days) {
       if (d > date) break;
-      events.push(...(demo.replay[d]?.events ?? []));
+      events.push(...(demo.replay[d]?.events ?? []).filter((e) => !hasLots || lotById(e.unit_id) !== null));
     }
   }
   events.sort((a, b) => Date.parse(b.at) - Date.parse(a.at));
@@ -38,8 +39,9 @@ export function Alerts() {
                   <ListRow
                     key={e.id}
                     leading={<LevelBadge level={e.to_level} variant="plain" size="sm" />}
-                    title={`${unitName(e.unit_id)} · ${t('alerts.change', { from: t(`level.${e.from_level}`), to: t(`level.${e.to_level}`) })}`}
+                    title={unitName(e.unit_id)}
                     subtitle={[
+                      t('alerts.change', { from: t(`level.${e.from_level}`), to: t(`level.${e.to_level}`) }),
                       formatInstant(e.at, prefs.units, prefs.language),
                       e.factors.map((f) => t(`factor.${f.name}`)).join(', '),
                     ]

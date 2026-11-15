@@ -222,20 +222,13 @@ export default function Lot({ id }: { id: string }) {
           </Card>
         ) : null}
 
-        {isAgronomist && alert && (alert.side.sigatoka || alert.side.cold) ? (
+        {/* Cold stress was removed (D-024); Sigatoka is experimental and labelled so. */}
+        {isAgronomist && alert?.side.sigatoka ? (
           <Card title={t('lot.side')}>
-            <div className="flex flex-wrap gap-4">
-              {alert.side.sigatoka ? (
-                <span className="flex items-center gap-2 text-callout">
-                  {t('lot.sigatoka')} <LevelBadge level={alert.side.sigatoka} size="sm" />
-                </span>
-              ) : null}
-              {alert.side.cold ? (
-                <span className="flex items-center gap-2 text-callout">
-                  {t('lot.cold')} <LevelBadge level={alert.side.cold} size="sm" />
-                </span>
-              ) : null}
-            </div>
+            <span className="flex flex-wrap items-center gap-2 text-callout text-ink">
+              {t('lot.sigatoka')} <LevelBadge level={alert.side.sigatoka} size="sm" />
+              <span className="rounded-full border border-dashed border-line-strong px-1.5 text-caption text-ink-2">{t('common.experimental')}</span>
+            </span>
           </Card>
         ) : null}
 

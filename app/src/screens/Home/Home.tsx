@@ -26,10 +26,10 @@ function GearLink() {
 }
 
 export default function Home() {
-  const { status, demo, day, unitName, date } = useData();
+  const { status, demo, day, unitName, date, lotUnits } = useData();
   const { prefs, t } = usePrefs();
   const farm = demo?.farm?.farm;
-  const units = day?.units ?? [];
+  const units = lotUnits;
   const updated = formatInstant(newestUpdate(units), prefs.units, prefs.language);
   const source = sourceLabel(resolveProvenance(day?.provenance, demo?.manifest ?? null));
   const banner = bannerUnit(units);

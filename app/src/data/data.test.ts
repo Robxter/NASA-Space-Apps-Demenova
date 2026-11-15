@@ -4,7 +4,7 @@ import { fixtureFarm, fixtureHistory, fixtureManifest, fixtureReplay } from './f
 import { memoryKV } from './idb';
 import { fromSpec, resolveOrigin } from './origin';
 import { bannerUnit, countByLevel, highestLevel, highestW, sortByW, topFactor } from './select';
-import { loadDemo } from './demo';
+import { initialIndex, loadDemo } from './demo';
 import { guards, loadJson, resolveProvenance, SnapshotError, sourceLabel, trimHistory } from './snapshots';
 import type { ReplayUnit } from '../types/contracts';
 
@@ -105,12 +105,22 @@ describe('loadDemo', () => {
   });
 });
 
+describe('initialIndex', () => {
+  const days = ['2026-02-22', '2026-02-23', '2026-02-24'];
+  it('opens on the deep-link day, else 23 Feb 2026, else the last day', () => {
+    expect(initialIndex(days, '2026-02-24')).toBe(2);
+    expect(initialIndex(days, null)).toBe(1);
+    expect(initialIndex(days, '2025-01-01')).toBe(1);
+    expect(initialIndex(['2026-03-01', '2026-03-02'], null)).toBe(1);
+  });
+});
+
 describe('provenance', () => {
   it('resolves manifest references and labels non-dataset records with their note', () => {
     const recs = resolveProvenance({ ref: 'manifest.json', ids: ['prov-app-test-fixture'] }, fixtureManifest);
     expect(recs).toHaveLength(1);
     expect(sourceLabel(recs)).toMatch(/^App test fixture/);
-    expect(sourceLabel([{ ...recs[0]!, dataset: 'GPM_3IMERGDE', provider: 'NASA GES DISC' }])).toBe('NASA GES DISC GPM_3IMERGDE');
+    expect(sourceLabel([{ ...recs[0]!, dataset: 'GPM_3IMERGDE', provider: 'NASA GES DISC' }])).toBe('GPM_3IMERGDE');
   });
 });
 

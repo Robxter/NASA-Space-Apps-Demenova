@@ -1,6 +1,6 @@
 // Demo data, replay clock, identity and connectivity in one React context. No state library.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { loadDemo, loadDevFixture, SnapshotError, type DemoData } from '../data/demo';
+import { initialIndex, loadDemo, loadDevFixture, SnapshotError, type DemoData } from '../data/demo';
 import { initIdentity, type Identity } from '../data/identity';
 import type { Lot, ReplayDay, ReplayUnit } from '../types/contracts';
 import { usePrefs } from './prefs';
@@ -24,15 +24,17 @@ interface DataValue {
   identity: Identity;
   lotById: (id: string) => Lot | null;
   unitById: (id: string) => ReplayUnit | null;
-  /** Display name of a unit: lot name, else the unit id. */
+  /** Display name of a unit: lot name, zone tercile, else the unit id. */
   unitName: (id: string) => string;
+  /** The day's units that are lots of the farm (all units when the farm has no lots). */
+  lotUnits: ReplayUnit[];
   retry: () => void;
 }
 
 const DataContext = createContext<DataValue | null>(null);
 
 export function DataProvider({ initialDate, children }: { initialDate: string | null; children: ReactNode }) {
-  const { prefs } = usePrefs();
+  const { prefs, t } = usePrefs();
   const [status, setStatus] = useState<LoadStatus>('loading');
   const [demo, setDemo] = useState<DemoData | null>(null);
   const [index, setIndexRaw] = useState(0);
@@ -48,8 +50,7 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
       .then((d) => {
         if (!alive) return;
         setDemo(d);
-        const at = initialDate ? d.days.indexOf(initialDate) : -1;
-        setIndexRaw(at >= 0 ? at : 0);
+        setIndexRaw(initialIndex(d.days, initialDate));
         setStatus('ready');
       })
       .catch(async (e: unknown) => {
@@ -57,8 +58,7 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
         if (!alive) return;
         if (fixture) {
           setDemo(fixture);
-          const at = initialDate ? fixture.days.indexOf(initialDate) : -1;
-          setIndexRaw(at >= 0 ? at : 0);
+          setIndexRaw(initialIndex(fixture.days, initialDate));
           setStatus('ready');
           return;
         }
@@ -136,10 +136,16 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
       identity,
       lotById: (id) => lots.get(id) ?? null,
       unitById: (id) => units.get(id) ?? null,
-      unitName: (id) => lots.get(id)?.name ?? id,
+      unitName: (id) => {
+        const lot = lots.get(id);
+        if (lot) return lot.name;
+        const zone = /^zone_.+_(low|mid|high)$/.exec(id);
+        return zone ? t(`zone.${zone[1] as 'low' | 'mid' | 'high'}`) : id;
+      },
+      lotUnits: lots.size ? (day?.units ?? []).filter((u) => lots.has(u.unit_id)) : (day?.units ?? []),
       retry: () => setAttempt((a) => a + 1),
     };
-  }, [status, demo, date, day, index, setIndex, playing, togglePlay, online, identity]);
+  }, [status, demo, date, day, index, setIndex, playing, togglePlay, online, identity, t]);
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;
 }

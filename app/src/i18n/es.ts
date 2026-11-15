@@ -44,6 +44,10 @@ export const es: Record<MessageKey, string> = {
   'common.dataFrom': 'Datos del {time}',
   'common.source': 'Fuente: {source}',
   'common.retry': 'Reintentar',
+  'common.experimental': 'Experimental',
+  'zone.low': 'Zona de humedad baja',
+  'zone.mid': 'Zona de humedad media',
+  'zone.high': 'Zona de humedad alta',
   'common.comingSoon': 'Llega en un bloque posterior.',
 
   'status.offline': 'Sin conexión, datos del {time}',
@@ -127,7 +131,6 @@ export const es: Record<MessageKey, string> = {
   'lot.strategies': 'Ver estrategias para este lote',
   'lot.side': 'Indicadores complementarios',
   'lot.sigatoka': 'Clima para Sigatoka',
-  'lot.cold': 'Estrés por frío',
   'lot.confidence': 'Confianza {n} de 3',
   'drainage.good': 'Bueno',
   'drainage.moderate': 'Moderado',

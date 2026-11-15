@@ -109,15 +109,17 @@ export default function MapView() {
       if (level) prevLevels.current.set(lot.id, level);
       poly.unbindTooltip();
       let label: string | null = null;
-      if (layer === 'terrain') label = `${lot.name}: ${lot.twi_tercile ? t(`tercile.${lot.twi_tercile}`) : t('common.noData')}`;
+      // Short labels keep small lots visible; the lot name is in the sheet and the tooltip's accessible text.
+      if (layer === 'terrain') label = lot.twi_tercile ? t(`tercile.${lot.twi_tercile}`) : t('common.noData');
       if (layer === 'rain') {
         const q = rainOf(lot.id);
         const origin = resolveOrigin(unit?.features, 'rain_local_mm');
-        label = `${lot.name}: ${q?.text && origin ? `${q.text} ${q.unit} · ${t(`origin.${origin}`)}` : t('common.noData')}`;
+        label = q?.text && origin ? `${q.text} ${q.unit} · ${t(`origin.${origin}`)}` : t('common.noData');
       }
-      if (layer === 'level') label = `${lot.name}: ${level ? t(`level.${level}`) : t('common.noData')}`;
+      if (layer === 'level') label = level ? t(`level.${level}`) : t('common.noData');
       // Permanent labels on every layer: on the level layer the word travels with the colour (CLAUDE.md §2).
-      if (label) poly.bindTooltip(label, { permanent: true, direction: 'center' });
+      if (label) poly.bindTooltip(label, { permanent: true, direction: 'center', opacity: 0.85 });
+      el.setAttribute('aria-label', `${lot.name}: ${label ?? ''}`);
     }
   }, [lots, day, layer, prefs.units, prefs.language, t, unitById]);
 

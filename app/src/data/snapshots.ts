@@ -123,9 +123,9 @@ export function provenanceByIds(ids: readonly string[], manifest: AppManifest | 
   return (manifest?.provenance ?? []).filter((p) => set.has(p.id));
 }
 
-/** Short source line: dataset names (with provider); for non-dataset records, the record's own note, shortened. */
+/** Short source line: dataset names; for non-dataset records, the record's own note, shortened. */
 export function sourceLabel(records: Provenance[]): string | null {
-  const names = [...new Set(records.map((p) => (p.dataset ? `${p.provider ? `${p.provider} ` : ''}${p.dataset}` : null)).filter(Boolean))];
+  const names = [...new Set(records.map((p) => p.dataset).filter(Boolean))];
   if (names.length) return names.join(', ');
   const note = records.find((p) => p.notes)?.notes;
   return note ? (note.length > 100 ? `${note.slice(0, 99)}…` : note) : null;

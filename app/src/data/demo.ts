@@ -12,8 +12,19 @@ import {
   type LoaderDeps,
 } from './snapshots';
 
-/** Used only when the manifest does not state a window (SPEC: committed 15 Feb to 5 Mar 2026 snapshots). */
-export const DEFAULT_REPLAY_WINDOW = { start: '2026-02-15', end: '2026-03-05' } as const;
+/** Used only when the manifest does not state a window (D-029: 20 Jan to 5 Mar 2026). */
+export const DEFAULT_REPLAY_WINDOW = { start: '2026-01-20', end: '2026-03-05' } as const;
+/** The replay opens on the day after the demo flood (Buenavista overflow, 22-23 Feb 2026). */
+export const DEFAULT_REPLAY_DAY = '2026-02-23';
+
+/** Index of the opening day: the deep-link day, else DEFAULT_REPLAY_DAY, else the last day of the window. */
+export function initialIndex(days: readonly string[], wanted: string | null): number {
+  for (const d of [wanted, DEFAULT_REPLAY_DAY]) {
+    const i = d ? days.indexOf(d) : -1;
+    if (i >= 0) return i;
+  }
+  return Math.max(days.length - 1, 0);
+}
 
 export interface DemoData {
   manifest: AppManifest;
