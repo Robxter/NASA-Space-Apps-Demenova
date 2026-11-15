@@ -158,11 +158,21 @@ the scrubber thumb on a real iPhone (iOS drags only from the thumb; checked here
   dark ink-2/ink-3 text on the navy surface reads clearly; the "colour" is the orbit-blue surface, not a hue.
 - R-11 P3 FE MapView label placement: at 1440 the map now opens at a tighter zoom, and the Warning label of the lot
   below Lote 1 covers part of Lote 1's lower half (labels are checked against labels only); include lot bounds in the
-  collision test, or offset that label. Not a blocker: the shape keeps its colour, and the label keeps its word.
+  collision test, or offset that label. Not a blocker: the shape keeps its colour, and the label keeps its word. Status: done 2231e63 (T-070): a label picks the side (above/below) that does not cover a neighbouring lot; only label-on-label overlap hides a label (FE).
 
 ## Learn-taste rules approved by Roberto ("APPROVE ALL", 2026-11-15)
 
 Rules 1-4 and the em-dash ruling are in DESIGN.md under "Approved by Roberto". Check C1 is
 `app/src/styles/motion.test.ts` (PD, done: 2 tests, 0 flags).
 - CL-32 P2 FE Check C2: add `app/src/i18n/claims.test.ts`: no value in `en.ts` or `es.ts` matches
-  `/predic|predij|forecast|pron[oó]stic|anticip/i` (DESIGN.md rule: never claim the app predicted the Feb 2026 flood) - check: Vitest green; it flags 0 strings today.
+  `/predic|predij|forecast|pron[oó]stic|anticip/i` (DESIGN.md rule: never claim the app predicted the Feb 2026 flood) - check: Vitest green; it flags 0 strings today. Status: done ee721cf, 0 strings flagged (FE).
+
+## Last pass (frontend-engineer, adapt / onboard / distill, 2231e63)
+
+- adapt: map full width at tablet and desktop (controls and dock stay on the 736 px column); Home two columns from
+  1024 px by CSS grid (status and check beside the lot list, DOM order unchanged); Setup map 26 rem tall from md.
+  Lot detail stays one reading column. Proposal, not built: Lot detail two columns at lg (Why + Today beside History).
+- onboard: Setup first run opens on the demo region (it opened on the whole continent) and says why a pin is enough;
+  empty Alerts offers "Play the replay"; a missing replay day offers "Show the next day with data".
+- distill: farmer-mode Home shows the alert, its check, then the lots; the status card shows only when there is no alert.
+

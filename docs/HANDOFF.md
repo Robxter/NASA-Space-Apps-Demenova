@@ -2,6 +2,12 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~14:35 - frontend-engineer to main session: last pass (adapt, onboard, distill), Gate green
+State: block/3-polish, app last green 2231e63 (full Gate at 0361afe: Vitest 84, 96.4 kB gzip, e2e 198 passed +
+@perf 2 alone; the one parallel-run perf failure is the known artefact). Not pushed. Commits: ee721cf (CL-32 claims
+test, sw denylist /about/), 2231e63 (adapt, onboard, distill, T-070/R-11). Proposal left in CHANGE_LIST: Lot detail
+two columns at lg. Roberto: iPad Air M2 portrait/landscape on the real device (emulated here only).
+
 ## 2026-11-15 ~10:35 - product-designer to main session: learn-taste rules approved by Roberto
 Roberto answered "APPROVE ALL" to `design/upgrade/taste-rules-proposed.md`. Written: DESIGN.md rules 1-4 and the
 em-dash ruling (keep his D-025 wording); check C1 `app/src/styles/motion.test.ts` (Vitest 81 passed).
