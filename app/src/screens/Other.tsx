@@ -2,7 +2,7 @@
 // and Settings (language, units, mode, storage, theme, device identity).
 import { Button, Card, EmptyState, List, ListRow } from '../components/ui';
 import { DataValue } from '../components/DataValue';
-import { LevelBadge, LoadGate, ReplayDock, ScreenHeader, Segmented, StatusNotices } from '../components/shell';
+import { LoadGate, ReplayDock, ScreenHeader, Segmented, StatusNotices } from '../components/shell';
 import { fromSpec } from '../data/origin';
 import { navigate } from '../state/nav';
 import { useData } from '../state/data';
@@ -40,7 +40,9 @@ export function Alerts() {
                 {events.map((e) => (
                   <ListRow
                     key={e.id}
-                    leading={<LevelBadge level={e.to_level} variant="plain" size="sm" />}
+                    level={e.to_level}
+                    levelLabel={t(`level.${e.to_level}`)}
+                    lang={prefs.language}
                     title={unitName(e.unit_id)}
                     subtitle={
                       // Wraps instead of truncating: the time must never be cut off (break-ui: never truncate dates).
@@ -56,7 +58,7 @@ export function Alerts() {
                         ) : null}
                       </>
                     }
-                    trailing={<DataValue kind="index" si={e.w} origin={fromSpec(e.origin, 'w')} at={e.at} />}
+                    trailing={<DataValue kind="index" si={e.w} origin={fromSpec(e.origin, 'w')} at={e.at} stacked />}
                     onPress={() => navigate({ name: 'lot', id: e.unit_id })}
                   />
                 ))}

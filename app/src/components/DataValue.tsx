@@ -27,6 +27,8 @@ export interface DataValueProps {
   missingReason?: string;
   /** Hide the origin badge when the surrounding group already shows the same origin. */
   hideBadge?: boolean;
+  /** Badge under the value, right-aligned: a narrow trailing column in list rows (CL-02). */
+  stacked?: boolean;
   className?: string;
 }
 
@@ -54,6 +56,7 @@ export function DataValue({
   showMeta = false,
   missingReason,
   hideBadge = false,
+  stacked = false,
   className = '',
 }: DataValueProps) {
   const { prefs, t } = usePrefs();
@@ -66,7 +69,7 @@ export function DataValue({
   // Full stops in tooltips and meta (copy-proposals "Separators"); QA's origin check reads the words, not the dots.
   const tooltip = [name, origin ? t(`origin.${origin}`) : t('origin.unknown'), ...metaParts].filter(Boolean).join('. ');
   return (
-    <span className={`inline-flex items-end gap-1.5 ${className}`} title={tooltip}>
+    <span className={`inline-flex ${stacked ? 'flex-col items-end gap-0.5' : 'items-end gap-1.5'} ${className}`} title={tooltip}>
       <Value
         value={unknownOrigin ? null : q.text}
         unit={q.unit || undefined}

@@ -126,7 +126,10 @@ export default function Home() {
                 {sortByW(units).map((u) => (
                   <ListRow
                     key={u.unit_id}
-                    leading={<LevelBadge level={u.alert.level} variant="plain" size="sm" />}
+                    // CL-01: core in the leading slot, level word opening the subtitle; the name shows in full.
+                    level={u.alert.level}
+                    levelLabel={t(levelKey(u.alert.level))}
+                    lang={prefs.language}
                     title={unitName(u.unit_id)}
                     subtitle={reasonOf(u)}
                     trailing={
@@ -137,6 +140,7 @@ export default function Home() {
                           origin={fromSpec(u.alert.origin, 'w')}
                           source={source}
                           at={u.alert.updated_at}
+                          stacked
                         />
                       ) : undefined
                     }
