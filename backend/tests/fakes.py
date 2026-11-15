@@ -42,6 +42,9 @@ def _norm(value: Any) -> Any:
 
 
 def _matches(row: dict[str, Any], col: str, expr: str) -> bool:
+    if col == "or":  # or=(a.is.false,b.is.false)
+        terms = [t.split(".", 1) for t in expr.strip("()").split(",")]
+        return any(_matches(row, c, e) for c, e in terms)
     op, _, arg = expr.partition(".")
     value = row.get(col)
     if op == "eq":
@@ -57,6 +60,7 @@ class FakePostgrest:
     def __init__(self) -> None:
         self.tables: dict[str, list[dict[str, Any]]] = {
             "farms": [], "lots": [], "alert_states": [], "alert_events": [], "email_log": [],
+            "telegram_subscribers": [],
         }
         self.headers_seen: list[httpx.Headers] = []
         self.fail_tables: set[str] = set()
@@ -66,7 +70,7 @@ class FakePostgrest:
     def _rows(self, table: str, params: list[tuple[str, str]]) -> list[dict[str, Any]]:
         rows = self.tables[table]
         for col, expr in params:
-            if col in {"select", "order", "limit"}:
+            if col in {"select", "order", "limit", "on_conflict"}:
                 continue
             rows = [r for r in rows if _matches(r, col, expr)]
         return rows
@@ -92,11 +96,23 @@ class FakePostgrest:
             return httpx.Response(200, json=rows)
         if request.method == "POST":
             row = json.loads(request.content)
+            opts = dict(params)
+            if "on_conflict" in opts and "merge-duplicates" in request.headers.get("prefer", ""):
+                keys = opts["on_conflict"].split(",")
+                for existing in self.tables[table]:
+                    if all(existing.get(k) == row.get(k) for k in keys):
+                        existing.update(row)
+                        return httpx.Response(201)
+            elif table == "telegram_subscribers":
+                raise AssertionError("telegram_subscribers must be upserted")
             self.tables[table].append(dict(row, created_at=dt.datetime.now(dt.UTC).isoformat()))
             return httpx.Response(201)
         if request.method == "PATCH":
-            for row in self._rows(table, params):
+            changed = list(self._rows(table, params))
+            for row in changed:
                 row.update(json.loads(request.content))
+            if "return=representation" in request.headers.get("prefer", ""):
+                return httpx.Response(200, json=[{"id": r.get("id")} for r in changed])
             return httpx.Response(204)
         if request.method == "DELETE":
             doomed = {id(r) for r in self._rows(table, params)}

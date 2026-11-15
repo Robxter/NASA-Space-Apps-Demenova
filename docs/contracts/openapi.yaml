@@ -4,7 +4,7 @@
 openapi: 3.1.0
 info:
   title: Demenova backend
-  version: 0.2.0
+  version: 0.3.0
   summary: Background work only - protected pipeline re-runs, Severe email via Resend, Telegram bot webhook.
   description: |
     FastAPI on Render (ADR-001). Free web services sleep when idle, so no user-facing screen may call this API.
@@ -14,6 +14,9 @@ info:
     the Severe email; unset means the email has no link). Never log a secret, a token or a full email address
     (email_log stores a hash). Times are UTC ISO 8601 (ADR-002).
     0.2.0 (D-030, P-013): 503 on /run; APP_BASE_URL named.
+    0.3.0 (block 4, api-engineer, class B pending lead-architect): public POST /alerts/test-email (optional app
+    action: the screen must work, and say so, when the sleeping service answers slowly or not at all); env
+    HCAPTCHA_SECRET (secret) and HCAPTCHA_SITEKEY (optional, public).
 servers:
   - url: /
     description: Relative; the Render URL is recorded by devops-engineer in HANDOFF.md, not here.
@@ -104,6 +107,66 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "503":
           description: Email is not configured (missing environment variable). The body names no secret.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+
+  /alerts/test-email:
+    post:
+      tags: [alerts]
+      operationId: requestTestEmail
+      summary: Public - a user asks for a TEST Severe email (hCaptcha + rate limits).
+      description: |
+        Called from the app (CORS only for https://demenova-app.onrender.com, http://127.0.0.1:4173 and
+        http://localhost:5173; POST and OPTIONS on this path only). The hCaptcha token is verified server side
+        (https://api.hcaptcha.com/siteverify, form-encoded, with remoteip and, if set, HCAPTCHA_SITEKEY).
+        Demo delivery rule (product owner): Resend's test sender reaches only the account owner, so the email is sent
+        only when `email` equals ALERT_EMAIL_TO (case-insensitive); any other address returns `limited_demo` and
+        Resend is not called. Content = the TEST email of /email/test (latest demo Severe event; missing values stay
+        missing); `lang` puts that language first (both languages are always present). Never writes email_log; the
+        address is never stored or logged. Rate limits (per process): 10 attempts per hour per client IP (every
+        attempt), 3 per hour per address (attempts that passed the captcha).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestEmailRequest"
+      responses:
+        "200":
+          description: Captcha passed. `sent` = delivered to the owner's inbox; `limited_demo` = not sent (demo rule).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TestEmailResult"
+        "400":
+          description: The captcha check failed (the app shows a new challenge).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "422":
+          description: Body does not match the schema, or the email address is not valid.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Rate limit reached (per network or per address); try again in an hour.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "502":
+          description: The owner's address matched but Resend did not accept the message.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "503":
+          description: Not configured (HCAPTCHA_SECRET or Resend missing) or the captcha service is unavailable.
           content:
             application/json:
               schema:
@@ -218,6 +281,33 @@ components:
         provider_id:
           description: Resend message id, null when the provider rejected the call.
           type: [string, "null"]
+
+    TestEmailRequest:
+      type: object
+      additionalProperties: false
+      required: [email, captcha_token, lang]
+      properties:
+        email:
+          description: Address typed by the user. Validated, compared with ALERT_EMAIL_TO, never stored or logged.
+          type: string
+          maxLength: 254
+        captcha_token:
+          description: hCaptcha response token from the widget (single use).
+          type: string
+          minLength: 1
+          maxLength: 8192
+        lang:
+          type: string
+          enum: [en, es]
+
+    TestEmailResult:
+      type: object
+      additionalProperties: false
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [sent, limited_demo]
 
     TelegramUpdate:
       description: Telegram Update object, defined by Telegram (https://core.telegram.org/bots/api#update); not restated here.

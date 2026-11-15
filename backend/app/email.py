@@ -120,20 +120,16 @@ def unit_kind(unit_id: str) -> tuple[str, str]:
     return "Finca", "Farm"
 
 
-def render(mail: SevereEmail) -> tuple[str, str, str]:
-    """Return (subject, html, text)."""
+def alert_lines(mail: SevereEmail) -> dict[str, tuple[list[str], list[str]]]:
+    """Per language: (fact lines, notes). Shared by the email and the Telegram message. First line = level."""
     unit_name, farm_name = clean_name(mail.unit_name), clean_name(mail.farm_name)
     unit_id = clean_name(mail.unit_id)
-    prefix = ("[PRUEBA/TEST] " if mail.test else "") + ("[DEMO] " if mail.is_demo else "")
-    subject = _one_line(f"{prefix}Riesgo SEVERO / SEVERE risk: {unit_name} ({farm_name})")[:200]
-
     w_txt = f"{mail.w:.2f}" if mail.w is not None else None
     w_es, w_en = (w_txt, w_txt) if w_txt else MISSING
     f_es, f_en = _factor_lines(mail.factors)
     ep_es, ep_en = format_time(mail.episode_start)
     up_es, up_en = format_time(mail.updated_at)
     rain_es, rain_en = format_time(mail.newest_rain_data_at)
-
     kind_es, kind_en = unit_kind(mail.unit_id)
     lines_es = [
         "NIVEL: ROJO — SEVERO",
@@ -165,10 +161,23 @@ def render(mail: SevereEmail) -> tuple[str, str, str]:
         notes_es.insert(0, "DEMO: finca y lotes sintéticos de demostración.")
         notes_en.insert(0, "DEMO: synthetic demonstration farm and lots.")
     if mail.test:
-        notes_es.insert(0, "PRUEBA: correo de prueba enviado por un administrador; no es un episodio nuevo.")
-        notes_en.insert(0, "TEST: test email sent by an administrator; not a new episode.")
+        notes_es.insert(0, "PRUEBA: alerta de prueba con el último episodio Severo disponible; no es un episodio nuevo.")
+        notes_en.insert(0, "TEST: test alert showing the latest Severe episode available; not a new episode.")
+    return {"es": (lines_es, notes_es), "en": (lines_en, notes_en)}
 
-    text_parts = [*lines_es, *notes_es, "", *lines_en, *notes_en]
+
+def render(mail: SevereEmail, first_lang: str = "es") -> tuple[str, str, str]:
+    """Return (subject, html, text). Both languages always; `first_lang` ("es" or "en") goes first."""
+    unit_name, farm_name = clean_name(mail.unit_name), clean_name(mail.farm_name)
+    prefix = ("[PRUEBA/TEST] " if mail.test else "") + ("[DEMO] " if mail.is_demo else "")
+    subject = _one_line(f"{prefix}Riesgo SEVERO / SEVERE risk: {unit_name} ({farm_name})")[:200]
+    parts = alert_lines(mail)
+    order = ["en", "es"] if first_lang == "en" else ["es", "en"]
+
+    text_parts: list[str] = []
+    for i, lang in enumerate(order):
+        lines, notes = parts[lang]
+        text_parts += ([""] if i else []) + lines + notes
     if mail.link:
         text_parts += ["", f"Ver lote / Open lot: {mail.link}"]
     text = "\n".join(text_parts)
@@ -179,7 +188,8 @@ def render(mail: SevereEmail) -> tuple[str, str, str]:
         "&#9679; ROJO — SEVERO / RED — SEVERE</p>"
     )
 
-    def block(lines: list[str], notes: list[str], lang: str) -> str:
+    def block(lang: str) -> str:
+        lines, notes = parts[lang]
         items = "".join(f"<li>{e(line)}</li>" for line in lines[1:])
         small = "".join(f'<p style="color:#444444;font-size:13px">{e(n)}</p>' for n in notes)
         return f'<div lang="{lang}"><ul>{items}</ul>{small}</div>'
@@ -187,7 +197,7 @@ def render(mail: SevereEmail) -> tuple[str, str, str]:
     link_html = (
         f'<p><a href="{e(mail.link, quote=True)}">Ver lote / Open lot</a></p>' if mail.link else ""
     )
-    body = f"{banner}{block(lines_es, notes_es, 'es')}<hr>{block(lines_en, notes_en, 'en')}{link_html}"
+    body = f"{banner}{block(order[0])}<hr>{block(order[1])}{link_html}"
     return subject, f"<!doctype html><html><body>{body}</body></html>", text
 
 
@@ -197,8 +207,9 @@ class ResendMailer:
         self._from = from_header
         self._client = client or httpx.Client(timeout=10.0)
 
-    def send(self, to: str, mail: SevereEmail, idempotency_key: str | None = None) -> SendResult:
-        subject, html_body, text = render(mail)
+    def send(self, to: str, mail: SevereEmail, idempotency_key: str | None = None,
+             first_lang: str = "es") -> SendResult:
+        subject, html_body, text = render(mail, first_lang)
         headers = {"Authorization": f"Bearer {self._api_key}", "User-Agent": "demenova-backend/0.1"}
         if idempotency_key:
             headers["Idempotency-Key"] = idempotency_key[:256]

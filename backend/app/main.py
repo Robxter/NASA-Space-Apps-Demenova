@@ -5,19 +5,23 @@ Run from the repository root: `uv run uvicorn backend.app.main:app`.
 
 import datetime as dt
 import hmac
+import ipaddress
+import re
 import logging
 import threading
 import time
-from typing import Annotated, Any
+from typing import Annotated, Any, Literal
 
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel, ConfigDict
+from fastapi.responses import JSONResponse, Response
+from pydantic import BaseModel, ConfigDict, Field
 
 from backend.app.alerts import build_email, latest_demo_severe, publish_severe_alerts, quiet_http_logs
-from backend.app.email import ResendMailer, SevereEmail
+from backend.app.captcha import CaptchaUnavailable, HCaptchaVerifier
+from backend.app.email import ResendMailer, SevereEmail, hash_recipient
 from backend.app.ids import new_ulid
+from backend.app.ratelimit import SlidingWindowLimiter
 from backend.app.settings import Settings, load_settings
 from backend.app.supabase import SupabaseError, SupabaseRest
 from pipeline.common.models import EmailStatus, FarmId
@@ -51,7 +55,43 @@ class _Throttle:
 
 email_test_throttle = _Throttle(EMAIL_TEST_MIN_INTERVAL_S)
 
-app = FastAPI(title="Demenova backend", version="0.1.0", docs_url=None, redoc_url=None, openapi_url=None)
+# Public /alerts/test-email (block 4): in-process limits, counted per client IP (every attempt) and per address hash
+# (each attempt that passed the captcha). The address itself is never stored or logged.
+TEST_EMAIL_PER_IP_PER_HOUR = 10
+TEST_EMAIL_PER_ADDRESS_PER_HOUR = 3
+test_email_ip_limiter = SlidingWindowLimiter(TEST_EMAIL_PER_IP_PER_HOUR, 3600.0)
+test_email_address_limiter = SlidingWindowLimiter(TEST_EMAIL_PER_ADDRESS_PER_HOUR, 3600.0)
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")  # same rule as EmailAddress in pipeline/common/models.py
+
+# CORS only for the public path, only for these origins (no wildcard).
+CORS_PATH = "/alerts/test-email"
+CORS_ORIGINS = frozenset({
+    "https://demenova-app.onrender.com",
+    "http://127.0.0.1:4173",
+    "http://localhost:5173",
+})
+
+app = FastAPI(title="Demenova backend", version="0.3.0", docs_url=None, redoc_url=None, openapi_url=None)
+
+
+@app.middleware("http")
+async def scoped_cors(request: Request, call_next: Any) -> Response:
+    if request.url.path != CORS_PATH:
+        return await call_next(request)
+    origin = request.headers.get("origin")
+    allowed = origin in CORS_ORIGINS
+    if request.method == "OPTIONS":
+        if not allowed:
+            return Response(status_code=403)
+        return Response(status_code=204, headers={
+            "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Max-Age": "600", "Vary": "Origin",
+        })
+    response = await call_next(request)
+    if allowed:
+        response.headers["Access-Control-Allow-Origin"] = origin  # type: ignore[assignment]
+        response.headers["Vary"] = "Origin"
+    return response
 
 
 class ApiError(Exception):
@@ -89,6 +129,22 @@ def get_mailer(settings: Annotated[Settings, Depends(get_settings)]) -> ResendMa
     return ResendMailer(settings.resend_api_key, settings.from_header)
 
 
+def get_captcha(settings: Annotated[Settings, Depends(get_settings)]) -> HCaptchaVerifier | None:
+    if settings.hcaptcha_secret is None:
+        return None
+    return HCaptchaVerifier(settings.hcaptcha_secret, settings.hcaptcha_sitekey)
+
+
+def client_ip(request: Request) -> str:
+    """First X-Forwarded-For entry (Render's proxy adds it), else the socket peer. Only used for rate limits."""
+    forwarded = request.headers.get("x-forwarded-for", "").split(",")[0].strip()
+    candidate = forwarded or (request.client.host if request.client else "")
+    try:
+        return str(ipaddress.ip_address(candidate))
+    except ValueError:
+        return "unknown"
+
+
 def require_admin(
     settings: Annotated[Settings, Depends(get_settings)],
     x_admin_token: Annotated[str | None, Header()] = None,
@@ -123,6 +179,17 @@ class RunAccepted(BaseModel):
 class EmailTestResult(BaseModel):
     status: EmailStatus
     provider_id: str | None
+
+
+class AlertTestEmailRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    email: str = Field(max_length=254)
+    captcha_token: str = Field(min_length=1, max_length=8192)
+    lang: Literal["en", "es"]
+
+
+class AlertTestEmailResult(BaseModel):
+    status: Literal["sent", "limited_demo"]
 
 
 # ----------------------------------------------------------------------------------------------- routes
@@ -191,6 +258,12 @@ def email_test(
         raise ApiError(503, "Email is not configured.")
     if not email_test_throttle.allow():
         raise ApiError(429, "Too many test emails; wait a minute.")
+    result = mailer.send(settings.alert_email_to, build_test_mail(db, settings))
+    return {"status": result.status, "provider_id": result.provider_id}
+
+
+def build_test_mail(db: SupabaseRest | None, settings: Settings) -> SevereEmail:
+    """TEST email from the demo farm's latest real Severe transition; every value missing when there is none."""
     mail = SevereEmail(unit_id="-", unit_name="sin dato / missing", farm_name="sin dato / missing",
                        is_demo=False, w=None, test=True)
     if db is not None:
@@ -200,9 +273,56 @@ def email_test(
                 event, state, farm = found
                 mail = build_email(db, settings, event, state, farm, test=True)
         except Exception as exc:  # noqa: BLE001 - a broken row must not block the delivery test
-            log.warning("email test: no Severe event used (%s)", type(exc).__name__)
-    result = mailer.send(settings.alert_email_to, mail)
-    return {"status": result.status, "provider_id": result.provider_id}
+            log.warning("test email: no Severe event used (%s)", type(exc).__name__)
+    return mail
+
+
+@app.post("/alerts/test-email", response_model=AlertTestEmailResult)
+def alerts_test_email(
+    body: AlertTestEmailRequest,
+    request: Request,
+    settings: Annotated[Settings, Depends(get_settings)],
+    db: Annotated[SupabaseRest | None, Depends(get_db)],
+    mailer: Annotated[ResendMailer | None, Depends(get_mailer)],
+    captcha: Annotated[HCaptchaVerifier | None, Depends(get_captcha)],
+) -> dict[str, str]:
+    """Public: anyone may ask for a TEST Severe email from the app (hCaptcha + rate limits).
+
+    Demo delivery rule (product owner, block 4): Resend's test sender reaches only the account owner, so the email
+    is sent only when the address equals ALERT_EMAIL_TO (case-insensitive); any other address gets
+    `limited_demo` and Resend is not called. Never writes email_log; never stores or logs the address.
+    """
+    if captcha is None:
+        raise ApiError(503, "Test alerts are not configured.")
+    address = body.email.strip()
+    if not EMAIL_RE.match(address):
+        raise ApiError(422, "Enter a valid email address.")
+    ip = client_ip(request)
+    if not test_email_ip_limiter.allowed(ip):
+        raise ApiError(429, "Too many test alerts from this network. Try again in an hour.")
+    test_email_ip_limiter.hit(ip)
+    address_key = hash_recipient(address)
+    if not test_email_address_limiter.allowed(address_key):
+        raise ApiError(429, "Too many test alerts for this address. Try again in an hour.")
+    try:
+        human = captcha.verify(body.captcha_token, None if ip == "unknown" else ip)
+    except CaptchaUnavailable:
+        raise ApiError(503, "The captcha check is unavailable. Try again later.") from None
+    if not human:
+        raise ApiError(400, "The captcha check failed. Please try again.")
+    test_email_address_limiter.hit(address_key)
+
+    owner = settings.alert_email_to
+    if owner is None or address.lower() != owner.strip().lower():
+        log.info("test email: limited_demo")
+        return {"status": "limited_demo"}
+    if mailer is None:
+        raise ApiError(503, "Email is not configured.")
+    result = mailer.send(owner, build_test_mail(db, settings), first_lang=body.lang)
+    if result.status != EmailStatus.sent:
+        raise ApiError(502, "The email provider did not accept the message. Try again later.")
+    log.info("test email: sent to the owner inbox")
+    return {"status": "sent"}
 
 
 @app.post("/telegram/webhook", status_code=501)

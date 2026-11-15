@@ -53,5 +53,18 @@ class SupabaseRest:
     def update(self, table: str, filters: dict[str, str], values: dict[str, Any]) -> None:
         self._call("PATCH", table, params=filters, json=values, prefer="return=minimal")
 
+    def update_returning(self, table: str, filters: dict[str, str], values: dict[str, Any],
+                         select: str = "id") -> list[dict[str, Any]]:
+        """PATCH and return the rows it changed: a conditional update is an atomic claim (one UPDATE ... WHERE)."""
+        rows = self._call("PATCH", table, params={**filters, "select": select}, json=values,
+                          prefer="return=representation")
+        if not isinstance(rows, list):
+            raise SupabaseError(f"PATCH {table}: expected a list")
+        return rows
+
+    def upsert(self, table: str, row: dict[str, Any], on_conflict: str) -> None:
+        self._call("POST", table, params={"on_conflict": on_conflict}, json=row,
+                   prefer="resolution=merge-duplicates,return=minimal")
+
     def delete(self, table: str, filters: dict[str, str]) -> None:
         self._call("DELETE", table, params=filters, prefer="return=minimal")
