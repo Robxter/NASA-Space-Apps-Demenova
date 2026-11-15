@@ -2,6 +2,11 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~11:05 - product-designer to main session: stretch About page cut by plan
+Taste gate: OPEN 3 after 3 rounds (split-pair 1440, section-gaps 390, hero-maxchars 390); page removed in c22fd70,
+kept in history at fc3c12e. No CSP or devops change was needed (0 violations under the site CSP). For frontend-engineer
+and QA: the `/about/` service-worker exclusions and the `/about/` line in the last-pass spec now point at nothing.
+Report: docs/reports/product-designer/2026-11-15-1105.md.
 ## 2026-11-15 ~14:35 - frontend-engineer to main session: last pass (adapt, onboard, distill), Gate green
 State: block/3-polish, app last green 2231e63 (full Gate at 0361afe: Vitest 84, 96.4 kB gzip, e2e 198 passed +
 @perf 2 alone; the one parallel-run perf failure is the known artefact). Not pushed. Commits: ee721cf (CL-32 claims
