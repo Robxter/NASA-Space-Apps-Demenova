@@ -1,6 +1,6 @@
 // Lot detail (SPEC 18): level and W, why (factors with share and timestamps), today's features, history charts
 // (1W / 1M / 3M, lazy uPlot), lot facts, strategies button. Displays engine output only.
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Card, EmptyState, List, ListRow, MissingData } from '../../components/ui';
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ScreenHeader, Segmented, StatusNotices } from '../../components/shell';
@@ -136,6 +136,7 @@ export default function Lot({ id }: { id: string }) {
   const isAgronomist = prefs.mode === 'agronomist';
   const when = (iso: string | null | undefined) => formatInstant(iso, prefs.units, prefs.language);
   const [reliabilityOpen, setReliabilityOpen] = useState(false);
+  const reliabilityButton = useRef<HTMLDivElement>(null);
 
   if (status !== 'ready') {
     return (
@@ -161,7 +162,8 @@ export default function Lot({ id }: { id: string }) {
     <div className="pb-6">
       <ScreenHeader title={unitName(id)} back={{ name: 'home' }}>
         <div className="mt-2 flex flex-wrap items-center gap-2">
-          {alert ? <LevelBadge level={alert.level} onset={alert.level === 'severe'} /> : <MissingData lang={prefs.language} />}
+          {/* CL-25: no ripple on opening an already-Severe lot. */}
+          {alert ? <LevelBadge level={alert.level} /> : <MissingData lang={prefs.language} />}
           {alert ? <span className="text-footnote text-ink-3">{t('lot.confidence', { n: alert.confidence })}</span> : null}
         </div>
       </ScreenHeader>
@@ -186,12 +188,20 @@ export default function Lot({ id }: { id: string }) {
 
         <LevelCheck level={alert?.level} />
 
-        <Button variant="secondary" block onClick={() => setReliabilityOpen(true)}>
-          {t('reliability.open')}
-        </Button>
+        {/* Focus returns to this button when the sheet closes (Safari does not focus buttons on tap). */}
+        <div ref={reliabilityButton}>
+          <Button variant="secondary" block onClick={() => setReliabilityOpen(true)}>
+            {t('reliability.open')}
+          </Button>
+        </div>
         {reliabilityOpen ? (
           <Suspense fallback={null}>
-            <ReliabilitySheet onClose={() => setReliabilityOpen(false)} />
+            <ReliabilitySheet
+              onClose={() => {
+                setReliabilityOpen(false);
+                reliabilityButton.current?.querySelector('button')?.focus();
+              }}
+            />
           </Suspense>
         ) : null}
 

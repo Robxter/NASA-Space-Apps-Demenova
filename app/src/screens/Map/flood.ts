@@ -1,22 +1,12 @@
 // The Severe moment on the map ("Flood", design/prototypes/severe-moment.js, CHANGE_LIST CL-29) and the map labels
 // (CL-05). Motion values come from the designer's tokens; reduced motion skips the sweep and CSS hides the ring.
 import type { Severity } from '../../types/contracts';
+import { prefersReducedMotion, tokenMs } from '../../motion';
+
+export { tokenMs };
 
 const NS = 'http://www.w3.org/2000/svg';
 const LEVEL_CLASSES = ['normal', 'watch', 'warning', 'severe', 'stale'].map((l) => `dn-lvl-${l}`);
-
-/** ms from a CSS time token such as "700ms" or "0.7s"; the fallback when the token is missing. */
-export function tokenMs(name: string, fallback: number): number {
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-  if (!v) return fallback;
-  const n = parseFloat(v);
-  if (!Number.isFinite(n)) return fallback;
-  return v.endsWith('ms') ? n : n * 1000;
-}
-
-export function prefersReducedMotion(): boolean {
-  return typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-}
 
 /** Cubic ease-in-out, the curve of --dn-ease-in-out (0.77, 0, 0.175, 1) approximated as in the prototype. */
 export const easeInOut = (t: number): number => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);

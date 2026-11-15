@@ -1,6 +1,7 @@
 // "How reliable is this?" sheet (D-028): counts against documented floods, the sensitivity check, the lead-time caveat
 // and the known limit. Numbers and quoted passages come from verification.json; the dictionary holds only words.
 import { useEffect, useRef } from 'react';
+import { prefersReducedMotion, tokenMs } from '../../motion';
 import { Button, Card, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { loadVerification } from '../../data/snapshots';
@@ -29,14 +30,71 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
   const { prefs, t } = usePrefs();
   const { demo } = useData();
   const file = useSnapshot(() => loadVerification());
-  const dialog = useRef<HTMLDivElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const opener = useRef<Element | null>(null);
+  const closing = useRef(false);
+  const drag = useRef<{ y0: number; dy: number; t: number; v: number } | null>(null);
 
+  // Native modal dialog (pick-ui-library: no hand-made focus trap): Tab stays inside, Escape closes, page is inert.
   useEffect(() => {
-    dialog.current?.focus();
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+    const el = dialog.current;
+    if (!el) return;
+    opener.current = document.activeElement;
+    if (!el.open) el.showModal();
+    return () => {
+      if (el.open) el.close();
+    };
+  }, []);
+
+  /** One exit for the close button, Escape and the drag: the sheet leaves by the edge it came from. */
+  const dismiss = () => {
+    const el = dialog.current;
+    if (!el || closing.current) return;
+    closing.current = true;
+    const done = () => {
+      if (el.open) el.close();
+      if (opener.current instanceof HTMLElement && opener.current !== document.body) opener.current.focus();
+      onClose(); // the caller returns focus to the control that opened the sheet
+    };
+    if (prefersReducedMotion()) return done();
+    el.style.transition = `transform ${tokenMs('--dn-dur-state', 200)}ms var(--dn-ease-out)`;
+    el.style.transform = 'translateY(100%)';
+    window.setTimeout(done, tokenMs('--dn-dur-state', 200));
+  };
+
+  // Drag to dismiss (gestures skill): track 1:1 with direct transform writes, rubber-band upwards, release on
+  // distance (35 % of the height) or velocity (0.5 px/ms); otherwise a fast snap back. Interruptible: a new press
+  // during the snap back takes over from where the sheet is.
+  const onPointerDown = (e: React.PointerEvent) => {
+    if ((e.target as Element).closest('button, a')) return;
+    const el = dialog.current;
+    if (!el || closing.current) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const current = new DOMMatrixReadOnly(getComputedStyle(el).transform).m42 || 0;
+    el.style.transition = 'none';
+    drag.current = { y0: e.clientY - current, dy: current, t: performance.now(), v: 0 };
+  };
+  const onPointerMove = (e: React.PointerEvent) => {
+    const d = drag.current;
+    const el = dialog.current;
+    if (!d || !el) return;
+    const raw = e.clientY - d.y0;
+    const dy = raw < 0 ? raw * 0.2 : raw;
+    const now = performance.now();
+    d.v = (dy - d.dy) / Math.max(now - d.t, 1);
+    d.dy = dy;
+    d.t = now;
+    el.style.transform = `translateY(${dy}px)`;
+  };
+  const onPointerUp = () => {
+    const d = drag.current;
+    const el = dialog.current;
+    drag.current = null;
+    if (!d || !el) return;
+    if (d.dy > el.clientHeight * 0.35 || d.v > 0.5) return dismiss();
+    el.style.transition = prefersReducedMotion() ? 'none' : `transform ${tokenMs('--dn-dur-state', 200)}ms var(--dn-ease-out)`;
+    el.style.transform = '';
+  };
 
   const r = file.status === 'ready' ? reliabilityFrom(file.value.data, demo?.manifest ?? null) : null;
   const count = (label: MessageKey, term: MessageKey, c: { value: number; origin: Origin | null }) => (
@@ -44,15 +102,32 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
   );
 
   return (
-    <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="dn-reliability-title" className="fixed inset-0 z-[1100] overflow-y-auto overscroll-contain bg-bg pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
+    <dialog
+      ref={dialog}
+      aria-labelledby="dn-reliability-title"
+      onCancel={(e) => {
+        e.preventDefault();
+        dismiss();
+      }}
+      className="fixed inset-0 m-0 h-dvh max-h-none w-full max-w-none overflow-y-auto overscroll-contain border-0 bg-bg p-0 pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)] text-ink transition-[translate,opacity] duration-sheet ease-drawer backdrop:bg-ink/40 starting:translate-y-full motion-reduce:transition-none motion-reduce:starting:translate-y-0"
+    >
       <div className="mx-auto max-w-3xl pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]">
-        <header className="flex items-start justify-between gap-3 px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
-          <h2 id="dn-reliability-title" className="m-0 mt-2 text-title text-ink">
-            {t('reliability.title')}
-          </h2>
-          <Button variant="secondary" onClick={onClose}>
-            {t('common.close')}
-          </Button>
+        <header
+          className="sticky top-0 z-10 touch-none select-none bg-bg px-4 pt-[max(env(safe-area-inset-top),8px)] pb-2"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+        >
+          <span aria-hidden="true" className="mx-auto mb-2 block h-1.5 w-10 rounded-full bg-line-strong" />
+          <div className="flex items-start justify-between gap-3">
+            <h2 id="dn-reliability-title" className="m-0 mt-2 text-title text-ink">
+              {t('reliability.title')}
+            </h2>
+            <Button variant="secondary" onClick={dismiss}>
+              {t('common.close')}
+            </Button>
+          </div>
         </header>
 
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
@@ -118,6 +193,6 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
           </div>
         ) : null}
       </div>
-    </div>
+    </dialog>
   );
 }
