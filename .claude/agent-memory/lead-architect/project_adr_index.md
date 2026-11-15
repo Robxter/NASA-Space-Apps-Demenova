@@ -21,6 +21,12 @@ Contract versioning (set by D-020, 2026-11-14): CONTRACT_VERSION in models.py; a
 (1.0.0 -> 1.1.0 for telegram_code). Server-generated columns are optional + nullable (default None) in client-facing
 models, required in backend-only models; string patterns copy the SQL check, never stricter. List each version's
 deltas in CONTRACTS.md §9 (§3 keeps the v0 field lists).
+1.2.0 (D-030, 2026-11-15, commit b2458b1): VerificationFile.sensitivity, SideIndicators.experimental, reviewed_by /
+human_review on domain items, verification.json budget 20 KB, openapi 0.2.0. New bools use strict `Flag`.
+Supabase limits: `private.is_side` allows exactly {sigatoka, cold}; practices/strategies have no review columns,
+so any new key in those reaches Supabase only via a class A migration (check supabase/migrations before adding).
+Team is solo since 2026-11-14 (FIX2, D-021..D-028): never name the former agronomist in new text; use "future
+local agronomist".
 
 **Why:** AGENTS.md §8 asks lead-architect memory to hold conventions and the ADR index.
 **How to apply:** before any contract change, edit models.py, run export, run tests/test_contracts.py, log in DECISIONS.

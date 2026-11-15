@@ -12,3 +12,9 @@ app pins vite 6.4.6, vitest 4.1.12, vite-plugin-pwa 2.0.0 (engines >=20.19), typ
 **Why:** the build must pass on Roberto's machine, CI and Render; CLAUDE.md §5 still states Node 22.11.
 **How to apply:** do not propose Vite/Vitest major upgrades unless the team standardises on Node >= 22.12; any
 upgrade is class A (PENDING.md). Re-check `node --version` before trusting this.
+
+2026-11-15: in the agent's PowerShell, `node`/`npx` were NOT on PATH; `C:/Program Files/nodejs/npx.cmd` worked.
+When frontend-engineer edits app/src in parallel, its half-done files break `tsc`; to prove a contracts.ts change
+clean, `git archive HEAD app` into %TEMP%, copy the new contracts.ts, junction node_modules, run tsc there.
+Delete the junction with `[System.IO.Directory]::Delete(path, $false)` BEFORE `Remove-Item -Recurse` (PS 5.1 can
+follow junctions and wipe the real node_modules).

@@ -1,4 +1,4 @@
-- [ADR index and conventions](project_adr_index.md) — ADR-001..005 one-liners, contract-change workflow + versioning, PENDING ids
-- [Node version constraint](project_node_version_constraint.md) — PATH Node 22.11.0 caps app at Vite 6 / Vitest 4; upgrades class A
+- [ADR index and conventions](project_adr_index.md) — ADR-001..005, contract versioning (1.2.0 = D-030), Supabase key limits, solo team
+- [Node version constraint](project_node_version_constraint.md) — Node 22.11 caps Vite 6 / Vitest 4; npx path; tsc check beside parallel app work
 - [Review fixes workflow](feedback_review_fixes.md) — failing test first, per-finding reply; strict numbers per field, not global
 - [GateGuard hook](feedback_gateguard_hook.md) — state facts before shell commands; keep commands simple; here-string Python
