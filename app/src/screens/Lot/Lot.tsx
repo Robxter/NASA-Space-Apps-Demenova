@@ -15,6 +15,7 @@ import type { DailyFeature, FactorName, HistoryFile, HistorySeries, Origin } fro
 import type { QuantityKind } from '../../units';
 
 const HistoryChart = lazy(() => import('./HistoryChart'));
+const ReliabilitySheet = lazy(() => import('./ReliabilitySheet'));
 
 type Range = '1w' | '1m' | '3m';
 const RANGE_DAYS: Record<Range, number> = { '1w': 7, '1m': 30, '3m': 90 };
@@ -137,6 +138,7 @@ export default function Lot({ id }: { id: string }) {
   const farmSource = sourceLabel(resolveProvenance(demo?.farm?.provenance, manifest));
   const isAgronomist = prefs.mode === 'agronomist';
   const when = (iso: string | null | undefined) => formatInstant(iso, prefs.units, prefs.language);
+  const [reliabilityOpen, setReliabilityOpen] = useState(false);
 
   if (status !== 'ready') {
     return (
@@ -184,6 +186,15 @@ export default function Lot({ id }: { id: string }) {
             </p>
           ) : null}
         </Card>
+
+        <Button variant="secondary" block onClick={() => setReliabilityOpen(true)}>
+          {t('reliability.open')}
+        </Button>
+        {reliabilityOpen ? (
+          <Suspense fallback={null}>
+            <ReliabilitySheet onClose={() => setReliabilityOpen(false)} />
+          </Suspense>
+        ) : null}
 
         <Card title={t('lot.why')} padded={false}>
           {alert && alert.factors.length ? (
