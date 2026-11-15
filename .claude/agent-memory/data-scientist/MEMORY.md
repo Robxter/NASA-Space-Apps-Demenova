@@ -1,0 +1,2 @@
+- [Engine calibration and evidence](engine-calibration-and-evidence.md) — lag, Kirpich, verification counts, sensitivity, P-014 threshold question (15 Nov 2026)
+- [Reading sources without poppler](reading-sources-without-poppler.md) — scanned-PDF trick; working FAO-56 and Saaty URLs
