@@ -2,6 +2,19 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 09:35 - Main session (Claude Code) to Roberto: Extract.md filled; live state
+State: `Extract.md` (repo root, 19 sections) describes the build that is live, commit 79e05f3 on block/2-core, for
+Roberto's claude.ai conversation; 54 screenshots in docs/extract/screenshots/ (9 screens x light/dark x 393/360/1440).
+Facts, health checks and screenshots were taken in a separate clean worktree, so block 3 was not interrupted.
+Live state checked earlier today: the live app build `index-BA1yB0-Q.js` contains the hCaptcha site key; tapping
+"Connect this device for sync" loads the hCaptcha widget (2 frames) with 0 CSP violations; a human has not yet been
+recorded completing the box, so sign-in and sync are still unproven. Render did not auto-deploy new commits (no new
+build 20 minutes after CI passed on 666cb6a); Roberto deployed by hand with "Clear build cache & deploy".
+Health at 79e05f3: pytest 424, Vitest 76, build + size gate green (94.3 kB of 150 kB), provenance and contracts OK.
+Block 3 (frontend upgrade, D-033) is in phase B on block/3-polish: see docs/briefs/2026-11-15-frontend-upgrade/.
+Waiting on Roberto: tick the hCaptcha box once on the live site and say what it shows; merge + tag; device checklist;
+video; submit. After block 3 is QA-green, sections 11 to 13 of Extract.md and the screenshots can be refreshed.
+
 ## 2026-11-15 ~11:10 - frontend-engineer to main session: block 3 Phase A done, Gate A green
 State: block/3-polish, last green adabfac (tsc, Vitest 79, 95.3 kB gzip, e2e 149 + 3 skipped, @perf 2). Not pushed.
 Done: A0 impeccable context + baseline; A1 mobile-native (theme-color per scheme + color-scheme + interactive-widget

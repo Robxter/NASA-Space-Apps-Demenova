@@ -1,0 +1,331 @@
+{
+ "commit": "79e05f3",
+ "base": "worktree build served by tests/e2e/serve.mjs",
+ "fullPage": "all except lot-reliability (viewport, sheet open)",
+ "shots": [
+  {
+   "file": "home-light-393.png",
+   "bytes": 112852,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-light-393.png",
+   "bytes": 151382,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-light-393.png",
+   "bytes": 135185,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-light-393.png",
+   "bytes": 61711,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-light-393.png",
+   "bytes": 87288,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-light-393.png",
+   "bytes": 82937,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-light-393.png",
+   "bytes": 179497,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-light-393.png",
+   "bytes": 26654,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-light-393.png",
+   "bytes": 67183,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "home-dark-393.png",
+   "bytes": 113487,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-dark-393.png",
+   "bytes": 148262,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-dark-393.png",
+   "bytes": 137772,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-dark-393.png",
+   "bytes": 61631,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-dark-393.png",
+   "bytes": 88293,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-dark-393.png",
+   "bytes": 82569,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-dark-393.png",
+   "bytes": 182127,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-dark-393.png",
+   "bytes": 27048,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-dark-393.png",
+   "bytes": 65379,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "home-light-360.png",
+   "bytes": 109126,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-light-360.png",
+   "bytes": 124053,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-light-360.png",
+   "bytes": 133203,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-light-360.png",
+   "bytes": 52785,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-light-360.png",
+   "bytes": 87735,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-light-360.png",
+   "bytes": 74197,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-light-360.png",
+   "bytes": 175882,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-light-360.png",
+   "bytes": 83807,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-light-360.png",
+   "bytes": 61566,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "home-dark-360.png",
+   "bytes": 109839,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-dark-360.png",
+   "bytes": 121290,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-dark-360.png",
+   "bytes": 135514,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-dark-360.png",
+   "bytes": 52843,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-dark-360.png",
+   "bytes": 88445,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-dark-360.png",
+   "bytes": 73987,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-dark-360.png",
+   "bytes": 178739,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-dark-360.png",
+   "bytes": 67188,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-dark-360.png",
+   "bytes": 59955,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "home-light-1440.png",
+   "bytes": 128557,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-light-1440.png",
+   "bytes": 315201,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-light-1440.png",
+   "bytes": 159219,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-light-1440.png",
+   "bytes": 82478,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-light-1440.png",
+   "bytes": 98538,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-light-1440.png",
+   "bytes": 111227,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-light-1440.png",
+   "bytes": 190477,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-light-1440.png",
+   "bytes": 159826,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-light-1440.png",
+   "bytes": 72069,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "home-dark-1440.png",
+   "bytes": 128344,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "map-dark-1440.png",
+   "bytes": 311163,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-dark-1440.png",
+   "bytes": 162125,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "lot-reliability-dark-1440.png",
+   "bytes": 82827,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "strategies-dark-1440.png",
+   "bytes": 99546,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "alerts-dark-1440.png",
+   "bytes": 110508,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "learn-dark-1440.png",
+   "bytes": 193906,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "setup-dark-1440.png",
+   "bytes": 146194,
+   "note": "ok",
+   "consoleErrors": 0
+  },
+  {
+   "file": "settings-dark-1440.png",
+   "bytes": 70293,
+   "note": "ok",
+   "consoleErrors": 0
+  }
+ ]
+}
