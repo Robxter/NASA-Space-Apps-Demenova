@@ -186,7 +186,7 @@ def crop_et(kc: float, eto_mm: np.ndarray) -> np.ndarray:
 
 
 # --------------------------------------------------------------------------------------------------------
-# Method 7: daily soil water balance (FAO-56): Delta S = P - ETc - D, and the 2-day rule (Tyson: banana tolerates
+# Method 7: daily soil water balance (FAO-56): Delta S = P - ETc - D, and the 2-day rule (team agronomist, 14 Nov 2026, sourced: banana tolerates
 # at most 2 days of waterlogging; SPEC Risk engine: 2 consecutive positive-balance days on a top-tercile unit set a
 # floor of Warning).
 # --------------------------------------------------------------------------------------------------------

@@ -2,7 +2,8 @@
 
 W_unit,t = sum_i w_i x_i,unit,t with sum_i w_i = 1 (docs/spec/12). The five indicators x are normalised to 0..1:
 percentile against the unit's own history (upstream, saturation, local, balance) and rank within the farm
-(terrain). Weights: SPEC starting weights (estimated) until Tyson's AHP matrix (method 13) is accepted.
+(terrain). Weights: SPEC starting weights, origin design ("engineering choice; no expert AHP matrix available",
+D-024); their stability is checked by sensitivity.py (T-024b). AHP (method 13) lives in ahp.py, unused.
 """
 
 from __future__ import annotations
@@ -88,49 +89,3 @@ def confidence_for_data_level(data_level: int) -> int:
     if data_level not in (0, 1, 2, 3):
         raise ValueError("data level is 0..3")
     return int(data_level)
-
-
-# --------------------------------------------------------------------------------------------------------
-# Method 13: analytic hierarchy process (Saaty 1990, EJOR 48: 9-26). Principal eigenvector, CI = (lmax - n)/(n - 1),
-# CR = CI / RI, accepted when CR <= 0.10 ("about 10% or less", p. 13).
-# --------------------------------------------------------------------------------------------------------
-
-# Random consistency index by matrix order, only where an opened source gives it. Saaty (1990) prints CI and CR for
-# its examples: Table 3 (n = 3) gives CI/CR = 0.043/0.074, 0.068/0.117, 0.032/0.056 -> RI 0.58; Table 2 (n = 8)
-# gives CI 0.238, CR 0.169 -> RI 1.41. Orders 1 and 2 are always consistent (CI = 0). Every other order is pending
-# until a source with Saaty's full RI table is opened (PENDING.md P-013); n = 5 (the five alert signals) needs it.
-RANDOM_INDEX: dict[int, float | None] = {1: 0.0, 2: 0.0, 3: 0.58, 4: None, 5: None, 6: None, 7: None, 8: 1.41, 9: None, 10: None}
-CR_LIMIT = 0.10
-
-
-class InconsistentJudgmentsError(ValueError):
-    """CR above 0.10: Saaty's rule is to revise the judgments, not to use the weights."""
-
-
-def ahp_weights(matrix: Sequence[Sequence[float]], *, require_consistent: bool = True) -> tuple[np.ndarray, float, float]:
-    """(weights, CI, CR) of a positive reciprocal pairwise matrix by its principal eigenvector.
-
-    Raises ValueError for a matrix that is not square, positive and reciprocal, or whose order has no sourced RI;
-    raises InconsistentJudgmentsError when CR > 0.10 and require_consistent is True.
-    """
-    a = np.asarray(matrix, dtype="float64")
-    if a.ndim != 2 or a.shape[0] != a.shape[1] or a.shape[0] < 1:
-        raise ValueError("the pairwise matrix is square")
-    n = a.shape[0]
-    if not np.isfinite(a).all() or (a <= 0).any():
-        raise ValueError("pairwise judgments are positive numbers")
-    if not np.allclose(a * a.T, 1.0, rtol=1e-6, atol=1e-9):
-        raise ValueError("the matrix is reciprocal: a_ji = 1 / a_ij")
-    ri = RANDOM_INDEX.get(n)
-    if ri is None:
-        raise ValueError(f"no sourced random index for n = {n} (PENDING.md P-013)")
-    eigvals, eigvecs = np.linalg.eig(a)
-    i = int(np.argmax(eigvals.real))
-    lam = float(eigvals[i].real)
-    vec = np.abs(eigvecs[:, i].real)
-    weights = vec / vec.sum()
-    ci = (lam - n) / (n - 1) if n > 2 else 0.0
-    cr = ci / ri if ri > 0 else 0.0
-    if require_consistent and cr > CR_LIMIT:
-        raise InconsistentJudgmentsError(f"CR = {cr:.3f} > {CR_LIMIT}: revise the judgments")
-    return weights, float(ci), float(cr)

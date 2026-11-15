@@ -5,7 +5,7 @@
   Watch after `days` consecutive favourable days (docs/spec/12). RH < rh_unfavourable is reported as unfavourable.
 - Method 10, banana heat units: daily units = mean temperature - base; the weekly (7-day) sum is compared with the
   same week's climatology (mean of the same 7-day window in earlier years); a sum below it flags cold stress
-  (literal reading of domain/thresholds.yaml cold_stress_rule; how far below counts is pending Tyson, Q-04).
+  (literal reading of domain/thresholds.yaml cold_stress_rule; how far below counts is not defined; experimental, D-024).
 All thresholds are `estimated` (D-014) and come from config/alerts.yaml.
 """
 
