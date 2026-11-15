@@ -23,6 +23,10 @@ Tried and rejected (do not retry):
 - Variable-width severity badges leading list rows: names misalign and truncate at 360. Use ListRow `level`.
 - DemoChip with inline hint text. Square ripple ring on the solid Severe banner (reads as a stray focus box).
 - Taste classics' font bans, double-bezel cards, scroll fade-ups: not for Operate screens or system fonts.
+Block 5 (D-038, 2026-11-15): Roberto relaxed the One Moment Rule ("Improve the frontend graphics and animations, doesnt
+matter if it makes it a little bit heavier"): entrances, stagger, reveal-once, skeleton, view transitions and Welcome-only
+ambient loops are allowed (transform/opacity, reduced-motion path, never on data values); motion.test.ts pins the
+keyframe set. The Welcome hero illustration (orbit, rain, core) is the showpiece. Font still system (no subsetting tool).
 Motion rule from B2 (remove-animations): functional data never animates on ordinary day changes (core water snaps,
 lot fill 200 ms); the 700 ms rise plays only under `.is-onset`/`.is-flooding`. Accessory removed in B4: the banner shadow.
 What worked: real demo transitions (6 to 7 Feb 2026, Lote 1 and 7 Warning to Severe) for prototypes, never invented levels.
