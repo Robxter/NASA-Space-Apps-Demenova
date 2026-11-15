@@ -42,13 +42,20 @@ export function Alerts() {
                     key={e.id}
                     leading={<LevelBadge level={e.to_level} variant="plain" size="sm" />}
                     title={unitName(e.unit_id)}
-                    subtitle={[
-                      t('alerts.change', { from: t(`level.${e.from_level}`), to: t(`level.${e.to_level}`) }),
-                      formatInstant(e.at, prefs.units, prefs.language),
-                      e.factors.map((f) => t(`factor.${f.name}`)).join(', '),
-                    ]
-                      .filter(Boolean)
-                      .join(' · ')}
+                    subtitle={
+                      // Wraps instead of truncating: the time must never be cut off (break-ui: never truncate dates).
+                      <>
+                        <span className="block whitespace-normal">
+                          {t('alerts.change', { from: t(`level.${e.from_level}`), to: t(`level.${e.to_level}`) })}{' '}
+                          <span className="dn-num whitespace-nowrap">· {formatInstant(e.at, prefs.units, prefs.language)}</span>
+                        </span>
+                        {e.factors.length ? (
+                          <span className="block truncate" title={e.factors.map((f) => t(`factor.${f.name}`)).join(', ')}>
+                            {e.factors.map((f) => t(`factor.${f.name}`)).join(', ')}
+                          </span>
+                        ) : null}
+                      </>
+                    }
                     trailing={<DataValue kind="index" si={e.w} origin={fromSpec(e.origin, 'w')} at={e.at} />}
                     onPress={() => navigate({ name: 'lot', id: e.unit_id })}
                   />

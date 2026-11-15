@@ -44,8 +44,8 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
   );
 
   return (
-    <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="dn-reliability-title" className="fixed inset-0 z-[1100] overflow-y-auto bg-bg">
-      <div className="mx-auto max-w-3xl pb-10">
+    <div ref={dialog} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="dn-reliability-title" className="fixed inset-0 z-[1100] overflow-y-auto overscroll-contain bg-bg pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]">
+      <div className="mx-auto max-w-3xl pb-[calc(2.5rem+env(safe-area-inset-bottom,0px))]">
         <header className="flex items-start justify-between gap-3 px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
           <h2 id="dn-reliability-title" className="m-0 mt-2 text-title text-ink">
             {t('reliability.title')}

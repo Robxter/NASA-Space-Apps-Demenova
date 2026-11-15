@@ -49,6 +49,22 @@ export function readPrefs(raw: string | null, fallback: UserPrefs): UserPrefs {
   }
 }
 
+/**
+ * Status-bar colour (mobile-native fix 10). index.html carries one theme-color per prefers-color-scheme; a forced
+ * theme overrides both with the page background token, read from CSS so no colour is written here.
+ */
+function syncThemeColor(theme: UserPrefs['theme']): void {
+  const metas = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
+  metas.forEach((m) => {
+    if (!m.dataset.scheme) m.dataset.scheme = m.media.includes('dark') ? 'dark' : 'light';
+    if (!m.dataset.initial) m.dataset.initial = m.content;
+  });
+  const bg = getComputedStyle(document.documentElement).getPropertyValue('--dn-bg').trim();
+  metas.forEach((m) => {
+    m.content = theme === 'system' || !bg ? (m.dataset.initial ?? m.content) : bg;
+  });
+}
+
 interface PrefsValue {
   prefs: UserPrefs;
   set: <K extends keyof UserPrefs>(key: K, value: UserPrefs[K]) => void;
@@ -78,6 +94,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     html.lang = prefs.language;
     if (prefs.theme === 'system') html.removeAttribute('data-theme');
     else html.setAttribute('data-theme', prefs.theme);
+    syncThemeColor(prefs.theme);
   }, [prefs]);
 
   // Data saver keeps no imagery cache (ADR-004): drop the runtime tile cache when it is selected.

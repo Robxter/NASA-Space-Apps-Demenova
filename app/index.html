@@ -2,12 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="color-scheme" content="light dark" />
     <meta
       name="description"
       content="Waterlogging and flood alerts for banana farms in coastal El Oro, Ecuador. Built with NASA Earth observations."
     />
-    <meta name="theme-color" content="#0e2135" />
+    <!-- Status bar = page background (--dn-bg) per scheme; state/prefs.tsx updates both when a theme is forced. -->
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef2ef" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0a1726" />
     <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
     <link rel="icon" href="/icons/icon-192.png" type="image/png" sizes="192x192" />

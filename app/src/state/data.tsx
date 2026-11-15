@@ -48,24 +48,40 @@ export function DataProvider({ initialDate, children }: { initialDate: string | 
   useEffect(() => {
     let alive = true;
     setStatus('loading');
-    loadDemo({ storageMode: prefs.storage_mode })
-      .then((d) => {
-        if (!alive) return;
-        setDemo(d);
-        setIndexRaw(initialIndex(d.days, initialDate));
-        setStatus('ready');
-      })
-      .catch(async (e: unknown) => {
-        const fixture = await loadDevFixture();
-        if (!alive) return;
-        if (fixture) {
-          setDemo(fixture);
-          setIndexRaw(initialIndex(fixture.days, initialDate));
+    const loadDemoInto = () =>
+      loadDemo({ storageMode: prefs.storage_mode })
+        .then((d) => {
+          if (!alive) return;
+          setDemo(d);
+          setIndexRaw(initialIndex(d.days, initialDate));
           setStatus('ready');
-          return;
-        }
-        setStatus(e instanceof SnapshotError && e.kind !== 'invalid' ? 'missing' : 'error');
+        })
+        .catch(async (e: unknown) => {
+          const fixture = await loadDevFixture();
+          if (!alive) return;
+          if (fixture) {
+            setDemo(fixture);
+            setIndexRaw(initialIndex(fixture.days, initialDate));
+            setStatus('ready');
+            return;
+          }
+          setStatus(e instanceof SnapshotError && e.kind !== 'invalid' ? 'missing' : 'error');
+        });
+    if (import.meta.env.DEV) {
+      // break-ui worst-case datasets enter at this same boundary, in dev builds only (?data=worst|empty|one|offline).
+      // Production builds drop this branch entirely, so their loading order is unchanged.
+      void import('../dev/worst-case').then((m) => {
+        const kind = m.worstKindFromUrl(window.location.search);
+        if (!kind) return loadDemoInto();
+        const worst = m.worstCase(kind);
+        if (!alive) return;
+        setDemo(worst);
+        setIndexRaw(initialIndex(worst.days, initialDate));
+        setStatus('ready');
       });
+    } else {
+      void loadDemoInto();
+    }
     return () => {
       alive = false;
     };

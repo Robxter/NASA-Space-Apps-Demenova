@@ -9,6 +9,7 @@ import { Button, EmptyState } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, Segmented, StatusNotices } from '../../components/shell';
 import { fromSpec, resolveOrigin } from '../../data/origin';
+import { LEVEL_RANK } from '../../data/select';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { navigate } from '../../state/nav';
 import { useData } from '../../state/data';
@@ -49,6 +50,9 @@ export default function MapView() {
   const [layer, setLayer] = useState<Layer>('level');
   const [baseName, setBaseName] = useState<Base>('relief');
   const [selected, setSelected] = useState<string | null>(null);
+  // Zoom drives which labels fit (break-ui: 40 permanent labels overlap into an unreadable block).
+  const [zoom, setZoom] = useState(0);
+  const [hiddenLabels, setHiddenLabels] = useState(false);
   const lots = useMemo(() => demo?.farm?.lots ?? [], [demo]);
   const farm = demo?.farm?.farm;
 
@@ -57,6 +61,7 @@ export default function MapView() {
     if (!box.current || status !== 'ready') return;
     const m = L.map(box.current, { zoomControl: true, attributionControl: false, maxZoom: 17 });
     map.current = m;
+    m.on('zoomend', () => setZoom(m.getZoom()));
     const group: L.Polygon[] = [];
     for (const lot of lots) {
       const poly = L.polygon(toLatLngs(lot), { className: 'dn-lot-shape', color: 'currentColor', fillColor: 'currentColor' });
@@ -93,6 +98,8 @@ export default function MapView() {
       const f = unitById(u)?.features;
       return f ? displayQuantity('mm', f.rain_local_mm, prefs.units, prefs.language) : null;
     };
+    let hidden = false;
+    const labelled: { poly: L.Polygon; label: string; rank: number }[] = [];
     for (const lot of lots) {
       const poly = shapes.current.get(lot.id);
       const el = poly?.getElement();
@@ -118,10 +125,24 @@ export default function MapView() {
       }
       if (layer === 'level') label = level ? t(`level.${level}`) : t('common.noData');
       // Permanent labels on every layer: on the level layer the word travels with the colour (CLAUDE.md §2).
-      if (label) poly.bindTooltip(label, { permanent: true, direction: 'center', opacity: 0.85 });
+      if (label) labelled.push({ poly, label, rank: level ? LEVEL_RANK[level] : -2 });
       el.setAttribute('aria-label', `${lot.name}: ${label ?? ''}`);
     }
-  }, [lots, day, layer, prefs.units, prefs.language, t, unitById]);
+    // Labels are placed worst level first; one that would overlap a placed label shows on tap instead, and the
+    // legend keeps every colour paired with its word (break-ui: 40 permanent labels pile into an unreadable block).
+    const placed: DOMRect[] = [];
+    labelled.sort((x, y) => y.rank - x.rank);
+    for (const { poly, label } of labelled) {
+      poly.bindTooltip(label, { permanent: true, direction: 'center', opacity: 0.85 });
+      const r = poly.getTooltip()?.getElement()?.getBoundingClientRect();
+      if (r && placed.some((q) => r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom)) {
+        poly.unbindTooltip();
+        poly.bindTooltip(label, { permanent: false, direction: 'center', opacity: 0.85 });
+        hidden = true;
+      } else if (r) placed.push(r);
+    }
+    setHiddenLabels(hidden);
+  }, [lots, day, layer, prefs.units, prefs.language, t, unitById, zoom]);
 
   const sel = selected ? unitById(selected) : null;
   const source = sourceLabel(resolveProvenance(day?.provenance, demo?.manifest ?? null));
@@ -130,7 +151,7 @@ export default function MapView() {
   if (status !== 'ready') return <LoadGate />;
 
   return (
-    <div className="relative flex h-[calc(100dvh-64px-env(safe-area-inset-bottom))] flex-col">
+    <div className="relative flex h-[calc(100dvh-64px-env(safe-area-inset-bottom,0px))] flex-col overscroll-none">
       <div className="z-[1001] flex flex-col gap-2 bg-bg px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
         <h1 className="m-0 text-title text-ink">{t('map.title')}</h1>
         <Segmented
@@ -157,6 +178,14 @@ export default function MapView() {
           {source ? ` · ${t('common.source', { source })}` : ''}
         </p>
         <p className="m-0 text-caption text-ink-3">{t('map.attribution', { layer: spec.id })}</p>
+        {hiddenLabels && layer === 'level' ? (
+          <div className="flex flex-wrap items-center gap-1.5" aria-label={t('map.legend')}>
+            <span className="text-caption text-ink-3">{t('map.legendHint')}</span>
+            {(['normal', 'watch', 'warning', 'severe', 'stale'] as const).map((lv) => (
+              <LevelBadge key={lv} level={lv} size="sm" />
+            ))}
+          </div>
+        ) : null}
       </div>
       <StatusNotices />
       {lots.length === 0 ? <EmptyState tone="missing" title={t('home.noUnits')} /> : null}
@@ -174,7 +203,7 @@ export default function MapView() {
                 type="button"
                 onClick={() => setSelected(null)}
                 aria-label={t('common.close')}
-                className="flex size-12 shrink-0 items-center justify-center rounded-full bg-surface-2 text-ink-2"
+                className="flex size-12 shrink-0 touch-manipulation select-none items-center justify-center rounded-full bg-surface-2 text-ink-2 active:scale-[0.95] transition-transform duration-[120ms] ease-standard"
               >
                 <svg aria-hidden="true" viewBox="0 0 14 14" width="14" height="14">
                   <path d="M2 2l10 10M12 2 2 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />

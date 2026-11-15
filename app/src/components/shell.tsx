@@ -41,7 +41,7 @@ export function Segmented<T extends string>({
             role="radio"
             aria-checked={on}
             onClick={() => onChange(o.value)}
-            className={`min-h-11 flex-1 rounded-control px-2 text-callout font-semibold transition-colors duration-[120ms] ease-standard ${
+            className={`min-h-11 flex-1 touch-manipulation select-none rounded-control px-2 text-callout font-semibold transition-[color,background-color,transform] duration-[120ms] ease-standard active:scale-[0.97] ${
               on ? 'bg-surface text-ink shadow-banner' : 'text-ink-2'
             }`}
           >
@@ -66,7 +66,7 @@ export function TabBar({ current }: { current: Tab }) {
   return (
     <nav
       aria-label={t('tab.nav')}
-      className="fixed inset-x-0 bottom-0 z-[1000] border-t border-line bg-surface pb-[env(safe-area-inset-bottom)]"
+      className="fixed inset-x-0 bottom-0 z-[1000] border-t border-line bg-surface pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
     >
       <ul className="m-0 mx-auto flex max-w-3xl list-none p-0">
         {tabs.map((tab) => {
@@ -76,7 +76,7 @@ export function TabBar({ current }: { current: Tab }) {
               <a
                 href={href({ name: tab })}
                 aria-current={on ? 'page' : undefined}
-                className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-caption font-semibold no-underline ${
+                className={`flex min-h-14 touch-manipulation select-none flex-col items-center justify-center gap-0.5 text-caption font-semibold no-underline transition-opacity duration-[120ms] ease-standard [-webkit-touch-callout:none] active:opacity-60 ${
                   on ? 'text-leaf' : 'text-ink-3'
                 }`}
               >
@@ -109,7 +109,7 @@ export function ScreenHeader({
     <header className="px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
       <div className="flex min-h-12 items-center justify-between gap-2">
         {back ? (
-          <a href={href(back)} className="-ml-2 flex min-h-12 items-center px-2 text-body font-semibold text-leaf no-underline">
+          <a href={href(back)} className="-ml-2 flex min-h-12 touch-manipulation select-none items-center px-2 text-body font-semibold text-leaf no-underline [-webkit-touch-callout:none] active:opacity-60">
             <svg aria-hidden="true" viewBox="0 0 8 14" width="8" height="14" className="mr-1.5">
               <path d="M7 1 1 7l6 6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
             </svg>

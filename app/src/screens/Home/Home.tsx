@@ -17,7 +17,7 @@ import { SEVERITY_VALUES, type ReplayUnit } from '../../types/contracts';
 function GearLink() {
   const { t } = usePrefs();
   return (
-    <a href={href({ name: 'settings' })} aria-label={t('home.settings')} className="flex size-12 items-center justify-center rounded-full text-ink-2">
+    <a href={href({ name: 'settings' })} aria-label={t('home.settings')} className="flex size-12 touch-manipulation select-none items-center justify-center rounded-full text-ink-2 [-webkit-touch-callout:none] active:opacity-60">
       <svg aria-hidden="true" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.8">
         <circle cx="12" cy="12" r="3" />
         <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z" />
@@ -108,7 +108,12 @@ export default function Home() {
 
           <Card title={t('home.lots')} padded={false}>
             {units.length === 0 ? (
-              <EmptyState tone="missing" title={t('home.noUnits')} />
+              // A missing replay file is not an empty farm (break-ui, harden): say which it is and how to move on.
+              day === null && (demo?.farm?.lots.length ?? 0) > 0 ? (
+                <EmptyState tone="missing" title={t('home.dayMissing')} body={t('home.dayMissingBody')} />
+              ) : (
+                <EmptyState tone="missing" title={t('home.noUnits')} body={t('home.noUnitsBody')} />
+              )
             ) : (
               <List>
                 {sortByW(units).map((u) => (

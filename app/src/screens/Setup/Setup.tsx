@@ -125,7 +125,7 @@ function SetupMap({
       ref={box}
       role="application"
       aria-label={t('setup.mapLabel')}
-      className={`relative z-0 h-72 overflow-hidden rounded-group text-ink ${mode === 'idle' ? '' : 'cursor-crosshair'}`}
+      className={`relative z-0 h-72 overflow-hidden overscroll-none rounded-group text-ink ${mode === 'idle' ? '' : 'cursor-crosshair'}`}
     />
   );
 }
@@ -350,7 +350,7 @@ export default function Setup() {
           {!rec ? (
             <label className="flex flex-col gap-1 text-footnote font-semibold text-ink-2">
               {t('setup.farmName')}
-              <input className={field} value={name} onChange={(e) => setName(e.currentTarget.value)} autoComplete="off" maxLength={80} />
+              <input className={field} value={name} onChange={(e) => setName(e.currentTarget.value)} autoComplete="off" autoCapitalize="words" enterKeyHint="done" maxLength={80} />
             </label>
           ) : (
             <p className="m-0 text-body text-ink">{rec.farm.name}</p>
@@ -394,16 +394,16 @@ export default function Setup() {
             <div className="grid grid-cols-1 gap-2">
               <label className="flex flex-col gap-1 text-footnote font-semibold text-ink-2">
                 {t('setup.lotName')}
-                <input className={field} value={lotName} onChange={(e) => setLotName(e.currentTarget.value)} maxLength={60} />
+                <input className={field} value={lotName} onChange={(e) => setLotName(e.currentTarget.value)} autoComplete="off" autoCapitalize="sentences" enterKeyHint="next" maxLength={60} />
               </label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="flex flex-col gap-1 text-footnote font-semibold text-ink-2">
                   {t('setup.lotArea', { unit: areaUnit })}
-                  <input className={field} inputMode="decimal" value={lotArea} onChange={(e) => setLotArea(e.currentTarget.value)} />
+                  <input className={field} inputMode="decimal" enterKeyHint="next" autoComplete="off" value={lotArea} onChange={(e) => setLotArea(e.currentTarget.value)} />
                 </label>
                 <label className="flex flex-col gap-1 text-footnote font-semibold text-ink-2">
                   {t('setup.lotAge')}
-                  <input className={field} inputMode="numeric" value={lotAge} onChange={(e) => setLotAge(e.currentTarget.value)} />
+                  <input className={field} inputMode="numeric" enterKeyHint="done" autoComplete="off" value={lotAge} onChange={(e) => setLotAge(e.currentTarget.value)} />
                 </label>
               </div>
             </div>
@@ -415,7 +415,7 @@ export default function Setup() {
                 <Button variant="secondary" onClick={addTyped}>
                   {t('setup.typeLot')}
                 </Button>
-                <label className="inline-flex min-h-12 cursor-pointer items-center justify-center rounded-control bg-surface-2 px-5 text-body font-semibold text-ink">
+                <label className="inline-flex min-h-12 cursor-pointer touch-manipulation select-none items-center justify-center rounded-control bg-surface-2 px-5 text-body font-semibold text-ink transition-transform duration-[120ms] ease-standard focus-within:outline focus-within:outline-3 focus-within:outline-focus active:scale-[0.98]">
                   {t('setup.importLots')}
                   <input
                     type="file"
@@ -443,7 +443,7 @@ export default function Setup() {
                           <button
                             type="button"
                             onClick={() => void commit(removeLot(rec, l.id, nowIso()))}
-                            className="min-h-11 rounded-control px-2 text-callout font-semibold text-leaf"
+                            className="min-h-11 touch-manipulation select-none rounded-control px-2 text-callout font-semibold text-leaf active:opacity-60"
                             aria-label={t('setup.removeLotNamed', { name: l.name })}
                           >
                             {t('setup.remove')}
