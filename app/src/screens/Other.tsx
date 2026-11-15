@@ -1,6 +1,6 @@
 // Alerts (log of level changes from the replay files up to the current day), Learn and Strategies placeholders,
 // and Settings (language, units, mode, storage, theme, device identity).
-import { Card, EmptyState, List, ListRow } from '../components/ui';
+import { Button, Card, EmptyState, List, ListRow } from '../components/ui';
 import { DataValue } from '../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, ScreenHeader, Segmented, StatusNotices } from '../components/shell';
 import { fromSpec } from '../data/origin';
@@ -86,6 +86,12 @@ export function Settings() {
     <div className="pb-4">
       <ScreenHeader title={t('settings.title')} back={{ name: 'home' }} />
       <div className="flex flex-col gap-5 px-4">
+        <Card title={t('settings.farmSetup')}>
+          <p className="m-0 mb-3 text-callout text-ink-2">{t('settings.farmSetupBody')}</p>
+          <Button variant="secondary" block onClick={() => navigate({ name: 'setup' })}>
+            {t('settings.farmSetup')}
+          </Button>
+        </Card>
         <Card title={t('settings.language')}>
           <Segmented label={t('settings.language')} value={prefs.language} onChange={(v) => set('language', v)} options={[{ value: 'es', label: 'Español' }, { value: 'en', label: 'English' }]} />
         </Card>
@@ -137,7 +143,6 @@ export function Settings() {
         <Card title={t('settings.identity')}>
           <p className="m-0 text-callout text-ink-2">{identityText}</p>
         </Card>
-        <p className="m-0 px-4 text-footnote text-ink-3">{t('settings.setupLater')}</p>
         <p className="m-0 px-4 text-footnote text-ink-3">{t('app.credit')}</p>
       </div>
     </div>

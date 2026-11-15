@@ -12,6 +12,7 @@ import { PrefsProvider, usePrefs } from './state/prefs';
 const MapView = lazy(() => import('./screens/Map/MapView'));
 const Lot = lazy(() => import('./screens/Lot/Lot'));
 const Strategies = lazy(() => import('./screens/Strategies/Strategies'));
+const Setup = lazy(() => import('./screens/Setup/Setup'));
 
 function Screens() {
   const hash = useHash();
@@ -41,6 +42,9 @@ function Screens() {
       break;
     case 'settings':
       screen = <Settings />;
+      break;
+    case 'setup':
+      screen = <Setup />;
       break;
     default:
       screen = <Home />;

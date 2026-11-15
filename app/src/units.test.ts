@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cToF, cmToIn, convert, displayQuantity, haToAcres, mmToIn, mToFt } from './units';
+import { cToF, cmToIn, convert, displayQuantity, haToAcres, mmToIn, mToFt, toSI } from './units';
 
 describe('conversions (exact definitions)', () => {
   it('converts SI to imperial', () => {
@@ -49,5 +49,16 @@ describe('displayQuantity', () => {
     expect(displayQuantity('mm', 60, 'imperial', 'en')).toEqual({ text: '2.36', unit: 'in' });
     expect(displayQuantity('celsius', 25.5, 'metric', 'es').text).toBe('25,5');
     expect(displayQuantity('index', 0.85, 'metric', 'en').text).toBe('0.85');
+  });
+});
+
+describe('toSI (typed input back to storage units)', () => {
+  it('inverts every conversion', () => {
+    for (const kind of ['mm', 'celsius', 'm', 'cm', 'ha', 'fraction'] as const) {
+      for (const system of ['metric', 'imperial'] as const) {
+        expect(toSI(kind, convert(kind, 12.5, system).value, system)).toBeCloseTo(12.5, 10);
+      }
+    }
+    expect(toSI('ha', 1, 'imperial')).toBeCloseTo(0.40468564224, 12);
   });
 });

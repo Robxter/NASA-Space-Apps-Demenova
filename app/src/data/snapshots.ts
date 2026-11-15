@@ -6,6 +6,7 @@ import type {
   GlossaryTerm,
   StrategiesFile,
   VerificationFile,
+  ZonesFile,
   HistoryFile,
   Provenance,
   ProvenanceBlock,
@@ -56,6 +57,7 @@ export const guards = {
   replayDay: (v: unknown): v is ReplayDay => isObj(v) && typeof v.date === 'string' && Array.isArray(v.units),
   history: (v: unknown): v is HistoryFile =>
     isObj(v) && typeof v.unit_id === 'string' && Array.isArray(v.dates) && isObj(v.series),
+  zones: (v: unknown): v is ZonesFile => isObj(v) && v.type === 'FeatureCollection' && Array.isArray(v.features),
   strategies: (v: unknown): v is StrategiesFile => isObj(v) && Array.isArray(v.strategies),
   glossary: (v: unknown): v is GlossaryAppFile => isObj(v) && Array.isArray(v.terms),
   verification: (v: unknown): v is VerificationFile =>
@@ -96,9 +98,16 @@ export async function loadJson<T>(path: string, guard: (v: unknown) => v is T, d
   try {
     const res = await doFetch(`${base}${path}`, { cache: 'no-cache' });
     const type = res.headers.get('content-type') ?? '';
-    // A dev server answers unknown paths with index.html (200, text/html): that is a missing file, not data.
-    if (res.ok && type.includes('json')) {
-      const body: unknown = await res.json();
+    // A dev server or SPA host answers unknown paths with index.html (200, text/html): a missing file, not data.
+    // Some hosts serve .geojson as octet-stream, so the body decides when the type is not JSON or HTML.
+    const text = res.ok && !type.includes('html') ? await res.text() : null;
+    if (text !== null && (type.includes('json') || !text.trimStart().startsWith('<'))) {
+      let body: unknown;
+      try {
+        body = JSON.parse(text);
+      } catch {
+        throw new SnapshotError('invalid', path);
+      }
       if (!guard(body)) throw new SnapshotError('invalid', path);
       const toStore =
         deps.storageMode === 'saver' && guards.history(body) ? trimHistory(body, 7) : body;
@@ -118,6 +127,7 @@ export async function loadJson<T>(path: string, guard: (v: unknown) => v is T, d
 export const loadManifest = (d?: LoaderDeps) => loadJson('manifest.json', guards.manifest, d);
 export const loadFarm = (d?: LoaderDeps) => loadJson('farm.json', guards.farm, d);
 export const loadReplayDay = (date: string, d?: LoaderDeps) => loadJson(`replay/${date}.json`, guards.replayDay, d);
+export const loadZones = (d?: LoaderDeps) => loadJson('zones.geojson', guards.zones, d);
 export const loadStrategies = (d?: LoaderDeps) => loadJson('strategies.json', guards.strategies, d);
 export const loadGlossary = (d?: LoaderDeps) => loadJson('glossary.json', guards.glossary, d);
 export const loadVerification = (d?: LoaderDeps) => loadJson('verification.json', guards.verification, d);

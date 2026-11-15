@@ -110,3 +110,24 @@ export function displayQuantity(
   const { value, unit } = convert(kind, si, system);
   return { text: formatNumber(value, lang, decimals ?? decimalsFor(kind, system)), unit };
 }
+
+/** Inverse of `convert` for values the user types in display units: returns the SI value to store. */
+export function toSI(kind: QuantityKind, value: number, system: UnitSystem): number {
+  if (system === 'imperial') {
+    switch (kind) {
+      case 'mm':
+        return value * MM_PER_INCH;
+      case 'celsius':
+        return ((value - 32) * 5) / 9;
+      case 'm':
+        return value * M_PER_FOOT;
+      case 'cm':
+        return (value * MM_PER_INCH) / 10;
+      case 'ha':
+        return (value * M2_PER_ACRE) / M2_PER_HECTARE;
+      default:
+        break;
+    }
+  }
+  return kind === 'fraction' ? value / 100 : value;
+}

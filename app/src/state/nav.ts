@@ -1,11 +1,11 @@
-// Hand-rolled hash navigation (no router): #home, #map, #alerts, #learn, #settings, #lot/<id>, #strategies/<id>.
+// Hand-rolled hash navigation (no router): #home, #map, #alerts, #learn, #settings, #setup, #lot/<id>, #strategies/<id>.
 // An optional query sets the replay day for deep links and tests: #map?d=2026-02-22.
 import { useSyncExternalStore } from 'react';
 
 export type Tab = 'home' | 'map' | 'alerts' | 'learn';
 
 export type Route =
-  | { name: Tab | 'settings' }
+  | { name: Tab | 'settings' | 'setup' }
   | { name: 'lot'; id: string }
   | { name: 'strategies'; id: string };
 
@@ -14,7 +14,7 @@ export interface ParsedHash {
   date: string | null;
 }
 
-const SIMPLE = new Set(['home', 'map', 'alerts', 'learn', 'settings']);
+const SIMPLE = new Set(['home', 'map', 'alerts', 'learn', 'settings', 'setup']);
 
 export function parseHash(hash: string): ParsedHash {
   const raw = hash.replace(/^#\/?/, '');
@@ -24,7 +24,7 @@ export function parseHash(hash: string): ParsedHash {
   const [head = '', ...rest] = path.split('/');
   const id = rest.length ? safeDecode(rest.join('/')) : '';
   if ((head === 'lot' || head === 'strategies') && id) return { route: { name: head, id }, date };
-  if (SIMPLE.has(head)) return { route: { name: head as Tab | 'settings' }, date };
+  if (SIMPLE.has(head)) return { route: { name: head as Tab | 'settings' | 'setup' }, date };
   return { route: { name: 'home' }, date };
 }
 
