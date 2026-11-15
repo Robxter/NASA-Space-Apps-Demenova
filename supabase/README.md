@@ -1,7 +1,7 @@
 # supabase/
 
 Owner: database-engineer. Every schema change is class A (CLAUDE.md §6) and is reviewed by database-reviewer.
-Status: written for T-015, revised after the database-review, approved by Roster (P-009, DECISIONS.md D-018) and
+Status: written for T-015, revised after the database-review, approved by Roberto (P-009, DECISIONS.md D-018) and
 tested on a local PostgreSQL 18.7 (see "Run locally"); **not yet applied to Supabase**. Needs Postgres 15 or newer
 (new Supabase projects are).
 

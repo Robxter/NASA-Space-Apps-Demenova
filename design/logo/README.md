@@ -1,6 +1,6 @@
 # Demenova logo options (T-016)
 
-Demeter (harvest) + nova (a new star). Roster picks one (class A, PENDING P-006). None uses or resembles the NASA
+Demeter (harvest) + nova (a new star). Roberto picks one (class A, PENDING P-006). None uses or resembles the NASA
 insignia: no blue disc, no orbit ellipse, no red vector. The star is a six-spike diffraction star, not the
 four-point "AI sparkle". The wordmark is set in system semibold; outline it to paths after the pick.
 Preview: `options-sheet.png` (lockups on Mist; icon at 192, maskable circle, 48 and 24 px on night blue).
@@ -20,4 +20,4 @@ Preview: `options-sheet.png` (lockups on Mist; icon at 192, maskable circle, 48 
 Colours: Orbit `#0E2135`, Leaf `#2A6343`, water `#9ED8DE`, Starlight `#F4DF8E` on dark ground, deep starlight
 `#E0B92C` on light ground. The app icons (`app/public/icons/`) come from option 1: `icon-core.svg` (full bleed;
 the "any" PNGs are rounded at radius 22 %) and `icon-core-maskable.svg` (star and water at 0.82 scale inside the
-80 % safe circle). Regenerate them if Roster picks another option.
+80 % safe circle). Regenerate them if Roberto picks another option.

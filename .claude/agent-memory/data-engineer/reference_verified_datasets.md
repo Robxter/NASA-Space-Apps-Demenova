@@ -17,7 +17,7 @@ Verified 2026-11-14 (details and URLs in config/datasets.yaml; re-check only if 
   Farm AOI lies in one POWER cell (centre + corners identical).
 - Sentinel-2 L2A: Earth Search v1 `sentinel-2-l2a`, anonymous; per-item raster:bands scale 0.0001 offset -0.1; AOI tile 17MPS.
 - OSM: Rio Buenavista = way 468343174. pysheds 0.5 needs an np.in1d shim on numpy 2.4.
-- Access (2026-11-14): Earthdata login OK from .env; GES DISC app approved by Roster (P-008 resolved), NSIDC needs nothing extra.
+- Access (2026-11-14): Earthdata login OK from .env; GES DISC app approved by Roberto (P-008 resolved), NSIDC needs nothing extra.
   If GES DISC ever returns 403 "EULA Acceptance Failure", the fix is the approve_app link in the JSON error body.
 - GLDAS_NOAH025_3H 2.1 main stream covered Feb 2026 (latest granule 2026-07-31 on 2026-11-14); farm = cell lon i 400, lat j 226.
 - IMERG catchment window = grid indices lon 1000-1004, lat 863-867; whole 2015-2026 run takes ~25 min with 6 workers.

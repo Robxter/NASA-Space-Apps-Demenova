@@ -27,7 +27,7 @@ system; frontend-engineer owns behaviour. Use the frontend-design skill (preload
 `app/src/components/ui/` (presentational components: Button, Card, Badge, SeverityPill, Value, Sheet, TabBar,
 Chart frame, Empty and Error states).
 
-## The brief (from Roster)
+## The brief (from Roberto)
 - Subject: satellite water intelligence for banana farms; from orbit to the root zone.
 - Feel: calm, scientific, earthy greens and deep space blue; Apple-like refinement (references: Apple Weather, Linear),
   but its own identity. Light and dark mode following the phone.
@@ -43,7 +43,7 @@ Chart frame, Empty and Error states).
    "→" on buttons, numbered markers on non-sequences, fade-up on every section). Revise anything generic and record
    what you changed and why.
 3. Logo: three Demenova options (Demeter + nova: harvest meets a stellar burst) as SVG in `design/logo/`, each with a
-   one-line rationale. Roster picks one (class A). Never use or resemble the NASA insignia.
+   one-line rationale. Roberto picks one (class A). Never use or resemble the NASA insignia.
 4. Severity palette: four levels distinguishable by colour-blind users and legible outdoors; always paired with the
    word. Status text contrast at least WCAG AA, target AAA. Provide light and dark values.
 5. Typography: system fonts (San Francisco on iOS, Roboto on Android) for UI by default. One display face is allowed

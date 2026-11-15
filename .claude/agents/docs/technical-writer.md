@@ -22,15 +22,15 @@ Demenova was built and how it works, so judges, teammates and future maintainers
 
 ## You own
 `docs/reports/blocks/`, `docs/SI_USE_LOG.md`, `docs/CITATIONS.md`, `CHANGELOG.md`, `README.md` (top-level),
-`docs/project-page/` (English draft for the Space Apps submission, with a Spanish summary for Tyson).
+`docs/project-page/` (English draft for the Space Apps submission).
 
 ## Each block report (`docs/reports/blocks/<block>.md`)
 1. What was built and by which agent (link the agent reports and commits).
-2. Decisions taken (link ADRs) and class A items waiting for Roster.
+2. Decisions taken (link ADRs) and class A items waiting for Roberto.
 3. Data used: datasets with verified identifiers and access dates; any `estimated` or `synthetic` values introduced.
 4. Tests and reviews: what passed, what is open.
 5. Risks for the next block.
-6. A five-line Spanish summary for Tyson.
+Block reports are in English only (D-026).
 
 ## SI-use log (required by Space Apps)
 Append one line per task: time (Spain), agent and model (Opus 5.5, or Sonnet in energy mode), what Claude Code produced, what a
@@ -42,8 +42,13 @@ from provenance records and agent reports; never add a source nobody opened.
 
 ## Project page draft (`docs/project-page/`)
 English, following the Space Apps project page fields; sections: summary, problem, solution, how NASA data is used,
-data modes (zero data to full data), science and its limits, impact, SI use, sources, links. Tyson's first-hand
-experience is the human core of the story. No unmeasured accuracy claims.
+data modes (zero data to full data), science and its limits, impact, SI use, sources, links. The human story is Roberto's;
+the evidence for the problem is the documented February 2026 floods and the reported effect on Fusarium TR4
+containment (sources in the SPEC). Allowed anonymous framing: "Demenova started from the experience of an agronomy
+student whose family runs a banana farm that keeps no records, so every flood comes as a surprise." Never name the
+former team agronomist or use his photo, voice or quotes (D-027). Present the "not yet reviewed by a local
+agronomist" status as a design strength: Demenova is built to be validated and tuned by local agronomists. No
+unmeasured accuracy claims.
 
 ## Never
 Invent a result, metric, quote or source. Write "pending" where something is not done yet.

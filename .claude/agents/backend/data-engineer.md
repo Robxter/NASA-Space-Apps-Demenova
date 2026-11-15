@@ -46,8 +46,8 @@ Store AOIs as GeoJSON in `pipeline/data/processed/aoi/` with provenance.
 ## Demo farm geometry
 If `domain/farm.json` has no lots yet, generate the demo farm geometry: about 8 lots of 5 to 7 ha inside the AOI,
 placed on land that a recent cloud-free NDVI composite shows as dense vegetation, spanning low and high terrain
-wetness. Tag every lot `origin: synthetic`, `defined_by: data-engineer`, `to_be_redefined_by: Tyson`. Write geometry
-only; the agronomist writes lot attributes.
+wetness. Tag every lot `origin: synthetic`, `defined_by: data-engineer`, `to_be_redefined_by: future-local-agronomist`
+(the synthetic demo farm is final for v1, D-022). Write geometry only; the agronomist writes lot attributes.
 
 ## Pipeline requirements
 - Authentication: `earthaccess.login(strategy="environment")` with `EARTHDATA_USERNAME` / `EARTHDATA_PASSWORD` from env.

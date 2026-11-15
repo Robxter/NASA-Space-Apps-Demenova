@@ -4,12 +4,29 @@ Mirrors GitHub Issues (one issue per task ID; label = agent, milestone = block).
 if the GitHub CLI is installed and authenticated, it may run `gh issue create --title "T-001 ..." --label <agent>`.
 Status: [ ] todo, [~] in progress, [x] done, [!] blocked (see PENDING.md).
 
-## Re-plan after FIX.md (14 Nov 18:10 Spain; deadline unchanged: submit by 20:00 on 15 Nov, hard close 23:59)
+## Re-plan after FIX2.md (15 Nov ~00:30 Spain): solo build by Roberto (D-021..D-028)
+Tyson left the team on 14 Nov; nothing waits on him (D-022). Opus 5-hour limit hit at ~00:15; resets 03:30.
+
+| When (Spain, 15 Nov) | What | Tasks |
+| --- | --- | --- |
+| 03:30-10:00 | Resume data-scientist (T-024 + sensitivity check, FIX2 §4) and api-engineer (T-028); then engine review; devops | T-024, T-024b, T-025, T-028, T-029 |
+| 10:00-13:00 | Strategies, data levels 0–2, deploy to Render, QA (emulated Android + iPhone) | T-042, T-044 |
+| 11:00 | Gate: nice-to-haves (FIX2 §8 list) only if must-haves are green | - |
+| 13:00-15:00 | Fix blockers; technical-writer project page; instructor guides | T-045, T-051 |
+| 15:00 / 15:00-19:00 / 19:00-20:00 | Feature freeze; Roberto records the 30 s video; submit (buffer to 23:59) | T-050..T-053 |
+
+Must-haves (FIX2 §8, D-028): replay 15 Feb–5 Mar 2026 with four levels and factors; Home, Map, Lot detail with history;
+Strategies (3 per lot, reasons/evidence/gaps/risks; cost and labour only if sourced); data levels 0–2 with confidence
+badge; email on Severe; records saved by default; units and language toggles; public link; sensitivity result visible.
+Nice-to-have: Telegram bot, flood memory timeline, level 3 field notes, farmer/agronomist toggle, priority sliders,
+Sigatoka and cold indicators (badge "Experimental"), Costa Rica proof map, live IMERG polling, spraying indicator.
+
+## Re-plan after FIX.md (14 Nov 18:10 Spain; superseded by the FIX2 re-plan above)
 Rule: at most 2 subagents at a time (CLAUDE.md §11), so phase 1 runs in two waves.
 
 | When (Spain) | What | Tasks |
 | --- | --- | --- |
-| 18:15-18:45 | Roster: FIX.md steps 4-6, restart with `scripts/start.ps1` | T-006, T-007 |
+| 18:15-18:45 | Roberto: FIX.md steps 4-6, restart with `scripts/start.ps1` | T-006, T-007 |
 | 18:45-19:30 | Finish phase 0 from commit 3a37c2b (lead-architect), review, commit, PR | T-001..T-005 |
 | 19:30-21:00 | Phase 1 wave A: data-engineer + agronomist (Tyson needs the review queue tonight) | T-010..T-014, T-017 |
 | 21:00-22:15 | Phase 1 wave B: database-engineer + product-designer | T-015, T-016 |
@@ -31,9 +48,9 @@ review queue, the flood candidates and the logo options.
 - [x] T-004 lead-architect: scripts/check_provenance.py + tests/test_provenance.py (94 tests pass, commit 3a37c2b)
 - [x] T-005 lead-architect: ADR-001..005, DECISIONS.md, PENDING.md (P-001..P-003), HANDOFF.md
 - [x] T-005b lead-architect: app/ scaffold (Vite React TS) and `npm --prefix app run build` green
-- [~] T-007 main session: apply FIX.md (steps 1-3, 8 done; Ponytail and claude-mem installed; open: Roster's
+- [~] T-007 main session: apply FIX.md (steps 1-3, 8 done; Ponytail and claude-mem installed; open: Roberto's
   Gemini key in claude-mem setup, run the unsigned FreeLLMAPI installer or not, OmniRoute removal, restart check)
-- [ ] T-006 Roster: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
+- [ ] T-006 Roberto: accounts (Earthdata, Supabase + anonymous sign-in, Render, Resend, Telegram bot), .env filled
 
 ## Block 1: foundations
 - [x] T-010 data-engineer: verify datasets and fill config/datasets.yaml with URLs and access dates (16 sourced via
@@ -48,11 +65,11 @@ review queue, the flood candidates and the logo options.
   (POWER 7, S2 NDVI 3 scenes, terrain, SMAP all-quality (NOT recommended) + recommended-only (0 days, P-010),
   IMERG Early daily, GLDAS 4 depths; day_definition + native_resolution per layer; follow-up: IMERG Early half-hourly)
 - [~] T-015 database-engineer: migrations, RLS, views, RLS tests (class A before applying). Written, not applied:
-  6 migrations + supabase/tests/rls_test.sql + README paste-in steps; waits on P-009 (Roster) and database-reviewer;
+  6 migrations + supabase/tests/rls_test.sql + README paste-in steps; waits on P-009 (Roberto) and database-reviewer;
   database-review fixes applied (P-002 b telegram_code, column grants, RLS at creation, 79-check test);
   P-009 approved (D-018). Local PostgreSQL 18.7 run (supabase/tests/run_local.ps1): migrations apply in one
   transaction and re-run cleanly; 79/79 checks pass; 6/7 mutants caught (7th blocked by the policy layer).
-  Remaining: Roster runs README steps 1–6 on Supabase (hosted-only items in the report)
+  Remaining: Roberto runs README steps 1–6 on Supabase (hosted-only items in the report)
 - [x] T-015b lead-architect: contract addition (class B) — Farm and TelegramSubscriber gain `telegram_code`
   (random, server-generated) per P-002 (b) / database review; update schemas, models.py, contracts.ts, drift test
   (contract 1.1.0, D-020; Farm optional, subscriber required; 5 new tests; pytest 183 passed, export --check OK)
@@ -66,17 +83,22 @@ review queue, the flood candidates and the logo options.
   practices, strategies, actions, glossary, flood_memories written + review queue Q-01..Q-19 + memory note;
   checks run by the main session 19:45: pytest 154 passed (all 6 domain files validate), provenance checker OK;
   domain/farm.json waits for T-012 lot geometry; P-004 raised)
-- [ ] T-018 Roster: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
+- [ ] T-018 Roberto: checkpoint A (schema, logo, dependencies); send flood candidates to Tyson; answer PENDING
   P-001 (state-machine diagram text), P-002 (Telegram farm code), P-003 (nullable country/province/canton)
 - [x] T-019 data-engineer (done in wave A, needed by T-014): `pipeline/common/{provenance,grid,io}.py`: provenance records per DATA_POLICY §3, the 30 m
   EPSG:32717 grid aligned to SRTM (ADR-002), writers whose output passes `scripts/check_provenance.py` (before T-014)
 
 ## Block 2: core
-- [ ] T-020 data-scientist: terrain features, TWI terciles, zones
-- [ ] T-021 data-scientist: runoff (CN), Kirpich first lag, calibrated lag on Feb 2026 event
-- [ ] T-022 data-scientist: API, FAO-56 ETc, daily balance, 2-day floor rule
-- [ ] T-023 data-scientist: index W, state machine, side indicators, explanations, confidence
-- [ ] T-024 data-scientist: verification counts; replay snapshots; tests
+- [x] T-020 data-scientist: terrain features, TWI terciles, zones (c39de04)
+- [x] T-021 data-scientist: runoff (CN), Kirpich first lag, calibrated lag on Feb 2026 event (83d8cf0; calibration
+  uses documented events only, FIX2 §4.4 / D-024)
+- [x] T-022 data-scientist: API, FAO-56 ETc, daily balance, 2-day floor rule (83d8cf0)
+- [x] T-023 data-scientist: index W, state machine, side indicators, explanations, confidence (8b1194e; side
+  indicators are nice-to-have with an "Experimental" badge, D-024)
+- [~] T-024 data-scientist: verification counts; replay snapshots; tests (paused at the usage limit; verification.py
+  uncommitted)
+- [ ] T-024b data-scientist: weight sensitivity check ±0.10 on the 22–23 Feb 2026 replay ->
+  app/public/data/demo/verification.json (FIX2 §4.2, replaces expert AHP; D-024)
 - [ ] T-025 scientist-reviewer + code-reviewer: engine review; blockers → tasks
 - [x] T-026 frontend-engineer: shell, navigation, data layer, IndexedDB, replay scrubber (2ea3983; 36 Vitest tests;
   initial JS 86.3 kB gzip; Supabase lazy and optional; checked with the synthetic dev fixture only)
@@ -85,26 +107,31 @@ review queue, the flood candidates and the logo options.
 - [ ] T-028 api-engineer: FastAPI health/run/email-test; Severe email with dedupe; tests
 - [ ] T-029 devops-engineer: CI, pipeline workflow, render.yaml, deploys, size gate; CI must run
   `python scripts/check_provenance.py` and `uv run pytest` on every push (not wired anywhere yet; Phase 0 review)
-- [ ] T-030 technical-writer: block 2 report, SI-use log; HANDOFF for Tyson's night shift
+- [ ] T-030 technical-writer: block 2 report, SI-use log (English only, D-026)
 
 ## Block 3: scope completion (day 2)
-- [ ] T-040 agronomist: apply Tyson's answers; approvals; remaining queue
-- [ ] T-041 data-scientist: AHP weights from Tyson's matrix (class A to apply)
-- [ ] T-042 frontend-engineer: Strategies, Alerts, Learn, Farm setup data levels 0–3, modes, data saver
+- [ ] T-040 agronomist: apply FIX2 §5 mandate (sourced or labelled, checks not prescriptions, reviewed_by /
+  human_review fields, review-queue.md for a future local agronomist) (D-025)
+- [x] T-041 closed: won't do — no expert AHP matrix; replaced by T-024b sensitivity check (D-024); ahp.py kept unused
+- [ ] T-042 frontend-engineer: Strategies (badge "Not yet reviewed by a local agronomist"), Alerts, Learn, Farm setup
+  data levels 0–2 (level 3 is nice-to-have), data saver, sensitivity result in Lot detail or "How reliable is this?"
 - [ ] T-043 api-engineer: Telegram bot (nice-to-have)
-- [ ] T-044 qa-demo-engineer: e2e suite, replay acceptance, DEVICE_CHECKLIST.md
-- [ ] T-045 instructor: farmer and agronomist guides (es/en), judge quick start, Learn cards
-- [ ] T-046 Tyson: device checklist on Galaxy A55; issues; project page draft; video script and voice
+- [ ] T-044 qa-demo-engineer: e2e suite, replay acceptance, DEVICE_CHECKLIST.md (iPhone 14 Pro, iPad Air M2,
+  Chrome DevTools Android emulation 360×780, CPU 4×, Slow 4G)
+- [ ] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
+  guidance stated as general and not reviewed by a local agronomist
+- [x] T-046 closed: won't do (team change, D-022)
 
 ## Freeze and submission (day 2, 15:00 → 20:00)
 - [ ] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates
-- [ ] T-051 technical-writer: README, CITATIONS, CHANGELOG, SI-use description, project page (en) + Tyson summary
-- [ ] T-052 Roster + Tyson: 30-second video with English subtitles, public link
-- [ ] T-053 Roster: submit by 20:00 Spain; confirm all members and public links
+- [ ] T-051 technical-writer: README, CITATIONS, CHANGELOG, SI-use description, project page (en); no naming of the
+  former team agronomist (FIX2 §7, D-027)
+- [ ] T-052 Roberto: 30-second video with English captions, public link
+- [ ] T-053 Roberto: submit by 20:00 Spain; confirm only active members are listed (ask the Local Lead, D-027)
 
-## Waiting on Tyson (questionnaire 5.1–5.10, Tasks 5–7 in his doc)
-- [ ] T-060 variety, density, soil type, drainage depth/spacing
-- [ ] T-061 actions per alert level; solo-farmer actions; local vocabulary; preferred channel
-- [ ] T-062 biosecurity text (Fusarium TR4) — nothing shown until approved
-- [ ] T-063 evidence of zero-data farms; flood memory table; AHP pairwise comparisons
-- [ ] T-064 redefine the demo farm's imaginary lot layout and attributes
+## Former Tyson inputs (closed 14 Nov 2026)
+- [x] T-060 closed: won't do (team change, D-022); questionnaire defaults become v1 values tagged estimated (D-023)
+- [x] T-061 closed: won't do (team change, D-022)
+- [x] T-062 closed: won't do (team change, D-022); biosecurity: at most one cited line to the official authority (D-025)
+- [x] T-063 closed: won't do (team change, D-022)
+- [x] T-064 closed: won't do (team change, D-022); the synthetic demo farm is final for v1

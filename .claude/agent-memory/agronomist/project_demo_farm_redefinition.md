@@ -1,16 +1,16 @@
 ---
 name: project-demo-farm-redefinition
-description: Standing note - Tyson must redefine Finca Demo El Oro's imaginary lots; questionnaire 5.1-5.10 still on estimated defaults
+description: Standing note - the synthetic demo farm Finca Demo El Oro is final for v1; questionnaire 5.1-5.10 closed with estimated defaults
 metadata:
   type: project
 ---
 
-Tyson must redefine the imaginary lot layout and attributes of Finca Demo El Oro; questionnaire answers 5.1–5.10
-are pending and currently use defaults tagged estimated (`estimated_by: questionnaire-default`).
+The synthetic demo farm is final for v1. Questionnaire 5.1–5.10 is closed: its defaults are the v1 values, tagged
+`estimated` with reason "team agronomist left; default retained" (D-023).
 
-**Why:** standing note required by docs/AGENTS.md §8. Tyson's family farm keeps no records, so the demo farm is
-synthetic (8 lots, 5–7 ha, Pasaje / Buenavista river). Task T-064 tracks the redefinition; T-060/T-061 the questionnaire.
+**Why:** the team agronomist left on 14 Nov 2026 (FIX2.md, D-022); nobody will redefine the lots. Tasks T-060..T-064
+are closed. The demo farm stays synthetic (8 lots, 5–7 ha, Pasaje / Buenavista river).
 
-**How to apply:** lot attributes in domain/farm.json stay `origin: synthetic`, `to_be_redefined_by: Tyson`, and null
-unless a source backs a plausible El Oro value. When tyson-answers.md gains answers, replace the estimated defaults in
-domain/thresholds.yaml and clear the matching items in domain/tyson-review-queue.md. See [[reference-source-verification]].
+**How to apply:** lot attributes in domain/farm.json stay `origin: synthetic`, `to_be_redefined_by:
+future-local-agronomist`, and null unless a source backs a plausible El Oro value. Open questions go to
+domain/review-queue.md (for a future local agronomist); no task waits on them. See [[reference-source-verification]].

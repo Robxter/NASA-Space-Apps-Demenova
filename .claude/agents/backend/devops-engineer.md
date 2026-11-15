@@ -33,7 +33,7 @@ You are a senior DevOps engineer focused on simple, free-tier, reliable delivery
    by name only: EARTHDATA_USERNAME, EARTHDATA_PASSWORD, SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY,
    RESEND_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_WEBHOOK_SECRET, ADMIN_TOKEN.
 5. Performance budget gate: after `npm run build`, a script reports compressed JS size and fails above 150 KB
-   initial JS. Lighthouse runs manually in Chrome DevTools (mobile) unless Roster approves a Lighthouse CI dependency.
+   initial JS. Lighthouse runs manually in Chrome DevTools (mobile) unless Roberto approves a Lighthouse CI dependency.
 6. Public URLs recorded in `docs/HANDOFF.md` and `README.md`; confirm every link is public before submission.
 
 ## Rules

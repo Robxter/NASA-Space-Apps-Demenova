@@ -1,9 +1,11 @@
 # Demenova agent system
 
 14 custom agents in `.claude/agents/`, plus ECC's reviewers, coordinated by the **main Claude Code session**
-(the orchestrator) under Roster's direction. Tyson is the human domain authority.
+(the orchestrator) under Roberto's direction. Roberto is the only human on the team since 14 Nov 2026 (D-021,
+D-022): product owner, builder, final approver and device tester. There is no human domain expert; nothing waits on
+anyone but Roberto (CLAUDE.md §13).
 
-## 1. Roster
+## 1. Agent roster
 
 | # | Agent | Folder | Owns | Writes code? | Memory |
 | --- | --- | --- | --- | --- | --- |
@@ -16,7 +18,7 @@
 | 7 | frontend-engineer | frontend | App logic, data layer, offline, data levels, units, i18n | Yes | none |
 | 8 | product-designer | frontend | Identity, logo, tokens, UI components, motion | Yes (styles, ui) | project |
 | 9 | scientist-reviewer | validation | Formula and claim verification | No (reports) | none |
-| 10 | agronomist | validation | Domain tables, strategies, actions; Tyson approves | Data files | project |
+| 10 | agronomist | validation | Domain tables, strategies, actions; sourced or labelled "not reviewed" (D-025) | Data files | project |
 | 11 | qa-demo-engineer | validation | Playwright, replay acceptance, device checklist | Tests only | none |
 | 12 | technical-writer | docs | Block reports, SI-use log, citations, project page | Docs | project |
 | 13 | agent-ops-engineer | docs | Briefs from vague requests, audits, proposals | Briefs only | project |
@@ -41,28 +43,28 @@ Custom names never reuse an ECC name.
 
 ## 3. Orchestration protocol (main session)
 
-The main session is the only place that talks to Roster. Delegation is flat
+The main session is the only place that talks to Roberto. Delegation is flat
 (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH=1`): main session → agent, never agent → agent.
 
 For every block:
 1. Read `TASKS.md`, `docs/HANDOFF.md`, `docs/decisions/PENDING.md`.
-2. Run `/ecc:plan` for the block, aligned with `docs/WORKFLOW.md`. Show the plan to Roster.
+2. Run `/ecc:plan` for the block, aligned with `docs/WORKFLOW.md`. Show the plan to Roberto.
 3. Launch agents as the plan says; agents with disjoint owned paths may run in parallel in the background.
 4. When an agent finishes: read its report; turn blockers into TASKS.md items; route reviews
    (engine → scientist-reviewer + code-reviewer; schema → database-reviewer; backend → security-reviewer).
-5. Read PENDING.md; ask Roster every class A question in one batch, with the options and a recommendation.
+5. Read PENDING.md; ask Roberto every class A question in one batch, with the options and a recommendation.
 6. Run technical-writer for the block report; update HANDOFF.md; commit.
 
 ## 4. Approval flow
 
 | Class | What | Who approves | How |
 | --- | --- | --- | --- |
-| A | New/upgraded dependencies, DB schema, alert weights and thresholds, data-policy or Rule-zero changes, data-source substitutions, high-importance agent-file changes | Roster | Agent writes PENDING.md entry and stops that branch; main session asks Roster |
+| A | New/upgraded dependencies, DB schema, alert weights and thresholds, data-policy or Rule-zero changes, data-source substitutions, high-importance agent-file changes | Roberto | Agent writes PENDING.md entry and stops that branch; main session asks Roberto |
 | B | Low-importance agent-file changes (wording, clarity, examples, formatting); backward-compatible contract additions | lead-architect | Lead applies and logs in DECISIONS.md |
 | C | Everything inside an agent's own paths that is not A or B | Owning agent | Reported in its run report |
 
-Agent-file change path (Roster's rule): agent-ops-engineer writes a proposal → main session runs lead-architect →
-low importance: lead approves and applies (class B) → high importance: PENDING.md → main session asks Roster.
+Agent-file change path (Roberto's rule): agent-ops-engineer writes a proposal → main session runs lead-architect →
+low importance: lead approves and applies (class B) → high importance: PENDING.md → main session asks Roberto.
 When in doubt it is class A.
 
 ## 5. Routing: who does what
@@ -75,8 +77,8 @@ When in doubt it is class A.
 | "Make it look less chunky / less AI" | agent-ops-engineer (brief) → product-designer → frontend-engineer → qa |
 | "Email/Telegram broken" | api-engineer → security-reviewer |
 | "Deploy / CI red" | devops-engineer (or `/build-fix`) |
-| "Schema change" | database-engineer → database-reviewer → Roster (class A) |
-| "Agronomic text / strategies" | agronomist → Tyson (via tyson-review-queue.md) |
+| "Schema change" | database-engineer → database-reviewer → Roberto (class A) |
+| "Agronomic text / strategies" | agronomist → scientist-reviewer (items stay `human_review: none`; open questions go to domain/review-queue.md for a future local agronomist) |
 | "Write the report / project page" | technical-writer |
 | "User guide" | instructor |
 | "An agent keeps doing X wrong" | agent-ops-engineer (audit + proposal) → lead-architect |
@@ -98,11 +100,10 @@ Model/effort: <opus xhigh | opus high | sonnet ...>   Task IDs: <T-...>   Branch
 - Class C taken: ...   Class A/B raised: <PENDING.md / proposal id>
 ## Open issues and risks
 - ...
-## Next steps for <agent or Roster>
-- ...
-## Resumen para Tyson (only if domain-relevant)
+## Next steps for <agent or Roberto>
 - ...
 ```
+Reports are in English only (D-026).
 
 ## 7. Handoff template (`docs/HANDOFF.md`, newest entry on top)
 
@@ -111,8 +112,7 @@ Model/effort: <opus xhigh | opus high | sonnet ...>   Task IDs: <T-...>   Branch
 State: <one sentence>
 Live links: app <url> | backend <url> | repo <url>
 Done since last handoff: ...
-Waiting on Roster: <PENDING ids>
-Waiting on Tyson: <tyson-review-queue items>
+Waiting on Roberto: <PENDING ids>
 Next for the receiver, in order: 1. ... 2. ...
 Do not touch: ...
 ```
@@ -120,8 +120,8 @@ Do not touch: ...
 ## 8. Agent memory
 
 Agents with `memory: project` keep notes in `.claude/agent-memory/<agent>/MEMORY.md` (committed). Standing notes:
-- agronomist: "Tyson must redefine the imaginary lot layout and attributes of Finca Demo El Oro; questionnaire
-  answers 5.1–5.10 are pending and currently use defaults tagged estimated."
+- agronomist: "The synthetic demo farm is final for v1. Questionnaire 5.1–5.10 is closed; its defaults are the v1
+  values, tagged estimated (D-023)."
 - lead-architect: conventions and ADR index.
 - data-engineer: verified dataset identifiers.
 - product-designer: what was tried and rejected.

@@ -1,7 +1,9 @@
-# Cola de revisión para Tyson
+# Cola de revisión — para un futuro agrónomo local (For a future local agronomist)
 
-Actualizado: 14 nov 2026 (agronomist, T-017). Todo lo de abajo es **borrador**: nada queda aprobado hasta que
-escribas "OK". Responde por número: **OK**, **cambio: ...** o **no sé**. Lo que no sepas queda vacío; no inventamos.
+Actualizado: 15 nov 2026 (FIX2.md §5, D-025). Antes `domain/tyson-review-queue.md`. El agrónomo del equipo dejó el
+proyecto el 14 nov 2026; esta cola queda abierta para que un agrónomo local valide y ajuste Demenova. Hasta entonces
+todo lo de abajo es **borrador**, con `human_review: none`, y la app lo muestra con la etiqueta "No revisado aún por
+un agrónomo local". Ninguna tarea espera estas respuestas. Lo que no se sepa queda vacío; no inventamos.
 Archivos: `domain/thresholds.yaml`, `practices.yaml`, `strategies.yaml`, `actions.yaml`, `glossary.yaml`.
 
 Ya confirmado por ti (no hace falta revisar): tolerancia 2 días de encharcamiento; raíces a 70 cm; Machala/El Oro.

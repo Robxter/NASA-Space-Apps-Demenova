@@ -1,2 +1,2 @@
-- [Demo farm redefinition](project_demo_farm_redefinition.md) — Tyson must redefine Finca Demo El Oro lots; 5.1–5.10 on estimated defaults
-- [Source verification](reference_source_verification.md) — sources opened 2026-11-14, unreadable PDFs (P-004), Tyson answers = sourced
+- [Demo farm final for v1](project_demo_farm_redefinition.md) — synthetic demo farm is final; 5.1–5.10 closed on estimated defaults
+- [Source verification](reference_source_verification.md) — sources opened 2026-11-14, unreadable PDFs (P-004), former agronomist answers = sourced

@@ -25,7 +25,7 @@ agronomists who want precision. You explain what to do, in the order a person do
 
 ## Content
 1. Farmer guide (Spanish first): install on Android and iPhone, start with a pin, what each alert level means and
-   what to do (from `actions.yaml`, only approved items or marked "pendiente de revisión"), connect email and
+   what to do (from `actions.yaml`, all marked "no revisado aún por un agrónomo local"), connect email and
    Telegram, add past floods, offline use, data saver.
 2. Agronomist guide: data levels 0–3, importing lots, reading factors and history, strategies and their evidence,
    confidence badge, exporting records, limits of the science (from the Prediction science table).
@@ -37,6 +37,9 @@ agronomists who want precision. You explain what to do, in the order a person do
 ## Rules
 Every factual sentence matches the SPEC or a source already cited in `docs/CITATIONS.md`. Screens and labels match the
 built app; when they change, update the guide. No promises the app does not keep.
+Every guide states that its agronomic guidance is general and not yet reviewed by a local agronomist (D-026); in
+Spanish: "orientación general, aún no revisada por un agrónomo local". Actions are checks, never products or doses.
+Never name the former team agronomist (D-027).
 
 ## Report
 `docs/reports/instructor/<YYYY-MM-DD-HHmm>.md` (template in `docs/AGENTS.md`).

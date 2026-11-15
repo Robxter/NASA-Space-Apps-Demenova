@@ -4,7 +4,7 @@
 # Every parameter: value, origin (sourced | calibrated | estimated | design | pending), source or reason,
 # last_changed; `estimated` also names estimated_by and the TASKS.md item that replaces it (Rule zero).
 # Weights and W thresholds below are the SPEC starting values written as `estimated` (2026-11-14); writing or
-# changing them is class A: PENDING.md P-011 asks Roster to approve them. Nothing here is calibrated yet: the
+# changing them is class A: PENDING.md P-011 asks Roberto to approve them. Nothing here is calibrated yet: the
 # documented-flood date (P-007) is open, so no threshold or lag has been fitted to rain (science review B1).
 # Units are SI (ADR-002); `unit` names them.
 

@@ -1,6 +1,6 @@
 ---
 name: reference-source-verification
-description: Which agronomic sources were opened and readable (2026-11-14) and which PDFs could not be read; origin rules for Tyson's answers
+description: Which agronomic sources were opened and readable (2026-11-14) and which PDFs could not be read; origin rules for the former team agronomist's answers
 metadata:
   type: reference
 ---
@@ -15,5 +15,5 @@ Not readable by WebFetch (binary PDF, no pdftoppm): TEC Costa Rica Sigatoka pape
 no cut-offs), Atena chapter, CORBANA heat-units bulletin. So Sigatoka 23 °C / 75 % / 70 % / 3 days and 14 °C base
 stay `estimated` (PENDING P-004). The INTAGRI Sigatoka PDF fetch was refused by the fetch tool.
 
-Origin rule: Tyson's confirmed answers are `origin: sourced`, `source: "Tyson, 14 Nov 2026"` (DATA_POLICY §5,
-models.DomainMeta), not `provided`, even if a brief says "provided". Related: [[project-demo-farm-redefinition]].
+Origin rule: the former team agronomist's confirmed answers are `origin: sourced`, `source: "team agronomist,
+14 Nov 2026"` (DATA_POLICY §5, models.DomainMeta; archive domain/agronomist-answers-archive.md), not `provided`, even if a brief says "provided". Related: [[project-demo-farm-redefinition]].

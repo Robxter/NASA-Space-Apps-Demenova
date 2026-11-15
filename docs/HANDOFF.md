@@ -2,6 +2,23 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 00:45 - Main session (Claude Code) to Roberto and the next session (PAUSED at the usage limit)
+State: Phase 2 paused on block/2-core: Opus 5-hour limit hit ~00:15, resets 03:30 Spain. FIX2.md applied (solo build).
+Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Done since last handoff: frontend T-026/T-027 (2ea3983, d0acc61); engine T-020 (c39de04), T-021/T-022 (83d8cf0),
+T-023 (8b1194e); FIX2: Roster→Roberto, Tyson tasks closed, answers archived (domain/agronomist-answers-archive.md),
+review queue → domain/review-queue.md, DATA_POLICY §4–§5, CLAUDE.md §13, agent files, D-021..D-028; P-007 closed (D-024).
+Paused agents (resume with SendMessage, their context is kept): data-scientist mid-T-024 (uncommitted
+pipeline/engine/verification.py + test_side_and_verification.py: leave them for it); api-engineer T-028 (nothing written).
+Waiting on Roberto: Space Apps Members tab with the Local Lead (D-027); apply schema to Supabase; open PRs to main.
+Next for the receiver, in order: 1. After 03:30 resume data-scientist: finish T-024, then T-024b sensitivity check
+(D-024; weights origin `design`), snapshots to app/public/data/demo/. 2. Resume api-engineer T-028. 3. Then:
+scientist-reviewer + one code review on the engine; frontend re-check against real snapshots; devops T-029.
+4. FIX2 follow-ups for agents: agronomist T-040 (domain YAMLs still say Tyson/approved_by; reviewed_by/human_review
+fields); lead-architect class B: contract text in models.py/schemas mentioning Tyson, `reviewed_by`/`human_review`
+on domain items; data-engineer: demo_lots `to_be_redefined_by: future-local-agronomist`; engine comments mention Tyson.
+Do not touch: contracts without lead-architect; .env and api keys.txt.
+
 ## 2026-11-14 23:55 - frontend-engineer to main session
 State: T-026 and T-027 done on block/2-core (2ea3983); not pushed. Report docs/reports/frontend-engineer/2026-11-14-2355.md.
 Done since last handoff: hash nav, context state, en/es dictionaries, snapshot loader with IndexedDB offline copy,
@@ -17,7 +34,7 @@ Do not touch: app/src/components/DataValue.tsx semantics (unknown origin renders
 State: T-010/T-011/T-012/T-019 done, T-014 partial, T-013 blocked on Earthdata credentials; all work uncommitted.
 Done since last handoff: datasets.yaml verified (16 sourced); pysheds added; AOI + 252.7 km² catchment; 8 synthetic lots;
 POWER daily/hourly; S2 NDVI; replay stack (no rain/soil yet). Report docs/reports/data-engineer/2026-11-14-1932.md.
-Waiting on Roster: P-005 (Earthdata keys in .env), P-007 (demo flood date).
+Waiting on Roberto: P-005 (Earthdata keys in .env), P-007 (demo flood date).
 Next for the receiver, in order: 1. Review/commit. 2. After P-005: `uv run python -m pipeline.ingest imerg`, then `replay`.
 3. agronomist merges processed/aoi/demo_lots.geojson into domain/farm.json.
 Do not touch: pipeline/data/raw (git-ignored cache, ~80 MB SRTM tiles).
@@ -27,21 +44,19 @@ State: T-017 domain files drafted (all unapproved except Tyson's 2 days / 70 cm)
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: domain/{thresholds,practices,strategies,actions,glossary,flood_memories}.yaml,
 domain/tyson-review-queue.md (Spanish, Q-01..Q-19); P-004 (unreadable Sigatoka/heat-unit PDFs, values kept estimated).
-Waiting on Roster: run `uv run pytest -q` and `python scripts/check_provenance.py`; P-004; paste the queue to Tyson.
-Waiting on Tyson: tyson-review-queue Q-01..Q-19 (biosecurity draft Q-17 never shown until he approves, T-062).
+Waiting on Roberto: run `uv run pytest -q` and `python scripts/check_provenance.py`; P-004.
 Next for the receiver, in order: 1. Run checks. 2. Send queue to Tyson. 3. After T-012 geometry, agronomist writes
 domain/farm.json lot attributes (null unless sourced, origin synthetic, to_be_redefined_by Tyson).
 Do not touch: domain/ approvals (only Tyson's answers, via tyson-answers.md, set approved_by).
 
-## 2026-11-14 23:45 - Main session (Claude Code) to Roster (morning) and next session
+## 2026-11-14 23:45 - Main session (Claude Code) to Roberto (morning) and next session
 State: Phase 1 complete on block/1-foundations (stacked on block/0-skeleton); all reviews' findings fixed.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: rain history rebuilt on one product (IMERG Early); SMAP recommended-only (0 days); outlet on
 OSM river; schema approved (D-018) and 79/79 RLS checks pass on local Postgres 18.7 (supabase/tests/run_local.ps1);
 telegram_code in contracts 1.1.0 (D-020); D-014..D-019 recorded; block 0+1 report docs/reports/blocks/block-0-1.md.
 Checks: pytest 183 passed; contracts in sync; provenance OK.
-Waiting on Roster: apply schema to Supabase (supabase/README.md) and report the RLS test line; open PR(s) to main.
-Waiting on Tyson: P-007 real flood date; review queue Q-01..Q-19 (Q-01, Q-06 first).
+Waiting on Roberto: apply schema to Supabase (supabase/README.md) and report the RLS test line; open PR(s) to main.
 Next for the receiver, in order: 1. Phase 2 (block/2-core): data-scientist engine T-020..T-024 + frontend-engineer
 shell T-026/T-027, then api-engineer T-028 and devops T-029 (max 2 agents at a time). 2. Do not calibrate on rain until
 P-007 answers; SMAP not used (D-019). 3. Engine review: scientist-reviewer + one code review.
@@ -64,23 +79,23 @@ Para revisar esta noche, en orden:
 3. Logo: tres opciones en `design/logo/options-sheet.png` (recomendada la 1, "Core").
 Nada de esto cambia el plazo: entrega el domingo 15 a las 20:00 (hora de España).
 
-## 2026-11-14 19:05 - Main session (Claude Code) to Roster
+## 2026-11-14 19:05 - Main session (Claude Code) to Roberto
 State: Phase 0 complete and pushed on block/0-skeleton; review (1 HIGH, 6 MEDIUM) fixed with regression tests.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: tree + READMEs, openapi.yaml, config stubs (all null/pending), app scaffold (build green),
 ADR-001..005, provenance checker hardened (CSV, sidecars, refs, numeric strings, pending origins); SPEC diagrams
 transcribed from the Claude Doc (P-001 resolved). Checks: pytest 148 passed; checker OK; contracts in sync; app build OK.
-Waiting on Roster: P-002 (Telegram farm code), P-003 (nullable country/province/canton); open the PR to main;
+Waiting on Roberto: P-002 (Telegram farm code), P-003 (nullable country/province/canton); open the PR to main;
 claude-mem Gemini key; FreeLLMAPI installer; OmniRoute removal.
 Next for the receiver, in order: 1. Phase 1 wave A (data-engineer + agronomist). 2. Wave B. 3. Checkpoint A.
 Do not touch: contracts without lead-architect (CONTRACTS.md §9).
 
-## 2026-11-14 18:40 - Main session (Claude Code) to Roster
-State: FIX.md applied except the steps only Roster can finish; phase 0 resumes from 3a37c2b after the restart.
+## 2026-11-14 18:40 - Main session (Claude Code) to Roberto
+State: FIX.md applied except the steps only Roberto can finish; phase 0 resumes from 3a37c2b after the restart.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: Ponytail (lite) installed; claude-mem installed off-plan (gemini, chill, no telemetry); Node
 22.23.5 + Bun 1.4.4 added; FreeLLMAPI installer downloaded and digest-verified (unsigned, not run). D-010..D-012 logged.
-Waiting on Roster: claude-mem setup page http://127.0.0.1:37774/?setup=1 with a Gemini key (never "Anthropic plan");
+Waiting on Roberto: claude-mem setup page http://127.0.0.1:37774/?setup=1 with a Gemini key (never "Anthropic plan");
 run or skip the FreeLLMAPI installer; remove OmniRoute (`npm uninstall -g omniroute`) or keep; restart with scripts/start.ps1.
 Next for the receiver, in order: 1. Confirm "lite" shows at startup. 2. Resume phase 0 (lead-architect). 3. Phase 1 wave A.
 Do not touch: committed phase 0 files except to complete them.
@@ -91,23 +106,21 @@ previa de la app; pasa al domingo por la mañana. Para tu turno de noche tendrá
 la cola de revisión `domain/tyson-review-queue.md` (en español), la lista de las 15 lluvias de 72 h más fuertes aguas
 arriba para que marques cuáles inundaron, y las tres opciones de logo. El plazo de entrega no cambia (domingo 20:00).
 
-## 2026-11-14 17:55 - Main session (Claude Code) to Roster
+## 2026-11-14 17:55 - Main session (Claude Code) to Roberto
 State: Applying FIX.md; phase 0 status: partial, checkpoint commit 3a37c2b on block/0-skeleton.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: SPEC.md exported from the Claude Doc; git initialised; kit pushed (8866698). Phase 0 partial
 (lead-architect hit the Fable 5-hour limit twice): 31 JSON Schemas, pipeline/common/models.py, app/src/types/contracts.ts,
 scripts/check_provenance.py + tests/test_provenance.py (94 passed), scripts/export_contracts.py, pyproject.toml + uv.lock,
 .gitignore. Phase 0 still missing: folder READMEs, openapi.yaml, config stubs, ADR-001..004, app scaffold + build, TASKS.md phase 1.
-Waiting on Roster: FIX.md steps 4-6 (Ponytail, Node upgrade + claude-mem key, FreeLLMAPI decision).
-Waiting on Tyson: questionnaire 5.1-5.10; his doc Tasks 5-7.
+Waiting on Roberto: FIX.md steps 4-6 (Ponytail, Node upgrade + claude-mem key, FreeLLMAPI decision).
 Next for the receiver, in order: 1. Finish FIX.md. 2. Restart with scripts/start.ps1. 3. Resume phase 0 from 3a37c2b.
 Do not touch: committed phase 0 files except to complete them.
 
-## 2026-11-14 - Claude (claude.ai) to Roster
+## 2026-11-14 - Claude (claude.ai) to Roberto
 State: agent kit, spec and data policy ready; repository empty except the kit.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
 Done since last handoff: CLAUDE.md, 14 agents, AGENTS.md, WORKFLOW.md, DATA_POLICY.md, CONTRACTS.md draft, TASKS.md, launchers.
-Waiting on Roster: Step 0 accounts; export SPEC.md from the Claude Doc.
-Waiting on Tyson: questionnaire 5.1-5.10; his doc Tasks 5-7; costs and labour for strategies.
+Waiting on Roberto: Step 0 accounts; export SPEC.md from the Claude Doc.
 Next for the receiver, in order: 1. WORKFLOW Step 0 and Step 1. 2. Start orchestrator. 3. Phase 0 prompt.
 Do not touch: nothing yet.

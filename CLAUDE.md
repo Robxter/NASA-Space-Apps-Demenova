@@ -5,7 +5,7 @@ waterlogging and flood alerts, field-condition history and soil-management strat
 banana farms in coastal El Oro, Ecuador. Built for the 2026 NASA Space Apps Challenge,
 challenge "Field Shift: Adapting Farms with NASA Data".
 
-- Team: Roster (product owner, builder, final approver) and Tyson (agronomist, domain authority).
+- Team: Roberto (Cristian Roberto Terán Paredes), product owner, builder and final approver. Solo since 14 Nov 2026.
 - Deadline: submission closes Sunday 15 Nov 2026, 23:59 Spain time (CET, UTC+1). Target: submit by 20:00.
 - Source of truth: `docs/SPEC.md`. Contracts: `docs/contracts/CONTRACTS.md`. Data rules: `docs/DATA_POLICY.md`.
   Agent roster and approval flow: `docs/AGENTS.md`. Run order: `docs/WORKFLOW.md`. Tasks: `TASKS.md` + GitHub Issues.
@@ -79,18 +79,18 @@ Package managers: npm for the app, uv for Python. Pin exact versions in lockfile
 
 ## 5. Environment: Windows 11 + PowerShell
 
-Roster develops on Windows 11 with PowerShell, VS Code, Node 22.11, Python 3.11.9, Git 2.47, Claude Code 2.1.325.
+Roberto develops on Windows 11 with PowerShell, VS Code, Node 22.11, Python 3.11.9, Git 2.47, Claude Code 2.1.325.
 - Prefer cross-platform commands (`npm`, `uv`, `python`, `git`). When a shell command is needed, write it for PowerShell.
 - Use forward slashes in code paths; never hard-code `C:\`.
 - Set `PYTHONUTF8=1` when Python reads or writes text files.
-- Test devices: iPhone 14 Pro, iPad Air M2, Tyson's Samsung Galaxy A55, plus Chrome DevTools throttling.
+- Test devices: iPhone 14 Pro, iPad Air M2; Android via Chrome DevTools emulation (360×780, CPU 4× slowdown, Slow 4G).
 
 ## 6. Approvals (who decides what)
 
-Subagents cannot ask the user questions. When a decision needs Roster, the agent writes it to
+Subagents cannot ask the user questions. When a decision needs Roberto, the agent writes it to
 `docs/decisions/PENDING.md` and stops that branch of work. The main session reads PENDING.md after every block.
 
-Always needs Roster's approval (class A):
+Always needs Roberto's approval (class A):
 - new or upgraded dependencies; database schema changes; alert weights or thresholds;
 - any change touching Rule zero or the data policy; substitution of a data source;
 - High-importance changes to agent files (tools, model, effort, permissions, scope, rules).
@@ -173,3 +173,12 @@ documentation, reports and review sweeps. Do not edit agent files to switch mode
 Ponytail runs in LITE mode only (never full or ultra). It may shorten implementation; it may never remove or skip:
 Rule zero checks, provenance blocks, the provenance checker, tests required by §7b, contract fields, error handling at
 trust boundaries, accessibility, or i18n keys. If Ponytail and this file disagree, this file wins.
+
+## 13. Solo-build rules (since 14 Nov 2026)
+
+- No task may wait on a human other than Roberto. If an agent needs domain input, it researches for at most
+  15 minutes, then either cites what it opened or labels the item "estimated" / "not reviewed" and moves on.
+- Class A questions go to Roberto in one batch per block, each with a recommended default. If Roberto has not
+  answered by the end of the block, the recommended default applies and is logged as such.
+- Unknown values are shown as unknown. Never invent a number to fill a gap left by the team change.
+- Prefer cutting a nice-to-have over slowing a must-have.

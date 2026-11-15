@@ -57,14 +57,30 @@ that do not exist yet (they are `null` in data and shown as missing).
 }
 ```
 
-## 4. Values awaiting Tyson (currently `estimated`)
+## 4. Values without an expert since the team change (14 Nov 2026; D-023)
 
-Questionnaire 5.1–5.10 defaults: banana variety (Cavendish Williams), planting density, soil type (loam), drain depth
-and spacing, actions per alert level, local vocabulary, preferred channel, biosecurity text (none until approved),
-solo-farmer actions. Also: Sigatoka Watch after 3 days, cold-stress threshold, alert weights (until his AHP matrix).
-Each is listed in `domain/tyson-review-queue.md` and replaced when he answers.
+The team agronomist left on 14 Nov 2026 and answers nothing more. No value waits on him. Archive:
+`domain/agronomist-answers-archive.md`.
 
-## 5. Already confirmed by Tyson (`origin: sourced`, source "Tyson, 14 Nov 2026")
+| Item | Origin now | Rule |
+| --- | --- | --- |
+| Questionnaire 5.1–5.10 defaults (variety Cavendish Williams, planting density, soil type loam, drain depth and spacing, actions per level, vocabulary, channel, solo-farmer actions, review time) | `estimated`, reason "team agronomist left; default retained" | Closed; the defaults are the v1 values |
+| Biosecurity (Fusarium TR4) | none | No recommendations of our own; at most one neutral line to Ecuador's official plant-health authority, only if its official page was opened and cited (D-025) |
+| Sigatoka Watch after 3 days; cold-stress threshold | `estimated` | Experimental, nice-to-have, "Experimental" badge in the UI |
+| Strategy scores (soil, water, cost, labour) | `estimated` | Drafted by Claude, never validated; badge "Not yet reviewed by a local agronomist" |
+| Strategy costs and labour | `pending` | Shown as "not estimated"; never guessed |
+| Alert weights 0.35 / 0.25 / 0.20 / 0.10 / 0.10 (SPEC starting weights) | `design`, reason "engineering choice; no expert AHP matrix available" | Backed by the ±0.10 sensitivity check on the Feb 2026 replay (D-024) |
+| AHP pairwise matrix | none | Never answered; `ahp.py` stays as the path for a future local agronomist |
+| Flood memories | none | Use documented floods only, `observed`, observer = press source URL from the SPEC |
+| Agronomic statements in domain files | `sourced` (agent opened the source) or labelled "General guidance — not reviewed by an agronomist" | `reviewed_by: [agronomist-agent, scientist-reviewer]`, `human_review: none` (D-025) |
 
-Banana tolerates at most 2 days of waterlogging; roots at 70 cm; Machala/El Oro is the right area; his family farm
-keeps no records and does not use maní forrajero; his test phone is a Samsung Galaxy A55.
+Open questions for a future local agronomist live in `domain/review-queue.md`. No task waits on them.
+
+## 5. Kept from the team agronomist (`origin: sourced`, source "team agronomist, 14 Nov 2026")
+
+Banana tolerates at most 2 days of waterlogging and roots reach 70 cm (used by the 2-day floor rule); Machala/El Oro
+is the right area; field problems, signals, users, phone-first, trust via history and adoption barriers are product
+requirements. His family farm keeps no records and does not use maní forrajero: kept internally as the founding case,
+anonymous in public. Evidence of zero-data farms: only his own farm, as an anonymous anecdote with no statistics.
+Consent to use his name, voice or photo is treated as withdrawn unless he reconfirms in writing (D-027). He is not
+named in public materials.

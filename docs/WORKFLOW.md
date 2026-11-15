@@ -1,8 +1,17 @@
 # Demenova workflow: from empty repo to submission
 
-All times are Spain time (CET). Deadline 15 Nov 23:59; target submission 20:00. Roster sleeps about 00:00 to 04:30.
+All times are Spain time (CET). Deadline 15 Nov 23:59; target submission 20:00. Roberto sleeps about 00:00 to 04:30.
 Every prompt below is meant to be pasted into the **main Claude Code session** as written.
 
+> **Re-planned 15 Nov ~00:30 (FIX2.md, D-021..D-028): solo build by Roberto.** Tyson left the team on 14 Nov 2026;
+> every step below that mentions Tyson, his answers, his issues, his AHP matrix, his night shift or a Spanish summary
+> for him no longer applies. Timetable and must-have / nice-to-have scope: top of `TASKS.md` (D-028). Day-2 changes:
+> step 1 = agronomist applies the FIX2 §5 mandate (sourced or labelled; `domain/review-queue.md`); step 2 = the ±0.10
+> weight sensitivity check replaces AHP (D-024); step 3 = data levels 0–2 (level 3 and the farmer/agronomist toggle
+> are nice-to-have); no Spanish summary at freeze; video = Roberto only, the 5 s problem uses the documented
+> February 2026 floods (no name, photo or voice of the former team member, D-027); Members tab: only active members.
+> Solo-build rules: CLAUDE.md §13.
+>
 > **Re-planned 14 Nov 18:10 (FIX.md §8).** The times in this file are superseded by the timetable at the top of
 > `TASKS.md`. Phase 1 runs in two waves of two agents (CLAUDE.md §11: at most 2 subagents at a time): wave A
 > data-engineer + agronomist, wave B database-engineer + product-designer. The Render preview for Tyson moves to day 2.
@@ -10,7 +19,7 @@ Every prompt below is meant to be pasted into the **main Claude Code session** a
 
 ---
 
-## Step 0. Accounts and tools (Roster, about 25 min, can overlap with phase 0)
+## Step 0. Accounts and tools (Roberto, about 25 min, can overlap with phase 0)
 
 | Item | Action | Done |
 | --- | --- | --- |
@@ -102,7 +111,7 @@ When all four finish, show me their reports' "Open issues" and every PENDING.md 
 recommendation for each.
 ```
 
-**Checkpoint A (Roster, 10 min):** approve or change the schema SQL, pick a logo, answer any dependency request.
+**Checkpoint A (Roberto, 10 min):** approve or change the schema SQL, pick a logo, answer any dependency request.
 Paste the 15 flood candidates to Tyson. Then:
 
 ```text
@@ -125,7 +134,7 @@ When data-scientist finishes, run @scientist-reviewer on pipeline/engine and con
 code-reviewer on the same diff. Turn blockers into TASKS.md items for the owner and fix them before merging.
 ```
 
-## Before Roster sleeps (about 23:30)
+## Before Roberto sleeps (about 23:30)
 
 ```text
 1. @devops-engineer: CI, pipeline workflow (manual run once), render.yaml, deploy the app as a Render
@@ -164,18 +173,18 @@ flood memory, level 3 notes, Telegram, priority sliders, Costa Rica map, live po
 Feature freeze. Run: qa-demo-engineer full suite; scientist-reviewer final review of engine, guides and
 project page claims; ECC security-reviewer on backend and app; provenance checker; size gate. Fix only
 blockers. Then @technical-writer: final README, CITATIONS.md, CHANGELOG, SI-use description and the
-project page in English, plus a Spanish summary for Tyson. Merge to main and tag v1.0.0.
+project page in English. Merge to main and tag v1.0.0.
 ```
 
 ## 15:00 to 19:00 Demo video (humans, with Claude's help)
 
-30 seconds, English or Spanish with English subtitles: 5 s problem (Tyson), 20 s replay (rain upstream → lot turns
+30 seconds, English or Spanish with English subtitles: 5 s problem (documented Feb 2026 floods), 20 s replay (rain upstream → lot turns
 Severe → email arrives → water reaches the farm), 5 s strategies + "From orbit to the root zone." No NASA logo.
 Host it publicly (the Space Apps site does not host videos) and test the link in a logged-out browser window.
 
 ## 19:00 to 20:00 Submit
 
-Checklist: all members on the Members tab; every required field in English; demo link public; SI-use description;
+Checklist: only active members on the Members tab (ask the Local Lead, D-027); every required field in English; demo link public; SI-use description;
 data citations; no minors' likeness; press Submit (not just save). Buffer until 23:59.
 
 ---

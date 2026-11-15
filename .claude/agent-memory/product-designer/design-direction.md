@@ -8,7 +8,7 @@ metadata:
 v1 shipped 2026-11-14 (T-016). The signature is the **soil core**: logo = core in section (space, curved Earth limb,
 leaf ground, root-zone water); severity glyph = water rising in the core (25/50/75/100 %, stale = dashed empty);
 the one motion moment = ripple x2 when a lot turns Severe (`.dn-lot-shape.is-onset`, `SeverityGlyph onset`).
-Logo pick is Roster's (PENDING P-006, recommended option 1 Core); icons already drawn from option 1.
+Logo pick is Roberto's (PENDING P-006, recommended option 1 Core); icons already drawn from option 1.
 
 **Why:** the brief asks for boldness only at the calm-to-Severe map moment; the core makes logo, status and moment one idea.
 

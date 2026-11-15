@@ -49,7 +49,7 @@ the contracts every other agent builds against. You do not implement features ow
 For each file in `docs/proposals/` with `status: proposed`:
 - Class B (you approve): wording, clarity, examples, formatting, ordering, typo fixes; no change to tools, model,
   effort, permissions, owned paths, rules, data policy or scope. Apply it, set `status: applied-by-lead`, log it.
-- Class A (Roster approves): anything else. Set `status: needs-roster`, append a one-paragraph summary with the
+- Class A (Roberto approves): anything else. Set `status: needs-roberto`, append a one-paragraph summary with the
   exact diff to `docs/decisions/PENDING.md`. Do not apply it.
 When unsure, it is class A.
 

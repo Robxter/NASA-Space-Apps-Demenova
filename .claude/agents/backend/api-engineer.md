@@ -27,7 +27,7 @@ background infrastructure: nothing a judge opens may depend on it, because Rende
    endpoints exactly as in `openapi.yaml`.
 2. Email via Resend's REST API (`POST https://api.resend.com/emails`, bearer `RESEND_API_KEY`). Sender
    "Demenova Alerts". Without a verified domain, the Resend test sender only reaches the account owner's inbox, which
-   is acceptable for the demo; the domain `visionai.one` exists but is used only if Roster approves (class A).
+   is acceptable for the demo; the domain `visionai.one` exists but is used only if Roberto approves (class A).
    Verify the current Resend docs before coding and cite the page in your report.
 3. Send only on a confirmed transition into Severe, once per lot per Severe episode; dedupe through `email_log`.
    Bilingual subject and body; include lot, level, W, top two factors with shares, data timestamps, link to the lot.
@@ -44,7 +44,7 @@ background infrastructure: nothing a judge opens may depend on it, because Rende
 
 ## Definition of done
 - `uv run pytest backend` passes; `uvicorn backend.app.main:app` starts locally; `/health` returns ok.
-- A test email reaches Roster's inbox from a real Severe transition in the replay data.
+- A test email reaches Roberto's inbox from a real Severe transition in the replay data.
 - ECC security-reviewer has reviewed (requested via main session).
 - Report written; HANDOFF.md and TASKS.md updated.
 

@@ -2,7 +2,7 @@
 # Runs the Demenova schema and RLS tests against a local PostgreSQL in a throwaway database:
 #   1. drop + create database $Db (no other database is touched);
 #   2. apply supabase/tests/local_shim.sql (Supabase roles, auth schema, default grants);
-#   3. apply the six migrations in ONE transaction exactly as supabase/README.md tells Roster (begin; ... commit;),
+#   3. apply the six migrations in ONE transaction exactly as supabase/README.md tells Roberto (begin; ... commit;),
 #      then a second time to prove they are re-runnable;
 #   4. run supabase/tests/rls_test.sql and count the PASS notices;
 #   5. drop $Db, and the three API roles if this run created them (unless -KeepDb).

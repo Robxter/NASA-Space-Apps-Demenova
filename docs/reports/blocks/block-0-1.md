@@ -20,9 +20,9 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
 ## 2. Decisions
 - D-008 all agents on Opus 5.5 (Fable limit hit twice); D-009 context diet; D-010 Ponytail lite; D-011 claude-mem off-plan;
   D-012 FreeLLMAPI installer verified, not run; D-013 contracts v1 (class B). ADR-001..005 in DECISIONS.md.
-- Roster approvals (commit f471eb3): D-014 Sigatoka/heat-unit values stay `estimated`; D-015 logo option 1 "Core";
+- Roberto approvals (commit f471eb3): D-014 Sigatoka/heat-unit values stay `estimated`; D-015 logo option 1 "Core";
   D-016 country/province/canton nullable; D-017 random per-farm `telegram_code`; D-018 schema T-015 approved;
-  D-019 no not-recommended SMAP in the replay. Class A still open: **P-007** demo flood date (Tyson/Roster).
+  D-019 no not-recommended SMAP in the replay. Class A still open: **P-007** demo flood date (Tyson/Roberto).
 
 ## 3. Data used (identifiers and access dates in `config/datasets.yaml`, all accessed 2026-11-14)
 - Rain: GPM_3IMERGDE V07 (IMERG Early daily), 4,335 granules 2015-01-01..2026-11-13, none missing; V07B to 2026-03-03,
@@ -47,7 +47,7 @@ Branch `block/1-foundations` at f6c6edb (block 0 on `block/0-skeleton`). Commits
 
 ## 5. Open items and risks for block 2
 - P-007 flood date (Tyson): replay window 2026-02-15..03-05 rests on an unconfirmed date; 22-24 Feb 2026 is only rank 60.
-- Supabase not applied: Roster runs `supabase/README.md` steps 1-6; hosted auth/JWT path is unverified locally.
+- Supabase not applied: Roberto runs `supabase/README.md` steps 1-6; hosted auth/JWT path is unverified locally.
 - PR `block/1-foundations` -> `main` not opened. T-015b contract addition (`telegram_code`) with lead-architect.
 - Engine (block 2) must calibrate only on the IMERG Early series; saturation from API/GLDAS, SMAP shown as missing.
 - Tyson's queue Q-01 (2 days vs more than 2) gates the engine's damage-day rule. Icons not precached by Workbox.

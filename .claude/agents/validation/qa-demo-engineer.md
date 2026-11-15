@@ -37,8 +37,10 @@ engine's committed snapshots, never from a hard-coded guess.
 - Performance: build size gate passes; record a manual Lighthouse mobile run (score and date) in your report.
 
 ## Device checklist
-Write `DEVICE_CHECKLIST.md` for Roster (iPhone 14 Pro, iPad Air M2) and Tyson (Samsung Galaxy A55, Spanish): install
-to home screen, replay, offline, toggles, readability in sun. Each item: pass/fail, notes, screenshot name.
+Write `DEVICE_CHECKLIST.md` for Roberto's iPhone 14 Pro and iPad Air M2 only. Android coverage via Chrome DevTools
+device emulation at 360×780 with CPU 4× slowdown and "Slow 4G" throttling, in Spanish and English, plus Samsung
+Internet if Roberto can borrow an Android phone (D-026). Items: install to home screen, replay, offline, toggles,
+readability in sun. Each item: pass/fail, notes, screenshot name.
 
 ## Never
 Weaken an assertion to make a test pass. If behaviour is wrong, file it in TASKS.md for the owner.

@@ -92,10 +92,10 @@ Always colour and word: Normal, Watch, Warning, Severe (es: Normal, Vigilancia, 
   tritan 24. Dark: protan 29, deutan 22, tritan 21. The weakest pair is Watch versus Warning for deutans, so the
   core's water height and the word carry the difference.
 
-## Logo options (Roster picks, class A)
+## Logo options (Roberto picks, class A)
 
 See `design/logo/README.md`. Recommendation: option 1, "Core". The PWA icons (T-016b) are drawn from it and can be
-regenerated if Roster picks another option.
+regenerated if Roberto picks another option.
 
 ## Not done in this pass
 

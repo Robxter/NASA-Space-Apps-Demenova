@@ -1,6 +1,6 @@
 ---
 name: screenshot-tooling
-description: How to render specimens and icon PNGs on Roster's Windows box without Playwright or new deps (headless Edge quirks)
+description: How to render specimens and icon PNGs on Roberto's Windows box without Playwright or new deps (headless Edge quirks)
 metadata:
   type: reference
 ---

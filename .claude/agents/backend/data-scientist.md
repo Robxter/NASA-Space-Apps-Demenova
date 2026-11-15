@@ -29,27 +29,33 @@ science table of `docs/SPEC.md`; you implement nothing that is not there without
    Automatic zones for data level 1 = TWI terciles inside the farm outline.
 2. Upstream runoff: catchment-mean IMERG rain → Curve Number runoff
    Q = (P − Ia)² / (P − Ia + S), Ia = 0.2 S, S = 25400/CN − 254 (mm). CN comes from land cover and hydrologic soil
-   group; any value not derived from data is `origin: estimated` and listed in PENDING.md for Tyson/scientist review.
+   group; any value not derived from data is `origin: estimated` and listed in PENDING.md for scientist-reviewer.
 3. Travel time: Kirpich tc (min) = 0.0195 L^0.77 S^−0.385 as the first estimate only; then calibrate the lag on
-   the 22–23 Feb 2026 Buenavista event and record the calibrated lag and its evidence.
+   documented events only: 22–23 Feb 2026 (Buenavista, Pasaje; Pital, Santa Rosa), 11–12 Oct 2026 (Santa Rosa),
+   19 and 24 Oct 2026 (Chaguana, El Guabo), tagged `observed` with the press URLs from the SPEC as observer (D-024).
+   Record the calibrated lag and its evidence.
 4. Antecedent wetness: API_t = P_t + k · API_{t−1}; k starts at 0.90 tagged `estimated` (literature range 0.85–0.98).
    Use API only where SMAP is missing; mark the value's origin per day.
 5. Evapotranspiration: ETc = Kc × ETo (FAO-56). Use NASA POWER inputs; banana coefficients from FAO-56 tables;
    cite the table you used in code comments and in the report.
-6. Daily water balance per zone: ΔS = P − ETc − D; D from terrain and drainage class (estimated until Tyson answers).
+6. Daily water balance per zone: ΔS = P − ETc − D; D from terrain and drainage class (`estimated`; no expert input will come, D-022).
 7. Alert index W = Σ wᵢ xᵢ with the five normalized indicators from the SPEC (percentiles against each lot's own
-   history; TWI rank within farm). Weights: until Tyson's AHP matrix arrives, use the SPEC starting weights
-   (0.35, 0.25, 0.20, 0.10, 0.10) tagged `estimated`. Implement `ahp_weights(matrix) -> (weights, CI, CR)` with
-   Saaty's principal eigenvector and random index table; accept only CR ≤ 0.10.
+   history; TWI rank within farm). Weights: the SPEC starting weights
+   (0.35 upstream, 0.25 saturation, 0.20 terrain, 0.10 local, 0.10 balance) tagged `origin: design`, reason
+   "engineering choice; no expert AHP matrix available" (D-024). Sensitivity check instead of AHP: perturb each weight
+   by ±0.10 (renormalising the rest), re-run the 22–23 Feb 2026 replay, and report whether the same lots reach Severe
+   on the same days; write the result to `app/public/data/demo/verification.json` and a note in your report; if it is
+   not stable, say so. `ahp_weights` (already implemented and tested) stays unused, documented as the path for a
+   future local agronomist.
 8. Agronomic rule: two consecutive days of positive balance on a top-tercile TWI lot sets a floor of Warning
-   (banana tolerates at most 2 days of waterlogging; roots at 70 cm, per Tyson).
+   (banana tolerates at most 2 days of waterlogging; roots at 70 cm; `sourced`, team agronomist, 14 Nov 2026).
 9. State machine: Normal / Watch / Warning / Severe / Stale exactly as in the SPEC diagram: escalate at 0.40 / 0.60 /
    0.80 (Severe needs two consecutive updates); de-escalate below 0.30 / 0.50 / 0.70; Stale when the newest rain
    data is older than 12 h; Stale never emails. These are design parameters stored in `config/alerts.yaml`.
 10. Side indicators (never in emails): Sigatoka pressure (Watch after 3 consecutive days with mean temperature
     > 23 °C, mean RH > 75% and rain; RH < 70% unfavourable; leaf-wetness hours = hours with RH ≥ 90%), and cold
     stress (daily heat units = mean T − 14 °C, weekly sum vs same-week climatology). The 3-day and 23 °C values are
-    `estimated` pending Tyson.
+    `estimated`. Side indicators are nice-to-have and, if built, carry an "Experimental" badge (D-024).
 11. Explanations: each alert carries its top two factors with their share of W and the data timestamps.
 12. Confidence badge per data level (0–3) as defined in the SPEC "Data modes" table.
 13. Verification: compute hits, misses, false alarms, POD, FAR, CSI against documented floods (22–23 Feb 2026;
