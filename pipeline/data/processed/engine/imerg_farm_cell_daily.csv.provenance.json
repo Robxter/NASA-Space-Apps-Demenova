@@ -1,0 +1,26 @@
+{
+ "provenance": {
+  "id": "prov-imerg-early-farm-cell-daily-2015-01-01-2026-11-13",
+  "dataset": "GPM_3IMERGDE",
+  "version": "07",
+  "provider": "NASA GES DISC",
+  "url": "https://cmr.earthdata.nasa.gov/search/collections.umm_json?short_name=GPM_3IMERGDE&version=07",
+  "accessed": "2026-11-15T03:44:44Z",
+  "spatial_resolution": "0.1 degree",
+  "temporal_resolution": "daily (accumulated from half-hourly IMERG Early; UTC day)",
+  "aoi": "aoi_pasaje_buenavista",
+  "time_range": [
+   "2015-01-01",
+   "2026-11-13"
+  ],
+  "processing": [
+   "cached OPeNDAP subsets of `precipitation` (mm/day, UTC days) from GPM_3IMERGDE V07 written by pipeline/ingest/imerg.py (window lon 1000-1004, lat 863-867)",
+   "value of the single 0.1 degree cell containing all 8 demo lots: grid index lon 1001, lat 866 (centre -79.85, -3.35)",
+   "granule version per day copied from processed/rain/imerg_catchment_daily.csv; a day without a cached subset stays empty"
+  ],
+  "code_commit": "0a8024a+uncommitted",
+  "agent": "data-scientist",
+  "notes": "Local (farm) daily rain history for the engine's percentiles; same product and days as the catchment series."
+ },
+ "origin": "sourced"
+}
