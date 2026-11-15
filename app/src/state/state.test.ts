@@ -13,8 +13,12 @@ describe('hash navigation', () => {
     expect(parseHash('#map?d=yesterday').date).toBeNull();
   });
 
-  it('falls back to home for empty, unknown or incomplete hashes', () => {
-    for (const h of ['', '#', '#nope', '#lot', '#lot/']) expect(parseHash(h).route).toEqual({ name: 'home' });
+  it('falls back to home for unknown or incomplete hashes', () => {
+    for (const h of ['#nope', '#lot', '#lot/']) expect(parseHash(h).route).toEqual({ name: 'home' });
+  });
+
+  it('opens the Welcome page for an empty hash (D-036)', () => {
+    for (const h of ['', '#']) expect(parseHash(h).route).toEqual({ name: 'welcome', tab: 'home' });
   });
 
   it('round-trips ids through href', () => {

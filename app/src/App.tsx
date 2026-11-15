@@ -14,6 +14,9 @@ const Lot = lazy(() => import('./screens/Lot/Lot'));
 const Strategies = lazy(() => import('./screens/Strategies/Strategies'));
 const Setup = lazy(() => import('./screens/Setup/Setup'));
 const Learn = lazy(() => import('./screens/Learn/Learn'));
+// Block 4 (D-036): the Welcome page (empty hash, #welcome...) is its own chunk and renders OUTSIDE DataProvider,
+// so a visitor reading it never triggers the demo data load; the data loads when they enter the app.
+const Welcome = lazy(() => import('./screens/Welcome/Welcome'));
 // break-ui toggle: dev builds only; production builds drop it (import.meta.env.DEV is false there).
 const DevDataToggle = import.meta.env.DEV ? lazy(() => import('./dev/DataToggle')) : null;
 
@@ -77,13 +80,28 @@ function Screens() {
   );
 }
 
+function Root({ initialDate }: { initialDate: string | null }) {
+  const hash = useHash();
+  const { route } = useMemo(() => parseHash(hash), [hash]);
+  if (route.name === 'welcome') {
+    return (
+      <Suspense fallback={null}>
+        <Welcome tab={route.tab} />
+      </Suspense>
+    );
+  }
+  return (
+    <DataProvider initialDate={initialDate}>
+      <Screens />
+    </DataProvider>
+  );
+}
+
 export default function App() {
   const initialDate = useMemo(() => parseHash(window.location.hash).date, []);
   return (
     <PrefsProvider>
-      <DataProvider initialDate={initialDate}>
-        <Screens />
-      </DataProvider>
+      <Root initialDate={initialDate} />
     </PrefsProvider>
   );
 }
