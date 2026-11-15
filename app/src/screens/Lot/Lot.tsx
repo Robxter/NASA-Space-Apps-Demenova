@@ -5,6 +5,7 @@ import { Button, Card, EmptyState, List, ListRow, MissingData } from '../../comp
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ScreenHeader, Segmented, StatusNotices } from '../../components/shell';
 import { LevelCheck } from '../../components/LevelCheck';
+import { SourceLines } from '../../components/SourceLines';
 import { loadDevFixtureHistory, loadHistory } from '../../data/demo';
 import { fromSpec, resolveOrigin } from '../../data/origin';
 import { provenanceByIds, resolveProvenance, sourceLabel } from '../../data/snapshots';
@@ -109,12 +110,7 @@ function History({ unitId, date }: { unitId: string; date: string | null }) {
       })}
       <p className="m-0 text-footnote text-ink-3">{t('lot.priorYears')}</p>
       <p className="m-0 text-footnote text-ink-3">
-        {[
-          source ? t('common.source', { source }) : null,
-          t('common.updated', { time: formatInstant(hist.file.generated_at, prefs.units, prefs.language) ?? '' }),
-        ]
-          .filter(Boolean)
-          .join(' · ')}
+        <SourceLines source={source} at={hist.file.generated_at} />
       </p>
     </div>
   );
@@ -172,7 +168,8 @@ export default function Lot({ id }: { id: string }) {
       <StatusNotices />
 
       <div className="flex flex-col gap-5 px-4">
-        <Card footer={daySource ? t('common.source', { source: daySource }) : undefined}>
+        {/* CL-15: one source line. Agronomist mode shows it under W (showMeta); farmer mode keeps the card footer. */}
+        <Card footer={!isAgronomist && daySource ? t('common.source', { source: daySource }) : undefined}>
           <DataValue kind="index" si={alert?.w ?? null} origin={wOrigin} source={daySource} at={alert?.updated_at} label={t('w.label')} size="display" showMeta={isAgronomist} />
           {alert && alert.w !== null ? (
             <div data-level={alert.level} aria-hidden="true" className="mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
@@ -181,9 +178,8 @@ export default function Lot({ id }: { id: string }) {
           ) : null}
           {alert ? (
             <p className="m-0 mt-3 text-footnote text-ink-3">
-              {t('lot.since', { time: when(alert.since) ?? '' })}
-              {' · '}
-              {alert.newest_rain_data_at ? t('lot.rainDataAt', { time: when(alert.newest_rain_data_at) ?? '' }) : t('common.noData')}
+              <span className="block">{t('lot.since', { time: when(alert.since) ?? '' })}</span>
+              <span className="block">{alert.newest_rain_data_at ? t('lot.rainDataAt', { time: when(alert.newest_rain_data_at) ?? '' }) : t('common.noData')}</span>
             </p>
           ) : null}
         </Card>
@@ -219,20 +215,26 @@ export default function Lot({ id }: { id: string }) {
         </Card>
 
         {isAgronomist ? (
-          <Card title={`${t('lot.today')}${date ? `, ${formatDate(date, prefs.units)}` : ''}`}>
-            <div className="grid grid-cols-2 gap-4">
+          // CL-14: one row per measure, label left and value right, like "Lot facts"; labels never wrap to three lines.
+          <Card title={`${t('lot.today')}${date ? `, ${formatDate(date, prefs.units)}` : ''}`} padded={false}>
+            <List>
               {TODAY.map((f) => (
-                <DataValue
+                <ListRow
                   key={f.key}
-                  kind={f.kind}
-                  si={unit?.features ? (unit.features[f.key] as number | null) : null}
-                  origin={resolveOrigin(unit?.features, f.key)}
-                  source={featSource}
-                  at={alert?.updated_at}
-                  label={t(f.label)}
+                  title={t(f.label)}
+                  trailing={
+                    <DataValue
+                      kind={f.kind}
+                      si={unit?.features ? (unit.features[f.key] as number | null) : null}
+                      origin={resolveOrigin(unit?.features, f.key)}
+                      source={featSource}
+                      at={alert?.updated_at}
+                      name={t(f.label)}
+                    />
+                  }
                 />
               ))}
-            </div>
+            </List>
           </Card>
         ) : null}
 

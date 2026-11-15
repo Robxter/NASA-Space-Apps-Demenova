@@ -6,7 +6,8 @@ import { DataValue, OriginBadge } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
 import { NotReviewedBadge } from '../../components/LevelCheck';
 import { isReviewed } from '../../data/actions';
-import { loadStrategies, resolveProvenance, sourceLabel } from '../../data/snapshots';
+import { loadStrategies, resolveProvenance } from '../../data/snapshots';
+import { SourceLines } from '../../components/SourceLines';
 import { strategiesForUnit, isSourcedScore, localized } from '../../data/strategies';
 import { useData } from '../../state/data';
 import { usePrefs } from '../../state/prefs';
@@ -52,14 +53,17 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
   );
   return (
     <Card>
+      {/* CL-17: no lettered discs (ranking is by score, not letter); the current management carries a neutral tag. */}
       <div className="flex items-start gap-3">
-        <span aria-hidden="true" className="flex size-10 shrink-0 items-center justify-center rounded-full bg-surface-2 text-headline text-ink">
-          {s.label}
-        </span>
         <div className="min-w-0 flex-1">
-          <h3 className="m-0 text-headline text-ink">
+          <h3 className="m-0 flex flex-wrap items-center gap-2 text-headline text-ink">
             <span className="sr-only">{t('strategies.option', { label: s.label })}: </span>
             {t(`strategies.title.${s.label}`)}
+            {s.label === 'A' ? (
+              <span className="inline-flex items-center rounded-full bg-surface-2 px-2 py-0.5 text-caption font-semibold text-ink-2">
+                {t('strategies.currentTag')}
+              </span>
+            ) : null}
           </h3>
           <p className="m-0 mt-1 text-callout text-ink">
             <Text value={s.what} />
@@ -95,7 +99,7 @@ function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
                     ) : (
                       e.citation
                     )}
-                    {e.accessed ? <span className="text-ink-3"> · {t('strategies.accessed', { date: formatDate(String(e.accessed), prefs.units) })}</span> : null}
+                    {e.accessed ? <span className="text-ink-3">, {t('strategies.accessed', { date: formatDate(String(e.accessed), prefs.units) })}</span> : null}
                   </li>
                 ))}
               </ul>
@@ -117,7 +121,8 @@ export default function Strategies({ id }: { id: string }) {
   const { unitName, demo } = useData();
   const file = useSnapshot(() => loadStrategies());
   const list = file.status === 'ready' ? strategiesForUnit(file.value.data.strategies, id) : [];
-  const source = file.status === 'ready' ? sourceLabel(resolveProvenance(file.value.data.provenance, demo?.manifest ?? null)) : null;
+  const note =
+    file.status === 'ready' ? (resolveProvenance(file.value.data.provenance, demo?.manifest ?? null).find((r) => r.notes)?.notes ?? null) : null;
 
   return (
     <div className="pb-28">
@@ -132,7 +137,11 @@ export default function Strategies({ id }: { id: string }) {
         {list.map((s) => (
           <StrategyCard key={s.strategy_id} s={s} at={file.status === 'ready' ? file.value.data.generated_at : null} />
         ))}
-        {source ? <p className="m-0 px-4 text-footnote text-ink-3">{t('common.source', { source })}</p> : null}
+        {file.status === 'ready' ? (
+          <div className="px-4 text-footnote text-ink-3">
+            <SourceLines at={file.value.data.generated_at} guidanceNote={note} />
+          </div>
+        ) : null}
       </div>
       {/* Fixed footer (SPEC 17, 18): always visible above the tab bar. */}
       <p

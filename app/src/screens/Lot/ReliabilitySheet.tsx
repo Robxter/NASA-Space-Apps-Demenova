@@ -84,9 +84,15 @@ export default function ReliabilitySheet({ onClose }: { onClose: () => void }) {
                     <ListRow
                       key={e.id}
                       title={t(`outcome.${e.outcome}`)}
-                      subtitle={`${formatDate(e.start, prefs.units)}${e.end && e.end !== e.start ? ` – ${formatDate(e.end, prefs.units)}` : ''}${
-                        e.sources[0] ? ` · ${e.sources[0].citation}` : ''
-                      }`}
+                      subtitle={
+                        <>
+                          <span className="block tabular-nums">
+                            {formatDate(e.start, prefs.units)}
+                            {e.end && e.end !== e.start ? ` – ${formatDate(e.end, prefs.units)}` : ''}
+                          </span>
+                          {e.sources[0] ? <span className="block truncate">{e.sources[0].citation}</span> : null}
+                        </>
+                      }
                     />
                   ))}
                 </List>

@@ -35,10 +35,9 @@ export default function Learn() {
               </div>
               <p className="m-0 mt-1 text-callout text-ink">{body}</p>
               <p className="m-0 mt-2 text-footnote text-ink-3">
-                {t('learn.notReviewed')}
+                <span className="block">{t('learn.notReviewed')}</span>
                 {term.source ? (
                   <>
-                    {' · '}
                     {/^https?:\/\//.test(term.source) ? (
                       <a href={term.source} target="_blank" rel="noopener noreferrer" className="text-leaf">
                         {t('learn.source')}
