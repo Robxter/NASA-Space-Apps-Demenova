@@ -1,3 +1,4 @@
 - [Design direction](design-direction.md) — soil-core signature, Flood Severe moment (D-033), palette roles, rejected ideas
 - [About page (cut, kept for later)](about-page.md) — Roberto may reuse it: restore from fc3c12e, 3 gate FAILs to fix first
+- [Shared-checkout commits](shared-checkout-commits.md) — check hunks before `commit -- file`; commit own lines via the index
 - [Screenshot tooling](screenshot-tooling.md) — pw_mcp bridge recipe, #settings language toggle, file:// blank, serve.mjs
