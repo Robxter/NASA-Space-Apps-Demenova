@@ -47,7 +47,7 @@ export function Alerts() {
                       <>
                         <span className="block whitespace-normal">
                           {t('alerts.change', { from: t(`level.${e.from_level}`), to: t(`level.${e.to_level}`) })}{' '}
-                          <span className="dn-num whitespace-nowrap">· {formatInstant(e.at, prefs.units, prefs.language)}</span>
+                          <span className="whitespace-nowrap tabular-nums">· {formatInstant(e.at, prefs.units, prefs.language)}</span>
                         </span>
                         {e.factors.length ? (
                           <span className="block truncate" title={e.factors.map((f) => t(`factor.${f.name}`)).join(', ')}>
