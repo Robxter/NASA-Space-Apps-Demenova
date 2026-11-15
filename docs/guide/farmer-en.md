@@ -46,7 +46,7 @@ At the top you will see a badge such as **Data level 0 · confidence low**. It r
 and to medium with lots.
 
 **Not in this version yet:** alerts for your own farm need an engine run for its location. Until then, **Home**
-shows the demo farm (marked **Demo**).
+shows the synthetic demo farm (marked **Demo**).
 
 Your farm is saved on the phone first. Clearing the browser data deletes farms that have not synced.
 
@@ -62,7 +62,9 @@ They are **general guidance, not yet reviewed by a local agronomist**.
 | Orange, **Warning** | "Waterlogging risk. Today, check this lot's drainage channels and every morning look for standing water. Avoid heavy machinery on saturated soil." |
 | Red, **Severe** | "Flooding possible or under way. Your safety first: do not walk into flowing water. When it is safe, look for standing water on your lots and note how many days it stays." |
 
-In this version the app does not yet show these sentences on screen; they are in this guide.
+The app shows the check for the level in the **What to check** card: on each lot's detail screen and, on **Home**,
+below the banner when a lot is at Warning or Severe. The card is marked as not yet reviewed by a local agronomist.
+In Agronomist mode the wording is more detailed.
 If you see **Out of date**, the data is old: do not rely on the level until it updates.
 
 **Where to look in the app**
@@ -91,4 +93,4 @@ Demenova keeps the records for you.
 2. Tap **Export records (CSV)**. A file downloads that opens in any spreadsheet.
 3. The CSV keeps stored units (mm, °C, fractions) and the origin of every value.
 
-In this version, the records are the replay days of the demo farm.
+In this version, the records are the replay days of the synthetic demo farm.

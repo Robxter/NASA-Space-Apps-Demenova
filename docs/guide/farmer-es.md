@@ -47,7 +47,7 @@ Arriba verás una etiqueta como **Nivel de datos 0 · confianza baja**. Sube a m
 con los lotes.
 
 **Lo que aún no hace esta versión:** las alertas de tu propia finca necesitan una corrida del motor para su ubicación.
-Mientras tanto, **Inicio** muestra la finca demo (marcada **Demo**).
+Mientras tanto, **Inicio** muestra la finca demo sintética (marcada **Demo**).
 
 Tu finca se guarda primero en el teléfono. Si borras los datos del navegador, se borran las fincas no sincronizadas.
 
@@ -63,7 +63,9 @@ El nivel siempre se muestra con color **y** palabra. Estas revisiones vienen del
 | Naranja, **Aviso** | "Riesgo de encharcamiento. Hoy revisa los canales de drenaje de este lote y cada mañana mira si hay agua estancada. Evita entrar con maquinaria pesada en suelo saturado." |
 | Rojo, **Severo** | "Inundación posible o en curso. Primero tu seguridad: no entres en agua que corre. Cuando sea seguro, mira si hay agua estancada en tus lotes y anota cuántos días se queda." |
 
-En esta versión la app todavía no muestra estas frases en pantalla; están en esta guía.
+La app muestra la revisión del nivel en la tarjeta **Qué revisar**: en el detalle de cada lote y, en **Inicio**, debajo
+del aviso cuando un lote está en Aviso o Severo. La tarjeta lleva la marca de que aún no está revisada por un agrónomo
+local. En modo Agrónomo el texto es más detallado.
 Si ves **Desactualizado**, los datos son viejos: no confíes en el nivel hasta que se actualice.
 
 **Dónde mirar en la app**
@@ -92,4 +94,4 @@ Demenova guarda los registros por ti.
 2. Toca **Exportar registros (CSV)**. Se descarga un archivo que abre Excel u Hojas de cálculo.
 3. El CSV mantiene las unidades guardadas (mm, °C, fracciones) y el origen de cada valor.
 
-En esta versión, los registros son los días de la reproducción de la finca demo.
+En esta versión, los registros son los días de la reproducción de la finca demo sintética.

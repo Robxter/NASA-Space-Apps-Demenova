@@ -42,7 +42,10 @@ reciente**. **Por qué** lista cinco factores ordenados por **Parte de W**:
 - **Humedad del terreno**: posición del índice topográfico de humedad del lote dentro de la finca, de SRTMGL1 a 30 m.
 - **Lluvia local**: lluvia IMERG Early en la celda de la finca.
 - **Balance hídrico**: lluvia de 7 días menos evapotranspiración del cultivo (FAO-56 ETo × Kc, datos NASA POWER).
-Cada indicador es un percentil frente a días estrictamente anteriores; W es la suma ponderada.
+Cada indicador de lluvia y de balance es un percentil de rango medio frente a días estrictamente anteriores (al
+menos 365); la humedad del terreno es una posición dentro de la finca. W es la suma ponderada.
+**Qué revisar**: en el detalle del lote, y en Inicio debajo del aviso para Aviso y Severo, la app muestra la revisión
+del nivel desde `domain/actions.yaml`, con el texto de productor o de agrónomo y la marca de "no revisado".
 **Hoy** (modo Agrónomo) muestra lluvia local, lluvia aguas arriba 24 h, humedad del suelo y balance hídrico 7 días.
 La humedad del suelo satelital está pendiente en esta versión y se muestra **Sin datos**: Demenova no la rellena.
 **Historial**: Lluvia, Humedad del suelo, Temperatura media, NDVI, con **1S / 1M / 3M**; cada gráfico lleva su
@@ -57,8 +60,9 @@ coinciden.
 **Ver estrategias para este lote** abre tres tarjetas: **A Manejo actual**, **B Drenaje mejorado**,
 **C Drenaje, cobertura viva y bioinsumos**. Cada una muestra puntajes borrador de 1 a 5 (beneficio para el suelo,
 control del agua, costo, mano de obra; origen Estimado) y **Por qué, evidencia, vacíos y riesgos**. Costos y mano de
-obra en dinero o jornales: **Sin estimar**. Evidencia citada: Turner y col. 2007 (el banano tolera como máximo 2 días
-de encharcamiento), Johns 1994 y De la Cruz y col. 1994 (maní forrajero), Jefwa y col. 2010 (micorrizas); enlaces y
+obra en dinero o jornales: **Sin estimar**. Evidencia citada: respuesta archivada del agrónomo del equipo, 14 nov 2026
+(el banano tolera como máximo 2 días de encharcamiento; raíces hasta 70 cm), Turner y col. 2007 (la falta de oxígeno
+mata rápido el ápice de la raíz), Johns 1994 y De la Cruz y col. 1994 (maní forrajero), Jefwa y col. 2010 (micorrizas); enlaces y
 fechas de consulta en las tarjetas. Cada tarjeta lleva **No revisado aún por un agrónomo local** y el pie dice
 "Demenova apoya el criterio del agrónomo; nunca lo reemplaza." Los controles de prioridad (SPEC 18) no están en esta
 versión.
@@ -70,14 +74,15 @@ En el detalle del lote, toca **¿Qué tan confiable es esto?** Todo viene de `ve
   la finca. En el archivo de verificación de la reproducción 2026: 1 acierto, 0 omisiones, 4 falsas alarmas del
   1 ene al 13 nov 2026, contados por episodio Severo. Una falsa alarma significa que no hubo inundación en las
   noticias revisadas, no prueba que no la hubiera. No se afirma ninguna precisión.
-- **Tiempo de aviso**: los lotes demo ya estaban en Severo por lluvias anteriores (episodio desde el 5 feb 2026). La
+- **Tiempo de aviso**: los lotes demo más húmedos (1 y 2) ya estaban en Severo por lluvias anteriores (desde el 5 y
+  el 7 feb). La
   lluvia de la inundación del 23 feb llega a W solo después de que se reportó el desborde: no hay tiempo de aviso
   propio de esa inundación.
 - **Límite conocido**: los percentiles se comparan con todo el año, así que en la temporada de lluvias los días se
   mantienen altos por semanas. Se planean percentiles por temporada después del hackathon.
-- **Sensibilidad**: cada uno de los 5 pesos se movió ±0,10 (10 corridas). En la reproducción 2026, qué lotes están en
-  Severo y en qué días cambia en 10 de 10 corridas; en los días de la inundación (21–24 feb) los lotes 1 y 2 están
-  en Severo en todas.
+- **Sensibilidad**: cada uno de los 5 pesos se movió ±0,10 (10 corridas). En la reproducción 2026 el resultado no es
+  estable en 10 de 10 corridas (qué lotes están en Severo y en qué días cambia), pero en los días de la inundación
+  (21–24 feb) los lotes 1 y 2 están en Severo en todas.
 - El umbral de Severo (W ≥ 0,90) es una decisión de diseño tomada tras ver la reproducción; no está ajustado ni validado.
 
 ## 6. Límites de la ciencia
@@ -85,12 +90,14 @@ En el detalle del lote, toca **¿Qué tan confiable es esto?** Todo viene de `ve
 - Pocas inundaciones documentadas: conteos, no porcentajes (SPEC 09, método 14).
 - El tiempo de viaje de Kirpich se usa muy fuera de su rango (cuencas de 1 a 112 acres; esta mide 254 km²); el
   desfase de 0 días sale del mismo evento usado para verificar.
-- El escurrimiento por Número de Curva está pendiente (sin CN calibrado).
+- El escurrimiento por Número de Curva está pendiente: no hay capa de cobertura del suelo ni de grupo de suelo, así
+  que no se puede leer un número de curva en las tablas, y el escurrimiento aguas arriba no se muestra.
 - El TWI depende de la resolución y el método del DEM, por eso los lotes se ordenan dentro de la finca; D8 maneja mal
   las zonas bajas planas.
 - Las tablas FAO-56 suponen condiciones subhúmedas estándar. Los días se definen distinto (IMERG en UTC, POWER en hora local).
 - Si falta W (hueco de POWER), el nivel se mantiene. Las nubes bloquean el NDVI óptico en el trópico.
-- Los umbrales de Sigatoka vienen de otras regiones bananeras. La lluvia IMERG Early de octubre de 2026 está muy por
+- Los umbrales de Sigatoka son estimados (una propuesta de investigación cuyos artículos citados no se pudieron leer)
+  y no están calibrados para El Oro. La lluvia IMERG Early de octubre de 2026 está muy por
   encima de 2015–2025 y no está verificada su independencia del cambio de producto de marzo de 2026.
 
 ## 7. Exportar registros
