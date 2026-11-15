@@ -2,7 +2,7 @@
   "name": "demenova-app",
   "private": true,
   "version": "0.0.0",
-  "description": "Demenova PWA: waterlogging and flood alerts for banana farms in coastal El Oro. Built with NASA Earth observations.",
+  "description": "Demenova PWA: waterlogging and flood alerts for banana farms in coastal El Oro. Built with NASA Earth observations. Code generated with SI (AI) assistance (Claude Code, Anthropic); see docs/SI_USE_LOG.md.",
   "type": "module",
   "engines": {
     "node": "^22.11.0"

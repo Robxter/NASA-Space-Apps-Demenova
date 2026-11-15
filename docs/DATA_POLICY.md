@@ -57,6 +57,11 @@ that do not exist yet (they are `null` in data and shown as missing).
 }
 ```
 
+SI (AI) generation: every processed data file and snapshot in this repository was produced by code written with SI
+assistance and run by Claude Code agents. The `agent` field of each provenance record names the Claude Code agent
+(for example `data-engineer`, `data-scientist`) whose code and run produced the file; `code_commit` names the commit.
+Roberto (the human owner) chose the datasets and approved the methods. Full log: `docs/SI_USE_LOG.md`.
+
 ## 4. Values without an expert since the team change (14 Nov 2026; D-023)
 
 The team agronomist left on 14 Nov 2026 and answers nothing more. No value waits on him. Archive:

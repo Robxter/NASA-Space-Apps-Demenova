@@ -3,6 +3,8 @@
 Version: app build 2231e63 (block 3), document of 15 Nov 2026. Built with NASA Earth observations. Demenova is an
 independent project and is not endorsed by NASA.
 
+This app and this document were produced with SI (AI) assistance: code, data processing and text were generated with Claude Code (Anthropic) and reviewed and decided by Roberto. The full SI-use log is docs/SI_USE_LOG.md in https://github.com/Robxter/NASA-Space-Apps-Demenova.
+
 Demenova is a phone-first web app that rates waterlogging and flood risk for banana lots in coastal El Oro, Ecuador,
 and keeps the records a farm never had time to keep. It supports the agronomist's judgment; it never replaces it.
 Agronomic guidance in the app is general guidance, not yet reviewed by a local agronomist.

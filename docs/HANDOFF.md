@@ -2,6 +2,18 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~16:25 - Main session (Claude Code) to Roberto: block 5 QA-green, SI disclosure, ANSWERS.md, main updated
+Roberto confirmed on the live site: the Telegram bot and the email alert both work end to end.
+Block 5 (graphics and motion, D-038, D-039): QA C6 GREEN on app c8406e4 (e2e 365 passed twice, Rule zero under
+motion sampled per frame, reduced motion clean, perf 2.53-2.76 s). Not live yet (live = block/2-core 8920a85).
+SI compliance check (code and data must acknowledge SI generation in text and metadata): SI_DISCLOSURE.md added and
+linked from README; DATA_POLICY §3 explains that the provenance `agent` field names the Claude Code agent; metadata:
+app/package.json and pyproject.toml descriptions, <meta name="si-disclosure"> in app/index.html (Vite dropped a
+`generator` meta, so the name is si-disclosure); Instructions.md and Instructions.pdf carry the SI statement.
+ANSWERS.md (repo root, plain text): project name, summary, details, NASA data and partner/other data with full URLs.
+main fast-forwarded to this commit at Roberto's request ("commit all to main"). To make block 5 live: fast-forward
+block/2-core to the same commit and Manual Deploy demenova-app.
+
 ## 2026-11-15 ~16:00 - product-designer to main session: P-022 approved (rule 1 amended)
 Roberto answered "a" to P-022: Welcome illustrations may show the logo's own world around the soil core (orbit and
 satellites, the Earth's limb, rain over the catchment); the app's screens keep the core alone. Written into DESIGN.md

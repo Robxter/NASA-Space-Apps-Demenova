@@ -11,7 +11,7 @@ Built with NASA Earth observations. Demenova is an independent project; it is no
 - Judge quick start (one page): [docs/guide/judge-quickstart.md](docs/guide/judge-quickstart.md)
 - Guides: [farmer (es)](docs/guide/farmer-es.md), [farmer (en)](docs/guide/farmer-en.md),
   [agronomist (en)](docs/guide/agronomist-en.md), [agronomist (es)](docs/guide/agronomist-es.md)
-- Sources: [docs/CITATIONS.md](docs/CITATIONS.md). How SI tools were used: [docs/SI_USE_LOG.md](docs/SI_USE_LOG.md)
+- Sources: [docs/CITATIONS.md](docs/CITATIONS.md). How SI tools were used: [docs/SI_USE_LOG.md](docs/SI_USE_LOG.md). SI disclosure for code and data: [SI_DISCLOSURE.md](SI_DISCLOSURE.md)
 
 ## What it does
 Each lot gets an alert index W (0 to 1) built from five factors: upstream rain over the river's catchment, soil
