@@ -2,6 +2,18 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~11:10 - frontend-engineer to main session: block 3 Phase A done, Gate A green
+State: block/3-polish, last green adabfac (tsc, Vitest 79, 95.3 kB gzip, e2e 149 + 3 skipped, @perf 2). Not pushed.
+Done: A0 impeccable context + baseline; A1 mobile-native (theme-color per scheme + color-scheme + interactive-widget
+in index.html, forced-theme status bar sync, side/bottom insets, tap feel, overscroll, input keyboards); A2 break-ui
+(dev-only worst-case fixture app/src/dev/, ?data=worst|empty|one|offline on the dev server; map label collisions +
+legend, missing-day message, alert time never truncated; fixture absent from dist); A3 motion/perf audit; A4 harden
+(error states say what to do, real sync retry) + clarify (10 of 12 copy rows); A5 pick-ui-library (no library).
+CHANGE_LIST: CL-25..CL-28 + CL-07 note appended. Ledger rows for every tool.
+For QA: tests/e2e/specs/setup.spec.ts:9 hard-codes the " · " separator in the confidence badge; CL-07 wants a
+comma, so the helper needs updating before that change lands (held back for now).
+Next: Phase B on the coordinator's message (CHANGE_LIST P1 first, Home -> Map -> Lot ...).
+
 ## 2026-11-15 ~08:30 - Main session (Claude Code) to Roberto: Supabase live and seeded
 State: schema applied by Roberto (SQL Editor, one transaction) and rls_test.sql passed on the hosted project; demo
 farm seeded by the main session (`supabase/seed/seed_demo.py`): provenance 13, farms 1, lots 8, zones 3,
