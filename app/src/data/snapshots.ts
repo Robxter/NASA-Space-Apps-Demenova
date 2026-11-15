@@ -1,6 +1,7 @@
 // Snapshot access (ADR-004): network first, then the IndexedDB copy when offline. Each result says where it came
 // from and when it was cached, so screens can say "offline, data from ...". Shapes are checked at this boundary.
 import type {
+  ActionEntry,
   AppManifest,
   FarmFile,
   GlossaryTerm,
@@ -58,11 +59,19 @@ export const guards = {
   history: (v: unknown): v is HistoryFile =>
     isObj(v) && typeof v.unit_id === 'string' && Array.isArray(v.dates) && isObj(v.series),
   zones: (v: unknown): v is ZonesFile => isObj(v) && v.type === 'FeatureCollection' && Array.isArray(v.features),
+  actions: (v: unknown): v is ActionsAppFile => isObj(v) && Array.isArray(v.actions),
   strategies: (v: unknown): v is StrategiesFile => isObj(v) && Array.isArray(v.strategies),
   glossary: (v: unknown): v is GlossaryAppFile => isObj(v) && Array.isArray(v.terms),
   verification: (v: unknown): v is VerificationFile =>
     isObj(v) && typeof v.hits === 'number' && typeof v.misses === 'number' && typeof v.false_alarms === 'number',
 };
+
+/** actions.json: domain/actions.yaml copied for the app (app/scripts/build_domain_snapshots.py). */
+export interface ActionsAppFile {
+  generated_at: string;
+  provenance: ProvenanceBlock;
+  actions: ActionEntry[];
+}
 
 /** glossary.json: domain/glossary.yaml copied for the app (app/scripts/build_domain_snapshots.py). */
 export interface GlossaryAppFile {
@@ -128,6 +137,7 @@ export const loadManifest = (d?: LoaderDeps) => loadJson('manifest.json', guards
 export const loadFarm = (d?: LoaderDeps) => loadJson('farm.json', guards.farm, d);
 export const loadReplayDay = (date: string, d?: LoaderDeps) => loadJson(`replay/${date}.json`, guards.replayDay, d);
 export const loadZones = (d?: LoaderDeps) => loadJson('zones.geojson', guards.zones, d);
+export const loadActions = (d?: LoaderDeps) => loadJson('actions.json', guards.actions, d);
 export const loadStrategies = (d?: LoaderDeps) => loadJson('strategies.json', guards.strategies, d);
 export const loadGlossary = (d?: LoaderDeps) => loadJson('glossary.json', guards.glossary, d);
 export const loadVerification = (d?: LoaderDeps) => loadJson('verification.json', guards.verification, d);

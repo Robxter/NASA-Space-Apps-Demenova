@@ -4,6 +4,8 @@
 import { Card, EmptyState, MissingData } from '../../components/ui';
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { NotReviewedBadge } from '../../components/LevelCheck';
+import { isReviewed } from '../../data/actions';
 import { loadStrategies, resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { strategiesForUnit, isSourcedScore, localized } from '../../data/strategies';
 import { useData } from '../../state/data';
@@ -19,16 +21,8 @@ function Text({ value }: { value: LocalizedText | null | undefined }) {
   return text === null ? <MissingData lang={prefs.language} /> : <>{text}</>;
 }
 
-export function NotReviewedBadge() {
-  const { t } = usePrefs();
-  return (
-    <span className="inline-flex items-center rounded-full border border-dashed border-line-strong px-2 py-0.5 text-caption font-semibold text-ink-2">
-      {t('strategies.notReviewed')}
-    </span>
-  );
-}
-
-function Score({ label, score, mustBeSourced }: { label: MessageKey; score: NumericValue; mustBeSourced: boolean }) {
+/** `at` is when strategies.json was produced: every number shows its origin and a timestamp (T-066). */
+function Score({ label, score, mustBeSourced, at }: { label: MessageKey; score: NumericValue; mustBeSourced: boolean; at: string | null }) {
   const { t } = usePrefs();
   return (
     <div className="flex min-h-11 items-center justify-between gap-3">
@@ -37,7 +31,7 @@ function Score({ label, score, mustBeSourced }: { label: MessageKey; score: Nume
         <span className="text-callout text-ink-3">{t('strategies.notEstimated')}</span>
       ) : (
         <span className="flex items-center gap-1">
-          <DataValue kind="count" si={score.value} origin={score.origin} source={score.source ?? score.estimated_by ?? null} hideBadge />
+          <DataValue kind="count" si={score.value} origin={score.origin} source={score.source ?? score.estimated_by ?? null} at={at} hideBadge />
           <span className="text-footnote text-ink-3">{t('strategies.outOf5')}</span>
           {score.value !== null ? <OriginBadge origin={score.origin} /> : null}
         </span>
@@ -46,7 +40,7 @@ function Score({ label, score, mustBeSourced }: { label: MessageKey; score: Nume
   );
 }
 
-function StrategyCard({ s }: { s: Strategy }) {
+function StrategyCard({ s, at }: { s: Strategy; at: string | null }) {
   const { prefs, t } = usePrefs();
   const section = (title: MessageKey, value: LocalizedText) => (
     <div>
@@ -71,17 +65,17 @@ function StrategyCard({ s }: { s: Strategy }) {
             <Text value={s.what} />
           </p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            {s.approved_by ? null : <NotReviewedBadge />}
+            {isReviewed(s) ? null : <NotReviewedBadge />}
             <OriginBadge origin={s.origin} />
           </div>
         </div>
       </div>
 
       <div className="mt-3 border-t border-line pt-2">
-        <Score label="strategies.score.soil" score={s.scores.soil} mustBeSourced={false} />
-        <Score label="strategies.score.water" score={s.scores.water} mustBeSourced={false} />
-        <Score label="strategies.score.cost" score={s.scores.cost} mustBeSourced />
-        <Score label="strategies.score.labour" score={s.scores.labour} mustBeSourced />
+        <Score label="strategies.score.soil" score={s.scores.soil} mustBeSourced={false} at={at} />
+        <Score label="strategies.score.water" score={s.scores.water} mustBeSourced={false} at={at} />
+        <Score label="strategies.score.cost" score={s.scores.cost} mustBeSourced at={at} />
+        <Score label="strategies.score.labour" score={s.scores.labour} mustBeSourced at={at} />
       </div>
 
       <details className="mt-2 border-t border-line pt-2">
@@ -136,7 +130,7 @@ export default function Strategies({ id }: { id: string }) {
           <EmptyState tone="missing" title={t('strategies.none')} />
         ) : null}
         {list.map((s) => (
-          <StrategyCard key={s.strategy_id} s={s} />
+          <StrategyCard key={s.strategy_id} s={s} at={file.status === 'ready' ? file.value.data.generated_at : null} />
         ))}
         {source ? <p className="m-0 px-4 text-footnote text-ink-3">{t('common.source', { source })}</p> : null}
       </div>

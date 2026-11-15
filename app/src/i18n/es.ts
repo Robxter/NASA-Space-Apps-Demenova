@@ -266,8 +266,8 @@ export const es: Record<MessageKey, string> = {
   'reliability.notInFile': 'El archivo de verificación no incluye esta parte.',
   'reliability.missing': 'El archivo de verificación no está disponible.',
 
-  'learn.general': 'Orientación general — no revisada por un agrónomo. Definiciones cortas para leer la app; no son recomendaciones.',
-  'learn.notReviewed': 'Orientación general — no revisada por un agrónomo',
+  'learn.general': 'Orientación general — aún no revisada por un agrónomo local. Definiciones cortas para leer la app; no son recomendaciones.',
+  'learn.notReviewed': 'Orientación general — aún no revisada por un agrónomo local',
   'learn.source': 'Fuente',
   'learn.missing': 'El glosario no está disponible.',
   'learn.datasets': 'De dónde vienen los datos',
@@ -277,6 +277,8 @@ export const es: Record<MessageKey, string> = {
   'records.saved': 'Días guardados en este dispositivo: {n}',
   'records.export': 'Exportar registros (CSV)',
   'records.note': 'El CSV mantiene las unidades guardadas (mm, °C, fracciones) y el origen de cada valor.',
+
+  'check.title': 'Qué revisar',
 
   'settings.title': 'Ajustes',
   'settings.language': 'Idioma',

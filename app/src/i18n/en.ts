@@ -264,8 +264,8 @@ export const en = {
   'reliability.notInFile': 'The verification file does not include this part.',
   'reliability.missing': 'The verification file is not available.',
 
-  'learn.general': 'General guidance — not reviewed by an agronomist. Short definitions to read the app; they are not recommendations.',
-  'learn.notReviewed': 'General guidance — not reviewed by an agronomist',
+  'learn.general': 'General guidance — not yet reviewed by a local agronomist. Short definitions to read the app; they are not recommendations.',
+  'learn.notReviewed': 'General guidance — not yet reviewed by a local agronomist',
   'learn.source': 'Source',
   'learn.missing': 'The glossary is not available.',
   'learn.datasets': 'Where the data comes from',
@@ -275,6 +275,8 @@ export const en = {
   'records.saved': 'Days saved on this device: {n}',
   'records.export': 'Export records (CSV)',
   'records.note': 'The CSV keeps stored units (mm, °C, fractions) and the origin of every value.',
+
+  'check.title': 'What to check',
 
   'settings.title': 'Settings',
   'settings.language': 'Language',
