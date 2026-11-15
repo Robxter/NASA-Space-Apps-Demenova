@@ -3,7 +3,7 @@
 // keyboard order and visible focus, 44 px targets, contrast of every severity word on its background in both themes,
 // the reliability dialog (Escape, Close, drag to dismiss, focus return) and lang following the language.
 import { expect, open, slider, t, test } from '../lib/app';
-import { bannerUnit, DEMO_DAY } from '../lib/demo';
+import { bannerUnit, DEMO_DAY, lotName } from '../lib/demo';
 import type { Page } from '@playwright/test';
 
 const LOT = encodeURIComponent(bannerUnit(DEMO_DAY)!.unit_id);
@@ -83,8 +83,15 @@ for (const theme of ['light', 'dark'] as const) {
       const checked: Record<string, number> = {};
       for (const hash of ['#home', `#lot/${LOT}`, '#map', '#alerts']) {
         await page.goto(`/${hash}`);
+        // Wait for this route's own content: with view transitions (D-038) the previous screen's level words stay on
+        // screen until the new (lazy) screen renders, so "any level word visible" is not enough.
         if (hash === '#map') await expect(page.locator('.leaflet-tooltip').first()).toBeVisible();
-        else await expect(page.locator('[data-level]:not([aria-hidden="true"])').first()).toBeVisible();
+        else if (hash.startsWith('#lot/'))
+          await expect(page.getByRole('heading', { level: 1 })).toHaveText(lotName(bannerUnit(DEMO_DAY)!.unit_id));
+        else if (hash === '#alerts') await expect(page.getByRole('heading', { level: 1 })).toHaveText(t('en', 'alerts.title'));
+        else await expect(slider(page)).toBeVisible();
+        await expect(page.locator('main [data-level]:not([aria-hidden="true"])').first()).toBeVisible();
+        await page.waitForTimeout(450); // let the first-view entrance and the route cross-fade end
         const res = await page.evaluate((where) => {
             const ctx = document.createElement('canvas').getContext('2d')!;
             const rgba = (c: string): number[] => {
