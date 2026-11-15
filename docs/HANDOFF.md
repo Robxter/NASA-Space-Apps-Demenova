@@ -2,6 +2,21 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~07:45 - Main session (Claude Code) to Roberto: LIVE, waiting on Supabase
+State: app and API live and smoke-tested; public docs carry the URLs (4ab7fcb); demo seed script ready (e5c766a).
+Live links: app https://demenova-app.onrender.com/ | backend https://demenova-api.onrender.com/health | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
+Live smoke (headless Edge, 360 px): health ok; CSP/headers ok; Home 1.6 s on 23 Feb; Map tiles, Lot, Strategies,
+Alerts, Learn, Settings ok; service worker + offline replay ok; app ships the anon key (role anon).
+Failing: Supabase anonymous sign-in (422 anonymous_provider_disabled) → app runs device-only; schema not applied
+(PGRST205: no public.farms etc.).
+Waiting on Roberto, in order: 1. Supabase → Authentication → Sign In / Providers → allow anonymous sign-ins.
+2. Apply the schema (supabase/README.md, SQL Editor, one transaction) and report the rls_test.sql line.
+3. Then the main session runs `uv run python supabase/seed/seed_demo.py` (dry run OK: 1 farm, 8 lots, 3 zones,
+495 daily features, 11 states, 18 events). After seeding, the first hourly pipeline run on main sends at most 4 DEMO
+emails, once each, to ALERT_EMAIL_TO (zone high, lots 1, 2, 7); `/email/test` (X-Admin-Token) shows lot 7's event.
+4. Merge block/2-core → main, tag v1.0.0, point Render at main. 5. Device checklist, video
+(docs/project-page/video-script.md), submit (docs/project-page/SUBMISSION.md).
+
 ## 2026-11-15 ~07:00 - Main session (Claude Code) to Roberto: FEATURE-COMPLETE, ready for freeze
 State: all must-haves (D-028) built, reviewed and green on block/2-core (b176218 + this entry), pushed. Nothing live yet.
 Live links: app <app URL> (pending deploy) | backend <api URL> (pending) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
