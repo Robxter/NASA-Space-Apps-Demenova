@@ -1,0 +1,147 @@
+{
+ "generated_at": "2026-11-15T05:11:47Z",
+ "provenance": {
+  "id": "prov-app-domain-actions",
+  "dataset": null,
+  "version": null,
+  "provider": null,
+  "url": null,
+  "accessed": null,
+  "spatial_resolution": null,
+  "temporal_resolution": null,
+  "aoi": null,
+  "time_range": null,
+  "processing": [
+   "yaml.safe_load",
+   "keep level, mode, text and review fields",
+   "drop the former agronomist's name (D-027)"
+  ],
+  "code_commit": "8358689",
+  "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
+  "notes": "Domain table copied from domain/actions.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
+ },
+ "actions": [
+  {
+   "level": "normal",
+   "mode": "farmer",
+   "text": {
+    "es": "Todo normal. De vez en cuando, revisa que los canales de drenaje de tus lotes no estén tapados.",
+    "en": "All normal. Now and then, check that the drainage channels of your lots are not blocked."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "normal",
+   "mode": "agronomist",
+   "text": {
+    "es": "Sin señales de encharcamiento. Rutina: revisar que canales y salidas de drenaje estén libres, registrar notas de campo (nivel freático, análisis de suelo, fechas de labores) y comparar con el historial del lote.",
+    "en": "No waterlogging signals. Routine: check that drainage channels and outlets are clear, log field notes (water table, soil analyses, field-work dates) and compare with the lot's history."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "watch",
+   "mode": "farmer",
+   "text": {
+    "es": "Puede venir agua. Hoy revisa que las salidas de drenaje de los lotes bajos no estén tapadas.",
+    "en": "Water may be coming. Today, check that the drain outlets of the low lots are not blocked."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "watch",
+   "mode": "agronomist",
+   "text": {
+    "es": "Revisar a diario la lluvia aguas arriba y la humedad del suelo del lote. Revisar canales y salidas de drenaje, primero en lotes bajos y planos. Antes de cualquier labor en campo, comprobar que el suelo no esté saturado.",
+    "en": "Check upstream rain and the lot's soil moisture daily. Check drainage channels and outlets, low and flat lots first. Before any field work, check that the soil is not saturated."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "warning",
+   "mode": "farmer",
+   "text": {
+    "es": "Riesgo de encharcamiento. Hoy revisa los canales de drenaje de este lote y cada mañana mira si hay agua estancada. Evita entrar con maquinaria pesada en suelo saturado.",
+    "en": "Waterlogging risk. Today, check this lot's drainage channels and every morning look for standing water. Avoid heavy machinery on saturated soil."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "warning",
+   "mode": "agronomist",
+   "text": {
+    "es": "Encharcamiento probable en los próximos días. Priorizar lotes con alta humedad del terreno: revisar canales y salidas de drenaje, inspeccionar cada mañana si hay agua estancada y contar los días con agua (el banano tolera como máximo 2 días). Evitar maquinaria pesada y tránsito en lotes saturados.",
+    "en": "Waterlogging likely within days. Prioritise lots with high terrain wetness: check drainage channels and outlets, inspect each morning for standing water and count the days with water (banana tolerates 2 days at most). Avoid heavy machinery and field traffic on saturated lots."
+   },
+   "origin": "estimated",
+   "source": "team agronomist, 14 Nov 2026",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "severe",
+   "mode": "farmer",
+   "text": {
+    "es": "Inundación posible o en curso. Primero tu seguridad: no entres en agua que corre. Cuando sea seguro, mira si hay agua estancada en tus lotes y anota cuántos días se queda.",
+    "en": "Flooding possible or under way. Your safety first: do not walk into flowing water. When it is safe, look for standing water on your lots and note how many days it stays."
+   },
+   "origin": "estimated",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  },
+  {
+   "level": "severe",
+   "mode": "agronomist",
+   "text": {
+    "es": "Inundación o encharcamiento de más de 2 días esperado o en curso. Primero la seguridad: nadie entra en agua que corre. Cuando el agua lo permita, inspeccionar los lotes afectados, revisar las salidas de drenaje y registrar la fecha de llegada del agua y los días que permanece. Evitar maquinaria pesada en suelo saturado. Al bajar el agua, inspeccionar las plantas y registrar lo observado por lote.",
+    "en": "Flooding or waterlogging beyond 2 days expected or under way. Safety first: nobody enters flowing water. When water allows, inspect the affected lots, check the drain outlets and record the date the water arrived and the days it stays. Avoid heavy machinery on saturated soil. When the water drops, inspect the plants and record what you see per lot."
+   },
+   "origin": "estimated",
+   "source": "team agronomist, 14 Nov 2026",
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
+  }
+ ]
+}

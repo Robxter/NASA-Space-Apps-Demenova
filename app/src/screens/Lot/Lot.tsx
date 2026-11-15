@@ -4,6 +4,7 @@ import { lazy, Suspense, useEffect, useMemo, useState } from 'react';
 import { Button, Card, EmptyState, List, ListRow, MissingData } from '../../components/ui';
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ScreenHeader, Segmented, StatusNotices } from '../../components/shell';
+import { LevelCheck } from '../../components/LevelCheck';
 import { loadDevFixtureHistory, loadHistory } from '../../data/demo';
 import { fromSpec, resolveOrigin } from '../../data/origin';
 import { provenanceByIds, resolveProvenance, sourceLabel } from '../../data/snapshots';
@@ -186,6 +187,8 @@ export default function Lot({ id }: { id: string }) {
             </p>
           ) : null}
         </Card>
+
+        <LevelCheck level={alert?.level} />
 
         <Button variant="secondary" block onClick={() => setReliabilityOpen(true)}>
           {t('reliability.open')}

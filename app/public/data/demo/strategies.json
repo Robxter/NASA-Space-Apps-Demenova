@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T04:50:36Z",
+ "generated_at": "2026-11-15T05:11:47Z",
  "provenance": {
   "id": "prov-app-domain-strategies",
   "dataset": null,
@@ -16,7 +16,7 @@
    "keep contract fields",
    "drop the former agronomist's name (D-027)"
   ],
-  "code_commit": "3e32b9a",
+  "code_commit": "8358689",
   "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
   "notes": "Domain table copied from domain/strategies.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
  },
@@ -109,7 +109,12 @@
     }
    },
    "approved_by": null,
-   "origin": "estimated"
+   "origin": "estimated",
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "strategy_id": "b_improved_drainage",
@@ -204,7 +209,12 @@
     }
    },
    "approved_by": null,
-   "origin": "estimated"
+   "origin": "estimated",
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "strategy_id": "c_drainage_cover_bioinputs",
@@ -309,7 +319,12 @@
     }
    },
    "approved_by": null,
-   "origin": "estimated"
+   "origin": "estimated",
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   }
  ]
 }

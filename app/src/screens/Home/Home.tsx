@@ -3,6 +3,7 @@
 import { AlertBanner, Card, DemoChip, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, ScreenHeader, StatusNotices } from '../../components/shell';
+import { LevelCheck } from '../../components/LevelCheck';
 import { bannerUnit, countByLevel, highestW, newestUpdate, sortByW, topFactor } from '../../data/select';
 import { fromSpec } from '../../data/origin';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
@@ -68,6 +69,8 @@ export default function Home() {
               onOpen={() => navigate({ name: 'lot', id: banner.unit_id })}
             />
           ) : null}
+          {/* The banner only exists for Warning and Severe (SPEC 18); its check follows it. */}
+          {banner ? <LevelCheck level={banner.alert.level} /> : null}
 
           <Card title={t('home.statusCard')} footer={source ? t('common.source', { source }) : undefined}>
             {units.length === 0 ? (

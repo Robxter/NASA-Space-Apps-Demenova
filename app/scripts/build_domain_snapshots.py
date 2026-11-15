@@ -3,6 +3,7 @@
 Owner: frontend-engineer. Run from the repo root:  uv run python app/scripts/build_domain_snapshots.py
 
 - strategies.json (StrategiesFile, CONTRACTS.md §4) from domain/strategies.yaml: contract fields only.
+- actions.json (ActionsFile shape + provenance) from domain/actions.yaml: the check per alert level and mode.
 - glossary.json (GlossaryFile shape + provenance) from domain/glossary.yaml: term, definition, origin and source
   fields only (internal `reason` notes are not shipped); terms without a definition in both languages are skipped.
 
@@ -72,8 +73,9 @@ def provenance(pid: str, source: str, steps: list[str]) -> dict:
 
 
 STRATEGY_KEYS = ["strategy_id", "lot_scope", "label", "what", "why", "evidence", "benefits", "gaps", "risks",
-                 "scores", "approved_by", "origin"]
-TERM_KEYS = ["term_id", "term", "definition", "origin", "source", "accessed", "approved_by"]
+                 "scores", "approved_by", "origin", "reviewed_by", "human_review"]
+TERM_KEYS = ["term_id", "term", "definition", "origin", "source", "accessed", "approved_by", "reviewed_by", "human_review"]
+ACTION_KEYS = ["level", "mode", "text", "origin", "source", "accessed", "approved_by", "reviewed_by", "human_review"]
 
 
 def default(o):
@@ -97,7 +99,7 @@ def main() -> None:
         "generated_at": now,
         "provenance": provenance("prov-app-domain-strategies", "domain/strategies.yaml",
                                  ["yaml.safe_load", "keep contract fields", "drop the former agronomist's name (D-027)"]),
-        "strategies": [scrub({k: s.get(k) for k in STRATEGY_KEYS}) for s in strategies],
+        "strategies": [scrub({k: s.get(k) for k in STRATEGY_KEYS if k in s}) for s in strategies],
     })
     terms = yaml.safe_load((ROOT / "domain" / "glossary.yaml").read_text(encoding="utf-8"))["terms"]
     kept = [t for t in terms if t.get("definition") and t["definition"].get("es") and t["definition"].get("en")]
@@ -107,6 +109,16 @@ def main() -> None:
                                  ["yaml.safe_load", "keep terms with a definition in both languages",
                                   "keep display fields only", "drop the former agronomist's name (D-027)"]),
         "terms": [scrub({k: t.get(k) for k in TERM_KEYS if k in t}) for t in kept],
+    })
+
+
+    actions = yaml.safe_load((ROOT / "domain" / "actions.yaml").read_text(encoding="utf-8"))["actions"]
+    write("actions.json", {
+        "generated_at": now,
+        "provenance": provenance("prov-app-domain-actions", "domain/actions.yaml",
+                                 ["yaml.safe_load", "keep level, mode, text and review fields",
+                                  "drop the former agronomist's name (D-027)"]),
+        "actions": [scrub({k: a.get(k) for k in ACTION_KEYS if k in a}) for a in actions],
     })
 
 

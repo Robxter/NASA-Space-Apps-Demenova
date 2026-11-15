@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T04:50:36Z",
+ "generated_at": "2026-11-15T05:11:47Z",
  "provenance": {
   "id": "prov-app-domain-glossary",
   "dataset": null,
@@ -17,7 +17,7 @@
    "keep display fields only",
    "drop the former agronomist's name (D-027)"
   ],
-  "code_commit": "3e32b9a",
+  "code_commit": "8358689",
   "agent": "frontend-engineer (app/scripts/build_domain_snapshots.py)",
   "notes": "Domain table copied from domain/glossary.yaml for the app. Not a dataset; each item keeps its own origin. Not reviewed by a local agronomist (human_review: none)."
  },
@@ -34,7 +34,12 @@
    },
    "origin": "estimated",
    "source": "team agronomist, 14 Nov 2026",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "lote",
@@ -47,7 +52,12 @@
     "en": "Part of the farm managed as one unit (harvest, field work, records)."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "cuadrilla",
@@ -60,7 +70,12 @@
     "en": "Group of workers who carry out field work."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "drenaje",
@@ -73,7 +88,12 @@
     "en": "Ditches and outlets that remove excess water from the lot."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "nivel_freatico",
@@ -87,7 +107,12 @@
    },
    "origin": "estimated",
    "source": "team agronomist, 14 Nov 2026",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "crecida",
@@ -101,7 +126,12 @@
    },
    "origin": "estimated",
    "source": "team agronomist, 14 Nov 2026",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "mani_forrajero",
@@ -116,7 +146,12 @@
    "origin": "sourced",
    "source": "https://agris.fao.org/search/es/records/6471eeb177fd37171a71944e",
    "accessed": "2026-11-15",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "micorrizas",
@@ -131,7 +166,12 @@
    "origin": "sourced",
    "source": "https://ishs.org/ishs-article/879_52/",
    "accessed": "2026-11-15",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "microorganismos_de_montana",
@@ -144,7 +184,12 @@
     "en": "Bio-input prepared from microorganisms collected from forest soil; in strategy C it is applied by drench on unsaturated soil."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "drench",
@@ -157,7 +202,12 @@
     "en": "A liquid application aimed at the soil around the plant."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "sigatoka_negra",
@@ -170,7 +220,12 @@
     "en": "Banana leaf disease favoured by warmth, high humidity and wet leaves."
    },
    "origin": "estimated",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "llenado_de_fruta",
@@ -185,7 +240,12 @@
    "origin": "estimated",
    "source": "https://www.ecuadortimes.net/low-temperatures-affect-the-banana-production/",
    "accessed": "2026-11-14",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "temporada_fresca",
@@ -200,7 +260,12 @@
    "origin": "sourced",
    "source": "https://es.weatherspark.com/y/19338/Tiempo-promedio-en-Machala-Ecuador-durante-todo-el-a%C3%B1o",
    "accessed": "2026-11-14",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   },
   {
    "term_id": "fusarium_r4t",
@@ -215,7 +280,12 @@
    "origin": "sourced",
    "source": "https://www.agrocalidad.gob.ec/se-fortalecen-medidas-de-prevencion-para-evitar-el-ingreso-de-fusarium-2/",
    "accessed": "2026-11-15",
-   "approved_by": null
+   "approved_by": null,
+   "reviewed_by": [
+    "agronomist-agent",
+    "scientist-reviewer"
+   ],
+   "human_review": "none"
   }
  ]
 }
