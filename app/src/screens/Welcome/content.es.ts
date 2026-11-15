@@ -14,6 +14,13 @@ const es: WelcomeContent = {
     credit: 'Hecho con observaciones de la Tierra de la NASA. Demenova es un proyecto independiente, sin aval de la NASA.',
     videoTitle: 'Demenova en 30 segundos',
     videoComing: 'Video próximamente',
+    artLabel: 'Ilustración: satélites en órbita, lluvia que cae aguas arriba y agua que sube en un núcleo de suelo.',
+    howTitle: 'De la órbita a la zona de raíces',
+    how: [
+      { title: 'Datos abiertos desde la órbita', body: 'Lluvia, clima, terreno y verdor de la NASA y de Copernicus Sentinel-2.' },
+      { title: 'Un índice por lote', body: 'Cinco factores forman el índice de alerta W, de 0 a 1, cada día.' },
+      { title: 'Un nivel para actuar', body: 'Normal, Vigilancia, Aviso o Severo, con color y palabra, y el porqué.' },
+    ],
     whatTitle: 'Qué hace',
     what: [
       'Califica cada lote cada día: Normal, Vigilancia, Aviso o Severo, siempre con color y palabra.',

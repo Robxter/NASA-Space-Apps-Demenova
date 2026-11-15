@@ -1,0 +1,50 @@
+/*
+ * Welcome page styles (block 5, D-038). Loaded with the lazy Welcome chunk as a file (CSP style-src 'self').
+ * No new keyframes here: the page uses the design system's approved set (index.css; motion.test.ts pins it).
+ */
+
+/* The constellation turns around the Earth's centre (the illustration's 200, 480), not the box centre. */
+.hero-art .dn-orbit {
+  transform-box: view-box;
+  transform-origin: 200px 480px;
+  animation-duration: 36s;
+}
+
+/* Rain: each drop starts on its own beat so the shower reads as continuous. */
+.hero-rain .dn-rain:nth-child(2) { animation-delay: 0.27s; }
+.hero-rain .dn-rain:nth-child(3) { animation-delay: 0.53s; }
+.hero-rain .dn-rain:nth-child(4) { animation-delay: 0.8s; }
+.hero-rain .dn-rain:nth-child(5) { animation-delay: 1.07s; }
+.hero-rain .dn-rain:nth-child(6) { animation-delay: 1.33s; }
+
+/* The surface wave: an 84 px path of six 14 px periods; dn-wave slides it by -50% = three periods, so the loop is
+   seamless and the 28 px core stays covered at both ends. */
+.hero-art .dn-wave {
+  transform-box: fill-box;
+  animation-name: dn-wave;
+}
+
+/* The water rises once: from the bottom of the core to its level, a beat after the page arrives. */
+.hero-art .hero-water {
+  transform: translateY(48px);
+  transition: transform 1400ms var(--dn-ease-in-out) 450ms;
+}
+.hero-art.is-in .hero-water {
+  transform: none;
+}
+
+/* The hero panel and the video frame: a hairline ring so the orbit-blue panel holds its edge on the dark page. */
+.hero-art {
+  border-radius: 22px;
+  box-shadow: 0 0 0 1px var(--dn-line);
+}
+.welcome-video {
+  box-shadow: 0 0 0 1px var(--dn-line);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-art .hero-water {
+    transform: none;
+    transition: none;
+  }
+}

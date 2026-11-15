@@ -3,7 +3,7 @@
 // demo data loads only when the visitor enters the app. Persuade surface, quiet: the soil core is the only motif, no
 // orchestrated motion (DESIGN.md One Moment Rule), press feedback only; theme and language follow the app's prefs.
 import { useEffect, useState, type ReactNode } from 'react';
-import { Card, DemoChip, SeverityBadge } from '../../components/ui';
+import { Card, DemoChip, Reveal, SeverityBadge } from '../../components/ui';
 import { Segmented } from '../../components/shell';
 import { href, type WelcomeTab } from '../../state/nav';
 import { usePrefs } from '../../state/prefs';
@@ -11,6 +11,9 @@ import type { WelcomeContent } from './content';
 import en from './content.en';
 import es from './content.es';
 import { embedUrl, loadIntroVideoId } from './video';
+import { HeroArt } from './HeroArt';
+import { HowItWorks } from './HowItWorks';
+import './welcome.css';
 
 const LEVELS = ['normal', 'watch', 'warning', 'severe'] as const;
 
@@ -48,7 +51,7 @@ function Video({ c }: { c: WelcomeContent }) {
     };
   }, []);
   return (
-    <figure className="m-0 aspect-video w-full overflow-hidden rounded-group bg-surface" data-testid="welcome-video">
+    <figure className="welcome-video m-0 aspect-video w-full overflow-hidden rounded-group bg-surface" data-testid="welcome-video">
       {id ? (
         <iframe
           className="block size-full border-0"
@@ -77,7 +80,8 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
   return (
     <div className="flex flex-col gap-8">
       <section className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10" aria-labelledby="welcome-h">
-        <div className="flex flex-col gap-4">
+        {/* Entrance: the words arrive in reading order (60 ms steps), the illustration settles in after them. */}
+        <div className="dn-stagger flex flex-col gap-4">
           <h1 id="welcome-h" className="m-0 text-display text-ink">
             {h.title}
           </h1>
@@ -85,9 +89,21 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
           <p className="m-0 text-footnote text-ink-2">{h.credit}</p>
           <AppAccess c={c} size="lg" className="self-stretch sm:self-start" />
         </div>
-        <Video c={c} />
+        <div className="dn-scale-in [animation-delay:180ms]" data-testid="welcome-hero-art">
+          <HeroArt label={h.artLabel} />
+        </div>
       </section>
 
+      <HowItWorks title={h.howTitle} steps={h.how} />
+
+      <Reveal as="section" aria-labelledby="welcome-video-h">
+        <h2 id="welcome-video-h" className="m-0 mb-2 px-4 text-footnote font-semibold text-ink-2">
+          {h.videoTitle}
+        </h2>
+        <Video c={c} />
+      </Reveal>
+
+      <Reveal>
       <Card title={h.whatTitle}>
         <ul className="m-0 flex list-none flex-col gap-3 p-0">
           {h.what.map((line) => (
@@ -108,7 +124,9 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
           <span>{h.demoNote}</span>
         </p>
       </Card>
+      </Reveal>
 
+      <Reveal>
       <Card title={h.aboutTitle} padded={false}>
         <dl className="dn-list m-0">
           {[
@@ -123,6 +141,7 @@ function HomeTab({ c, lang }: { c: WelcomeContent; lang: 'en' | 'es' }) {
           ))}
         </dl>
       </Card>
+      </Reveal>
     </div>
   );
 }
@@ -281,7 +300,7 @@ export default function Welcome({ tab }: { tab: WelcomeTab }) {
         </div>
       </header>
 
-      <main id="welcome-main" className="mx-auto max-w-5xl px-4 pb-10 pt-6 sm:px-6 sm:pt-10">
+      <main id="welcome-main" key={tab} className="dn-enter-fade mx-auto max-w-5xl px-4 pb-10 pt-6 sm:px-6 sm:pt-10">
         {tab === 'instructions' ? <InstructionsTab c={c} /> : tab === 'qa' ? <QaTab c={c} /> : <HomeTab c={c} lang={lang} />}
       </main>
 

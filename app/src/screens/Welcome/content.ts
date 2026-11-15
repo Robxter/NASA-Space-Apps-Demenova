@@ -21,6 +21,10 @@ export interface WelcomeContent {
     credit: string;
     videoTitle: string;
     videoComing: string;
+    /** Alt text for the hero illustration (abstract: satellites, rain upstream, water rising in a soil core). */
+    artLabel: string;
+    howTitle: string;
+    how: { title: string; body: string }[];
     whatTitle: string;
     what: string[];
     levelsLabel: string;

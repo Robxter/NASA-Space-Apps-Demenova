@@ -14,6 +14,13 @@ const en: WelcomeContent = {
     credit: 'Built with NASA Earth observations. Demenova is an independent project, not endorsed by NASA.',
     videoTitle: 'Demenova in 30 seconds',
     videoComing: 'Video coming soon',
+    artLabel: 'Illustration: satellites in orbit, rain falling upstream and water rising in a soil core in the ground.',
+    howTitle: 'From orbit to the root zone',
+    how: [
+      { title: 'Open data from orbit', body: 'Rain, weather, terrain and greenness from NASA and Copernicus Sentinel-2.' },
+      { title: 'One index per lot', body: 'Five factors make the alert index W, from 0 to 1, every day.' },
+      { title: 'A level you can act on', body: 'Normal, Watch, Warning or Severe, in colour and word, with the reason.' },
+    ],
     whatTitle: 'What it does',
     what: [
       'Rates each lot every day: Normal, Watch, Warning or Severe, always as colour and word.',
