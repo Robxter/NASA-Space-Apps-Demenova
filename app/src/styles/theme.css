@@ -36,21 +36,22 @@
   --radius-group: 14px;
   --radius-sheet: 22px;
 
+  /* Easing utilities (ease-out, ease-in-out, ease-drawer). Values mirror --dn-ease-* in tokens.css. */
   --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
+}
 
-  /* The one orchestrated moment: a lot turns Severe. */
-  --animate-dn-ripple: dn-ripple 1.1s cubic-bezier(0.2, 0, 0, 1) 2 both;
-
-  @keyframes dn-ripple {
-    0% {
-      transform: scale(1);
-      opacity: 0.9;
-    }
-    100% {
-      transform: scale(2.6);
-      opacity: 0;
-    }
-  }
+/* Duration utilities from the motion tokens: duration-press, duration-state, duration-sheet. */
+@utility duration-press {
+  transition-duration: var(--dn-dur-press);
+}
+@utility duration-state {
+  transition-duration: var(--dn-dur-state);
+}
+@utility duration-sheet {
+  transition-duration: var(--dn-dur-sheet);
 }
 
 @theme inline {

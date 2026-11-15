@@ -44,12 +44,28 @@
   --dn-severe-solid: #93154f; /* white text 8.53:1, both themes */
   --dn-on-severe-solid: #ffffff;
 
-  /* Motion */
-  --dn-ease: cubic-bezier(0.2, 0, 0, 1);
+  /*
+   * Motion (DESIGN.md "Motion vocabulary"; curves from Emil Kowalski's review-animations STANDARDS.md).
+   * Everything answers a touch except the Severe onset ("Flood": water rises in the lot, spills once).
+   * Under prefers-reduced-motion the movement tokens below drop to none; colour and opacity fades stay.
+   */
+  --dn-ease: cubic-bezier(0.2, 0, 0, 1); /* legacy standard curve, kept for existing callers */
+  --dn-ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* answers a touch: press, state, entrances */
+  --dn-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* something on screen changes in place: the flood */
+  --dn-ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* sheets and the scrubber dock */
   --dn-dur-press: 120ms;
   --dn-dur-state: 200ms;
   --dn-dur-sheet: 320ms;
-  --dn-dur-onset: 600ms;
+  --dn-dur-onset: 600ms; /* map lot colour change (legacy .dn-lot-shape transition) */
+  --dn-dur-flood: 700ms; /* water rises in the lot and in the core */
+  --dn-dur-spill: 900ms; /* the one ring that leaves the lot */
+  --dn-delay-spill: 560ms; /* starts just before the rise ends: one gesture, not two */
+  --dn-press-scale: 0.97; /* buttons and controls */
+  --dn-press-scale-wide: 0.985; /* wide surfaces: the alert banner, list rows */
+  --dn-sheet-offset: 100%; /* sheets enter from the bottom edge by this much */
+
+  /* Browser surfaces (craft floor): selection, caret, native controls */
+  --dn-selection: rgb(29 95 194 / 0.2);
 
   /* Elevation */
   --dn-shadow-sheet: 0 -1px 0 rgb(14 33 53 / 0.06), 0 -8px 24px rgb(14 33 53 / 0.08);
@@ -91,9 +107,11 @@
   --dn-stale-fill: #7c8893;
   --dn-stale-ink: #b9c3cc;
   --dn-stale-tint: #1d2a39;
-  --dn-shadow-sheet: 0 -1px 0 rgb(0 0 0 / 0.3), 0 -8px 24px rgb(0 0 0 / 0.35);
-  --dn-shadow-banner: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.35);
+  /* Orbit-tinted, not black: a lifted surface in the night sky (high-end-visual-design §2: no harsh black shadows). */
+  --dn-shadow-sheet: 0 -1px 0 rgb(231 237 242 / 0.06), 0 -10px 28px rgb(3 10 19 / 0.45);
+  --dn-shadow-banner: 0 1px 2px rgb(3 10 19 / 0.4), 0 8px 20px rgb(3 10 19 / 0.28);
   --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
+  --dn-selection: rgb(127 178 255 / 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -128,18 +146,32 @@
     --dn-stale-fill: #7c8893;
     --dn-stale-ink: #b9c3cc;
     --dn-stale-tint: #1d2a39;
-    --dn-shadow-sheet: 0 -1px 0 rgb(0 0 0 / 0.3), 0 -8px 24px rgb(0 0 0 / 0.35);
-    --dn-shadow-banner: 0 1px 2px rgb(0 0 0 / 0.3), 0 6px 16px rgb(0 0 0 / 0.35);
+    --dn-shadow-sheet: 0 -1px 0 rgb(231 237 242 / 0.06), 0 -10px 28px rgb(3 10 19 / 0.45);
+    --dn-shadow-banner: 0 1px 2px rgb(3 10 19 / 0.4), 0 8px 20px rgb(3 10 19 / 0.28);
     --dn-hatch: repeating-linear-gradient(135deg, transparent 0 3px, rgb(217 198 170 / 0.14) 3px 4px);
+    --dn-selection: rgb(127 178 255 / 0.3);
+  }
+}
+
+/* Reduced motion: no movement, no scale, no flood or spill; colour and opacity fades keep their 120-200 ms. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dn-dur-flood: 0ms;
+    --dn-dur-spill: 0ms;
+    --dn-delay-spill: 0ms;
+    --dn-press-scale: 1;
+    --dn-press-scale-wide: 1;
+    --dn-sheet-offset: 0px;
   }
 }
 
 /*
  * Level scope: any element with data-level="normal|watch|warning|severe|stale" exposes
  * --lvl-fill / --lvl-ink / --lvl-tint to its subtree (utilities: bg-lvl-tint, text-lvl-ink, ...).
+ * .dn-lvl-<level> does the same where an attribute cannot be set (Leaflet tooltip className).
  */
-[data-level='normal'] { --lvl-fill: var(--dn-normal-fill); --lvl-ink: var(--dn-normal-ink); --lvl-tint: var(--dn-normal-tint); --lvl-ratio: 0.25; }
-[data-level='watch'] { --lvl-fill: var(--dn-watch-fill); --lvl-ink: var(--dn-watch-ink); --lvl-tint: var(--dn-watch-tint); --lvl-ratio: 0.5; }
-[data-level='warning'] { --lvl-fill: var(--dn-warning-fill); --lvl-ink: var(--dn-warning-ink); --lvl-tint: var(--dn-warning-tint); --lvl-ratio: 0.75; }
-[data-level='severe'] { --lvl-fill: var(--dn-severe-fill); --lvl-ink: var(--dn-severe-ink); --lvl-tint: var(--dn-severe-tint); --lvl-ratio: 1; }
-[data-level='stale'] { --lvl-fill: var(--dn-stale-fill); --lvl-ink: var(--dn-stale-ink); --lvl-tint: var(--dn-stale-tint); --lvl-ratio: 0; }
+[data-level='normal'], .dn-lvl-normal { --lvl-fill: var(--dn-normal-fill); --lvl-ink: var(--dn-normal-ink); --lvl-tint: var(--dn-normal-tint); --lvl-ratio: 0.25; }
+[data-level='watch'], .dn-lvl-watch { --lvl-fill: var(--dn-watch-fill); --lvl-ink: var(--dn-watch-ink); --lvl-tint: var(--dn-watch-tint); --lvl-ratio: 0.5; }
+[data-level='warning'], .dn-lvl-warning { --lvl-fill: var(--dn-warning-fill); --lvl-ink: var(--dn-warning-ink); --lvl-tint: var(--dn-warning-tint); --lvl-ratio: 0.75; }
+[data-level='severe'], .dn-lvl-severe { --lvl-fill: var(--dn-severe-fill); --lvl-ink: var(--dn-severe-ink); --lvl-tint: var(--dn-severe-tint); --lvl-ratio: 1; }
+[data-level='stale'], .dn-lvl-stale { --lvl-fill: var(--dn-stale-fill); --lvl-ink: var(--dn-stale-ink); --lvl-tint: var(--dn-stale-tint); --lvl-ratio: 0; }

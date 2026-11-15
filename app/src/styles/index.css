@@ -1,4 +1,4 @@
-/* Entry stylesheet. Owner: product-designer. Tokens: tokens.css; Tailwind theme: theme.css; spec: design/BRIEF.md. */
+/* Entry stylesheet. Owner: product-designer. Tokens: tokens.css; Tailwind theme: theme.css; spec: DESIGN.md. */
 @import 'tailwindcss';
 @import './tokens.css';
 @import './theme.css';
@@ -8,6 +8,7 @@
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
     -webkit-tap-highlight-color: transparent;
+    accent-color: var(--dn-leaf);
   }
 
   body {
@@ -15,10 +16,48 @@
     min-height: 100dvh;
     background: var(--dn-bg);
     color: var(--dn-ink);
+    caret-color: var(--dn-focus);
     font-family: var(--font-sans);
     font-size: 1.0625rem;
     line-height: 1.47;
     -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--dn-selection);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: from-font;
+  }
+
+  /* mobile-native baseline: no double-tap delay, no text selection on long-press, no zoom into inputs. */
+  button,
+  a,
+  [role='button'],
+  [role='tab'] {
+    touch-action: manipulation;
+  }
+  button,
+  [role='button'],
+  [role='tab'] {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input,
+  select,
+  textarea {
+    font-size: max(16px, 1em);
   }
 
   :focus-visible {
@@ -34,6 +73,17 @@
     font-feature-settings: 'tnum' 1;
   }
 
+  /* Press feedback (Emil: scale .97, 120 ms strong ease-out). Wide surfaces press less. */
+  .dn-press {
+    transition: transform var(--dn-dur-press) var(--dn-ease-out);
+  }
+  .dn-press:active:not(:disabled) {
+    transform: scale(var(--dn-press-scale));
+  }
+  .dn-press-wide:active:not(:disabled) {
+    transform: scale(var(--dn-press-scale-wide));
+  }
+
   /* Inset grouped list: hairline between rows, inset from the leading edge (iOS pattern). */
   .dn-list > li + li {
     position: relative;
@@ -45,6 +95,27 @@
     right: 0;
     left: 16px;
     border-top: 1px solid var(--dn-line);
+  }
+
+  /*
+   * The soil core's water (SeverityGlyph). Height follows --lvl-ratio by scaleY from the bottom, so a level change
+   * is the water rising or falling (700 ms, in place). .is-onset replays the last step Warning to Severe once.
+   */
+  .dn-core-water {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scaleY(var(--lvl-ratio, 0));
+    transition:
+      transform var(--dn-dur-flood) var(--dn-ease-in-out),
+      fill var(--dn-dur-state) var(--dn-ease-out);
+  }
+  .is-onset > svg .dn-core-water {
+    animation: dn-core-flood var(--dn-dur-flood) var(--dn-ease-in-out);
+  }
+  @keyframes dn-core-flood {
+    from {
+      transform: scaleY(0.75);
+    }
   }
 
   /* Replay scrubber: native range input, track drawn by the day strip underneath. */
@@ -94,9 +165,10 @@
   .dn-lot-shape {
     stroke-width: 2;
     transition:
-      fill var(--dn-dur-onset) var(--dn-ease),
-      fill-opacity var(--dn-dur-onset) var(--dn-ease),
-      stroke var(--dn-dur-onset) var(--dn-ease);
+      fill var(--dn-dur-onset) var(--dn-ease-out),
+      fill-opacity var(--dn-dur-onset) var(--dn-ease-out),
+      stroke var(--dn-dur-state) var(--dn-ease-out),
+      stroke-width var(--dn-dur-state) var(--dn-ease-out);
   }
   .dn-lot-shape[data-level='normal'], .dn-lot--normal { fill: var(--dn-normal-fill); stroke: var(--dn-normal-ink); fill-opacity: 0.25; }
   .dn-lot-shape[data-level='watch'], .dn-lot--watch { fill: var(--dn-watch-fill); stroke: var(--dn-watch-ink); fill-opacity: 0.4; }
@@ -104,26 +176,75 @@
   .dn-lot-shape[data-level='severe'], .dn-lot--severe { fill: var(--dn-severe-fill); stroke: var(--dn-severe-ink); fill-opacity: 0.75; stroke-width: 3; }
   .dn-lot-shape[data-level='stale'], .dn-lot--stale { fill: var(--dn-stale-fill); stroke: var(--dn-stale-ink); fill-opacity: 0.15; stroke-dasharray: 6 4; }
 
-  /* Severe onset on the map: the stroke swells and settles twice. Add .is-onset for ~2.4 s. */
+  /*
+   * The Severe moment on the map ("Flood", design/prototypes/severe-moment.html, CHANGE_LIST CL-29/CL-30).
+   * MapView sweeps the fill bottom to top for --dn-dur-flood, then adds a clone of the lot outline with
+   * class "dn-lot-ring": one ring leaves the lot after --dn-delay-spill and is removed when it ends.
+   */
+  .dn-lot-ring {
+    fill: none;
+    stroke: var(--dn-severe-fill);
+    stroke-width: 2.5;
+    opacity: 0;
+    pointer-events: none;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: dn-lot-spill var(--dn-dur-spill) var(--dn-ease-out) var(--dn-delay-spill) 1 forwards;
+  }
+  @keyframes dn-lot-spill {
+    from {
+      opacity: 0.85;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.5);
+    }
+  }
+
+  /* Legacy onset (until CL-29 lands): the stroke swells and settles. Kept for MapView's current .is-onset. */
   .dn-lot-shape.is-onset {
-    animation: dn-lot-onset 1.1s var(--dn-ease) 2;
+    animation: dn-lot-onset 1.1s var(--dn-ease-out) 1;
   }
   @keyframes dn-lot-onset {
     0% { stroke-width: 3; stroke-opacity: 1; }
-    45% { stroke-width: 12; stroke-opacity: 0.35; }
+    45% { stroke-width: 10; stroke-opacity: 0.4; }
     100% { stroke-width: 3; stroke-opacity: 1; }
   }
 }
 
+/*
+ * Map lot labels (Leaflet tooltips: className "dn-map-label dn-lvl-<level>", direction "top", offset [0, -6]).
+ * Unlayered on purpose: leaflet.css is unlayered, and unlayered rules beat layered ones whatever the specificity.
+ */
+.leaflet-tooltip.dn-map-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border: 1px solid var(--lvl-ink, var(--dn-line-strong));
+  border-radius: 8px;
+  background: var(--dn-surface);
+  color: var(--lvl-ink, var(--dn-ink));
+  box-shadow: none;
+  font: 600 0.75rem/1rem var(--font-sans);
+  white-space: nowrap;
+}
+.leaflet-tooltip.dn-map-label::before {
+  display: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-  .dn-ripple {
+  /* Movement goes (tokens.css sets flood, spill and press to none); colour and opacity fades stay. */
+  .dn-ripple,
+  .dn-lot-ring {
     display: none;
+  }
+  .dn-lot-shape.is-onset,
+  .is-onset > svg .dn-core-water {
+    animation: none;
+  }
+  html:focus-within {
+    scroll-behavior: auto;
   }
 }
