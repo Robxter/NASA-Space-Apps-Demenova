@@ -2,6 +2,13 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 04:50 - devops-engineer (via main session) to Roberto
+State: T-029 committed (0a8024a): ci.yml, pipeline.yml (hourly; live ingest/score step is a marked, never-run TODO),
+render.yaml (Static Site app + free Web Service API), scripts/check_bundle_size.mjs, docs/DEPLOY.md. Nothing live yet.
+Waiting on Roberto: follow docs/DEPLOY.md: push, GitHub secrets (EARTHDATA_USERNAME/PASSWORD, SUPABASE_URL,
+SUPABASE_SERVICE_ROLE_KEY, RESEND_API_KEY, ALERT_EMAIL_TO), Render Blueprint with the listed env vars; apply schema.
+Next for the receiver: record the two public URLs here and in README.md; run the pipeline once from Actions after main.
+
 ## 2026-11-15 04:34 - api-engineer to main session
 State: T-028 done on block/2-core (backend FastAPI + Severe email with dedupe); not pushed.
 Live links: app (none yet) | backend (none yet) | repo https://github.com/Robxter/NASA-Space-Apps-Demenova
@@ -21,7 +28,7 @@ T-023 (8b1194e); FIX2: Roster→Roberto, Tyson tasks closed, answers archived (d
 review queue → domain/review-queue.md, DATA_POLICY §4–§5, CLAUDE.md §13, agent files, D-021..D-028; P-007 closed (D-024).
 Paused agents (resume with SendMessage, their context is kept): data-scientist mid-T-024 (uncommitted
 pipeline/engine/verification.py + test_side_and_verification.py: leave them for it); api-engineer T-028 (nothing written).
-Waiting on Roberto: Space Apps Members tab with the Local Lead (D-027); apply schema to Supabase; open PRs to main.
+Waiting on Roberto: apply schema to Supabase; open PRs to main. (Members tab: done by Roberto, 15 Nov.)
 Next for the receiver, in order: 1. After 03:30 resume data-scientist: finish T-024, then T-024b sensitivity check
 (D-024; weights origin `design`), snapshots to app/public/data/demo/. 2. Resume api-engineer T-028. 3. Then:
 scientist-reviewer + one code review on the engine; frontend re-check against real snapshots; devops T-029.
