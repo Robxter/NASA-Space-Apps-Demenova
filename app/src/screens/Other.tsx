@@ -8,6 +8,7 @@ import { navigate } from '../state/nav';
 import { useData } from '../state/data';
 import { usePrefs } from '../state/prefs';
 import { formatInstant } from '../time';
+import { recordsCsv, savedDays } from '../data/records';
 import type { AlertEvent } from '../types/contracts';
 
 export function Alerts() {
@@ -62,20 +63,20 @@ export function Alerts() {
   );
 }
 
-export function Learn() {
-  const { t } = usePrefs();
-  return (
-    <div className="pb-4">
-      <ScreenHeader title={t('learn.title')} />
-      <EmptyState title={t('learn.title')} body={t('common.comingSoon')} />
-      <p className="m-0 px-4 text-center text-footnote text-ink-3">{t('app.credit')}</p>
-    </div>
-  );
-}
-
 export function Settings() {
   const { prefs, set, t } = usePrefs();
-  const { identity } = useData();
+  const { identity, demo, unitName, lotById } = useData();
+  const exportCsv = () => {
+    if (!demo) return;
+    const hasLots = (demo.farm?.lots.length ?? 0) > 0;
+    const csv = recordsCsv(demo.days, demo.replay, unitName, (id) => !hasLots || lotById(id) !== null);
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `demenova-records-${demo.manifest.farm_id}.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  };
   const identityText = {
     pending: t('status.identityPending'),
     'signed-in': t('status.signedIn'),
@@ -139,6 +140,16 @@ export function Settings() {
               { value: 'dark', label: t('settings.theme.dark') },
             ]}
           />
+        </Card>
+        <Card title={t('records.title')}>
+          <p className="m-0 text-callout text-ink-2">{t('records.body')}</p>
+          <p className="m-0 mt-2 text-callout text-ink">{t('records.saved', { n: demo ? savedDays(demo.replay) : 0 })}</p>
+          <div className="mt-3">
+            <Button variant="secondary" block onClick={exportCsv} disabled={!demo}>
+              {t('records.export')}
+            </Button>
+          </div>
+          <p className="m-0 mt-2 text-footnote text-ink-3">{t('records.note')}</p>
         </Card>
         <Card title={t('settings.identity')}>
           <p className="m-0 text-callout text-ink-2">{identityText}</p>

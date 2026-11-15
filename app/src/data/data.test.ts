@@ -193,3 +193,22 @@ describe('strategies (D-028)', () => {
     expect(localized({ es: 'qué', en: null }, 'es')).toBe('qué');
   });
 });
+
+describe('records CSV (records by default)', () => {
+  it('writes stored values with their origin, missing as empty, never zero', async () => {
+    const { recordsCsv, savedDays, csvCell } = await import('./records');
+    const csv = recordsCsv(['2026-02-22', '2026-02-23', '2026-02-24'], { ...fixtureReplay, '2026-02-24': null }, (id) => `name ${id}`);
+    const lines = csv.trim().split('\n');
+    const header = lines[0]!.split(',');
+    expect(header.slice(0, 6)).toEqual(['date', 'unit_id', 'unit_name', 'level', 'w', 'w_origin']);
+    expect(lines).toHaveLength(1 + 2 + 2);
+    const row = (i: number) => Object.fromEntries(header.map((h, j) => [h, lines[i]!.split(',')[j]]));
+    expect(row(1)).toMatchObject({ date: '2026-02-22', level: 'severe', w: '0.85', w_origin: 'synthetic', rain_local_mm: '60', rain_local_mm_origin: 'synthetic' });
+    const missing = row(4);
+    expect(missing.w).toBe('');
+    expect(missing.w_origin).toBe('');
+    expect(missing.rain_local_mm).toBe('');
+    expect(savedDays({ a: fixtureReplay['2026-02-22']!, b: null })).toBe(1);
+    expect(csvCell('Lote "1", bajo')).toBe('"Lote ""1"", bajo"');
+  });
+});
