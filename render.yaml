@@ -25,7 +25,7 @@ services:
       # "Content Security Policy Settings" lists (checked 2026-11-15; no unsafe-inline/unsafe-eval needed).
       - path: /*
         name: Content-Security-Policy
-        value: "default-src 'self'; script-src 'self' https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' https://hcaptcha.com https://*.hcaptcha.com; img-src 'self' data: blob: https://gibs.earthdata.nasa.gov; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gibs.earthdata.nasa.gov https://hcaptcha.com https://*.hcaptcha.com; frame-src https://hcaptcha.com https://*.hcaptcha.com; worker-src 'self'; manifest-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+        value: "default-src 'self'; script-src 'self' https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' https://hcaptcha.com https://*.hcaptcha.com; img-src 'self' data: blob: https://gibs.earthdata.nasa.gov https://tile.openstreetmap.org; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://gibs.earthdata.nasa.gov https://tile.openstreetmap.org https://demenova-api.onrender.com https://hcaptcha.com https://*.hcaptcha.com; frame-src https://hcaptcha.com https://*.hcaptcha.com https://www.youtube-nocookie.com; worker-src 'self'; manifest-src 'self'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
       - path: /*
         name: X-Content-Type-Options
         value: nosniff
