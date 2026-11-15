@@ -178,9 +178,16 @@ paths:
       operationId: telegramWebhook
       summary: Telegram Bot API webhook (nice-to-have, T-043).
       description: |
-        Commands: `/start <farm_code>` saves the chat against the farm in Supabase `telegram_subscribers` and confirms
-        in Spanish; `/estado` replies with the farm status in Spanish. Severe alerts mirror the email dedupe per unit and
-        episode. Telegram sends the secret configured in setWebhook in the X-Telegram-Bot-Api-Secret-Token header.
+        Commands (replies in Spanish when the sender's Telegram language_code starts with "es", else English):
+        `/start` subscribes the chat to the demo farm (is_demo); `/start <farm_code>` to the farm with that
+        `telegram_code`; both save the chat in Supabase `telegram_subscribers` (upsert on chat_id + farm_id, active)
+        and reply at once with a confirmation and a TEST Severe alert built from that farm's latest real Severe event
+        (missing values stay missing). `/stop` sets every subscription of the chat inactive; `/help` (and any other
+        text) lists the commands; `/estado` or `/status` lists each unit's level as colour and word.
+        Severe alerts are mirrored to active subscribers with the email's eligibility rules (confirmed, not stale), once
+        per episode: `alert_events.telegram_sent` is claimed by one conditional update. Repeated `update_id`s are
+        ignored (in process), so Telegram's retries while the service wakes do nothing twice.
+        Telegram sends the secret configured in setWebhook in the X-Telegram-Bot-Api-Secret-Token header.
         `<farm_code>` is the farm's random `telegram_code` (Farm schema), never the farm id (D-017, P-002 b); the
         subscriber row stores it (TelegramSubscriber schema). An unknown code changes nothing.
       security:

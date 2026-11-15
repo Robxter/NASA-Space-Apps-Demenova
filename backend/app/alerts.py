@@ -29,6 +29,7 @@ from backend.app.email import DISPLAY_TZ, ResendMailer, SevereEmail, hash_recipi
 from backend.app.ids import new_ulid
 from backend.app.settings import Settings
 from backend.app.supabase import SupabaseError, SupabaseRest
+from backend.app.telegram import TelegramClient, mask_chat, render_telegram
 from pipeline.common.models import AlertEvent, AlertState, EmailStatus, Severity
 
 log = logging.getLogger("demenova.alerts")
@@ -46,6 +47,7 @@ class Outcome:
     unit_id: str
     result: str  # sent | failed | skipped:<reason>
     provider_id: str | None = None
+    channel: str = "email"  # email | telegram
 
 
 def quiet_http_logs() -> None:
@@ -213,15 +215,65 @@ def _release_claim(db: SupabaseRest, claim_id: str) -> None:
         log.error("claim %s could not be released; that episode stays blocked until it is cleared", claim_id)
 
 
-def publish_severe_alerts(db: SupabaseRest, mailer: ResendMailer, settings: Settings,
-                          farm_id: str | None = None, stale_after_hours: float | None = None) -> list[Outcome]:
-    """Send every pending Severe email (optionally for one farm). Never raises for a single bad row."""
+def publish_telegram(db: SupabaseRest, tg: TelegramClient, settings: Settings, event: AlertEvent,
+                     farm: dict[str, Any], stale_after_hours: float | None) -> Outcome:
+    """Mirror a Severe email to the farm's active Telegram subscribers, once per episode.
+
+    Same eligibility as the email (skip_reason). Dedupe without a schema change: `alert_events.telegram_sent` is
+    claimed with one conditional UPDATE (telegram_sent false -> true), so concurrent runs fan out once. If no chat
+    received it, the claim is undone so the next run retries; partial failures are not retried (there is no
+    per-chat log table; PENDING.md).
+    """
+    def out(result: str) -> Outcome:
+        return Outcome(event.id, event.unit_id, result, channel="telegram")
+
+    states = db.select("alert_states", {"select": STATE_COLUMNS, "unit_id": f"eq.{event.unit_id}", "limit": "1"})
+    try:
+        state = _model(AlertState, states[0]) if states else None
+    except ValidationError:
+        return out("skipped:invalid_state")
+    reason = skip_reason(event, state, stale_after_hours)
+    if reason:
+        return out(f"skipped:{reason}")
+    subs = db.select("telegram_subscribers", {"select": "chat_id", "farm_id": f"eq.{farm['id']}",
+                                              "active": "is.true", "limit": "500"})
+    if not subs:
+        return out("skipped:no_subscribers")
+    text = render_telegram(build_email(db, settings, event, state, farm))
+    claimed = db.update_returning("alert_events", {"id": f"eq.{event.id}", "telegram_sent": "is.false"},
+                                  {"telegram_sent": True})
+    if not claimed:
+        return out("skipped:duplicate")
+    delivered = 0
+    for sub in subs:
+        try:
+            delivered += tg.send(sub["chat_id"], text)
+        except Exception as exc:  # noqa: BLE001 - one chat never stops the others
+            log.warning("telegram send failed: chat=%s error=%s", mask_chat(sub.get("chat_id")), type(exc).__name__)
+    if delivered == 0:
+        try:
+            db.update("alert_events", {"id": f"eq.{event.id}"}, {"telegram_sent": False})
+        except Exception as exc:  # noqa: BLE001
+            log.warning("telegram claim not undone: unit=%s error=%s", event.unit_id, type(exc).__name__)
+        return out("failed")
+    log.info("telegram fan-out: unit=%s delivered=%d of %d", event.unit_id, delivered, len(subs))
+    return out("sent")
+
+
+def publish_severe_alerts(db: SupabaseRest, mailer: ResendMailer | None, settings: Settings,
+                          farm_id: str | None = None, stale_after_hours: float | None = None,
+                          telegram: TelegramClient | None = None) -> list[Outcome]:
+    """Send every pending Severe email and Telegram mirror (optionally for one farm). Never raises for one row.
+
+    Newest events first: old events that never qualified (stale, superseded episodes) stay unflagged forever and
+    must not crowd new ones out of the batch.
+    """
     if farm_id is not None and not FARM_ID_RE.match(farm_id):
         raise ValueError("invalid farm id")
     if stale_after_hours is None:
         stale_after_hours = load_stale_after_hours()
-    params = {"select": EVENT_COLUMNS, "to_level": "eq.severe", "email_sent": "is.false",
-              "order": "at.asc", "limit": str(BATCH_LIMIT)}
+    params = {"select": EVENT_COLUMNS, "to_level": "eq.severe",
+              "or": "(email_sent.is.false,telegram_sent.is.false)", "order": "at.desc", "limit": str(BATCH_LIMIT)}
     if farm_id:
         params["farm_id"] = f"eq.{farm_id}"
     outcomes: list[Outcome] = []
@@ -233,29 +285,46 @@ def publish_severe_alerts(db: SupabaseRest, mailer: ResendMailer, settings: Sett
         except ValidationError:
             outcomes.append(Outcome(row_id, str(row.get("unit_id", "?")), "skipped:invalid_event"))
             continue
-        try:
-            fid = str(row.get("farm_id", ""))
-            if fid not in farms:
-                found = db.select("farms", {"select": "id,name,is_demo,alert_email", "id": f"eq.{fid}", "limit": "1"})
-                farms[fid] = found[0] if found else {}
-            if not farms[fid]:
-                outcomes.append(Outcome(event.id, event.unit_id, "skipped:no_farm"))
-                continue
-            outcomes.append(publish_one(db, mailer, settings, event, farms[fid], stale_after_hours))
-        except SupabaseError as exc:
-            log.warning("publish failed: unit=%s error=%s", event.unit_id, exc)
-            outcomes.append(Outcome(event.id, event.unit_id, "skipped:supabase_error"))
-        except Exception as exc:  # noqa: BLE001 - one bad row never aborts the batch; log the class only
-            log.warning("publish failed: unit=%s error=%s", event.unit_id, type(exc).__name__)
-            outcomes.append(Outcome(event.id, event.unit_id, "skipped:error"))
+        channels = []
+        if mailer is not None and not event.email_sent:
+            channels.append("email")
+        if telegram is not None and not event.telegram_sent:
+            channels.append("telegram")
+        for channel in channels:
+            try:
+                fid = str(row.get("farm_id", ""))
+                if fid not in farms:
+                    found = db.select("farms", {"select": "id,name,is_demo,alert_email", "id": f"eq.{fid}",
+                                                "limit": "1"})
+                    farms[fid] = found[0] if found else {}
+                if not farms[fid]:
+                    outcomes.append(Outcome(event.id, event.unit_id, "skipped:no_farm", channel=channel))
+                    continue
+                if channel == "email":
+                    outcomes.append(publish_one(db, mailer, settings, event, farms[fid], stale_after_hours))  # type: ignore[arg-type]
+                else:
+                    outcomes.append(publish_telegram(db, telegram, settings, event, farms[fid], stale_after_hours))  # type: ignore[arg-type]
+            except SupabaseError as exc:
+                log.warning("publish failed: unit=%s channel=%s error=%s", event.unit_id, channel, exc)
+                outcomes.append(Outcome(event.id, event.unit_id, "skipped:supabase_error", channel=channel))
+            except Exception as exc:  # noqa: BLE001 - one bad row never aborts the batch; log the class only
+                log.warning("publish failed: unit=%s channel=%s error=%s", event.unit_id, channel, type(exc).__name__)
+                outcomes.append(Outcome(event.id, event.unit_id, "skipped:error", channel=channel))
     for o in outcomes:
-        log.info("severe email: event=%s unit=%s result=%s", o.event_id, o.unit_id, o.result)
+        log.info("severe %s: event=%s unit=%s result=%s", o.channel, o.event_id, o.unit_id, o.result)
     return outcomes
 
 
-def latest_demo_severe(db: SupabaseRest) -> tuple[AlertEvent, AlertState | None, dict[str, Any]] | None:
-    """Most recent real Severe transition of the demo farm, for /email/test. None when there is none."""
-    farms = db.select("farms", {"select": "id,name,is_demo", "is_demo": "is.true", "limit": "1"})
+def latest_severe(db: SupabaseRest, farm_id: str | None = None
+                  ) -> tuple[AlertEvent, AlertState | None, dict[str, Any]] | None:
+    """Most recent real Severe transition of a farm (default: the demo farm), for test alerts. None if none."""
+    columns = "id,name,is_demo"
+    if farm_id is None:
+        farms = db.select("farms", {"select": columns, "is_demo": "is.true", "limit": "1"})
+    elif FARM_ID_RE.match(farm_id):
+        farms = db.select("farms", {"select": columns, "id": f"eq.{farm_id}", "limit": "1"})
+    else:
+        return None
     if not farms:
         return None
     rows = db.select("alert_events", {"select": EVENT_COLUMNS, "farm_id": f"eq.{farms[0]['id']}",
@@ -270,22 +339,27 @@ def latest_demo_severe(db: SupabaseRest) -> tuple[AlertEvent, AlertState | None,
     return event, state, farms[0]
 
 
+def latest_demo_severe(db: SupabaseRest) -> tuple[AlertEvent, AlertState | None, dict[str, Any]] | None:
+    return latest_severe(db)
+
+
 def main(argv: list[str] | None = None) -> int:
     """CLI for the pipeline workflow's Publishing step: `uv run python -m backend.app.alerts [--farm farm_x]`."""
     from backend.app.settings import load_settings
 
-    parser = argparse.ArgumentParser(description="Send pending Severe emails (once per unit per episode).")
+    parser = argparse.ArgumentParser(description="Send pending Severe alerts (once per unit per episode).")
     parser.add_argument("--farm", type=str, default=None)
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
     quiet_http_logs()
     settings = load_settings()
-    if not (settings.supabase_configured and settings.resend_api_key):
-        log.error("Supabase or Resend is not configured; nothing sent")
+    if not settings.supabase_configured or not (settings.resend_api_key or settings.telegram_configured):
+        log.error("Supabase, or both Resend and Telegram, are not configured; nothing sent")
         return 2
     db = SupabaseRest(settings.supabase_url, settings.supabase_service_role_key)  # type: ignore[arg-type]
-    mailer = ResendMailer(settings.resend_api_key, settings.from_header)
-    outcomes = publish_severe_alerts(db, mailer, settings, args.farm)
+    mailer = ResendMailer(settings.resend_api_key, settings.from_header) if settings.resend_api_key else None
+    tg = TelegramClient(settings.telegram_bot_token) if settings.telegram_bot_token else None
+    outcomes = publish_severe_alerts(db, mailer, settings, args.farm, telegram=tg)
     return 1 if any(o.result == "failed" for o in outcomes) else 0
 
 

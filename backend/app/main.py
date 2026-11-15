@@ -12,7 +12,7 @@ import threading
 import time
 from typing import Annotated, Any, Literal
 
-from fastapi import BackgroundTasks, Depends, FastAPI, Header, Request
+from fastapi import BackgroundTasks, Body, Depends, FastAPI, Header, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse, Response
 from pydantic import BaseModel, ConfigDict, Field
@@ -24,6 +24,7 @@ from backend.app.ids import new_ulid
 from backend.app.ratelimit import SlidingWindowLimiter
 from backend.app.settings import Settings, load_settings
 from backend.app.supabase import SupabaseError, SupabaseRest
+from backend.app.telegram import TelegramClient, UpdateDeduper, handle_update
 from pipeline.common.models import EmailStatus, FarmId
 
 log = logging.getLogger("demenova.api")
@@ -129,6 +130,23 @@ def get_mailer(settings: Annotated[Settings, Depends(get_settings)]) -> ResendMa
     return ResendMailer(settings.resend_api_key, settings.from_header)
 
 
+def get_telegram(settings: Annotated[Settings, Depends(get_settings)]) -> TelegramClient | None:
+    if settings.telegram_bot_token is None:
+        return None
+    return TelegramClient(settings.telegram_bot_token)
+
+
+def require_telegram_secret(
+    settings: Annotated[Settings, Depends(get_settings)],
+    x_telegram_bot_api_secret_token: Annotated[str | None, Header()] = None,
+) -> None:
+    """Constant-time check of Telegram's secret header against TELEGRAM_WEBHOOK_SECRET; closed when unset."""
+    expected = settings.telegram_webhook_secret
+    supplied = (x_telegram_bot_api_secret_token or "").encode()
+    if expected is None or not hmac.compare_digest(supplied, expected.encode()):
+        raise ApiError(401, "Unauthorized.")
+
+
 def get_captcha(settings: Annotated[Settings, Depends(get_settings)]) -> HCaptchaVerifier | None:
     if settings.hcaptcha_secret is None:
         return None
@@ -201,12 +219,12 @@ def health() -> dict[str, str]:
 
 
 def _run_publishing(db: SupabaseRest, mailer: ResendMailer | None, settings: Settings,
-                    run_id: str, farm_id: str | None) -> None:
-    if mailer is None:
-        log.warning("run %s: RESEND_API_KEY not configured; Severe emails not published", run_id)
+                    run_id: str, farm_id: str | None, telegram: TelegramClient | None = None) -> None:
+    if mailer is None and telegram is None:
+        log.warning("run %s: neither Resend nor Telegram is configured; Severe alerts not published", run_id)
         return
     try:
-        outcomes = publish_severe_alerts(db, mailer, settings, farm_id)
+        outcomes = publish_severe_alerts(db, mailer, settings, farm_id, telegram=telegram)
     except Exception as exc:  # noqa: BLE001 - background task: log the failure class, never the payload
         log.error("run %s: publishing failed (%s)", run_id, type(exc).__name__)
         return
@@ -220,6 +238,7 @@ def trigger_run(
     settings: Annotated[Settings, Depends(get_settings)],
     db: Annotated[SupabaseRest | None, Depends(get_db)],
     mailer: Annotated[ResendMailer | None, Depends(get_mailer)],
+    telegram: Annotated[TelegramClient | None, Depends(get_telegram)],
 ) -> dict[str, Any]:
     """Runs the backend's part of the cycle (Publishing: pending Severe emails) in process.
 
@@ -237,7 +256,7 @@ def trigger_run(
             raise ApiError(404, "Unknown farm_id.")
     now = dt.datetime.now(dt.UTC)
     run_id = new_ulid(now)
-    background.add_task(_run_publishing, db, mailer, settings, run_id, body.farm_id)
+    background.add_task(_run_publishing, db, mailer, settings, run_id, body.farm_id, telegram)
     log.info("run %s accepted (farm=%s)", run_id, body.farm_id or "all")
     return {"run_id": run_id, "farm_id": body.farm_id,
             "accepted_at": now.isoformat(timespec="seconds").replace("+00:00", "Z")}
@@ -325,7 +344,31 @@ def alerts_test_email(
     return {"status": "sent"}
 
 
-@app.post("/telegram/webhook", status_code=501)
-def telegram_webhook() -> JSONResponse:
-    """Telegram bot is T-043 (nice-to-have), not built yet."""
-    return JSONResponse({"detail": "Not implemented."}, status_code=501)
+# Telegram retries an update until it gets a 2xx (e.g. while a sleeping instance wakes): remember update_ids.
+telegram_updates = UpdateDeduper()
+
+
+@app.post("/telegram/webhook", dependencies=[Depends(require_telegram_secret)])
+def telegram_webhook(
+    update: Annotated[dict[str, Any], Body()],
+    settings: Annotated[Settings, Depends(get_settings)],
+    db: Annotated[SupabaseRest | None, Depends(get_db)],
+    telegram: Annotated[TelegramClient | None, Depends(get_telegram)],
+) -> dict[str, bool]:
+    """Bot commands /start [code], /stop, /help, /estado|/status. Always 200 for a valid secret (no retries)."""
+    update_id = update.get("update_id")
+    if not isinstance(update_id, int) or isinstance(update_id, bool):
+        return {"ok": True}
+    if not telegram_updates.first_time(update_id):
+        log.info("telegram update %s already handled", update_id)
+        return {"ok": True}
+    if telegram is None:
+        log.warning("telegram update ignored: TELEGRAM_BOT_TOKEN is not configured")
+        return {"ok": True}
+    try:
+        action = handle_update(update, db, telegram, settings)
+    except Exception as exc:  # noqa: BLE001 - answer 200 anyway, or Telegram would retry a failing update forever
+        log.warning("telegram update %s failed (%s)", update_id, type(exc).__name__)
+        return {"ok": True}
+    log.info("telegram update %s: %s", update_id, action)
+    return {"ok": True}

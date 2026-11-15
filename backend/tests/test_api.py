@@ -121,9 +121,9 @@ def test_email_test_provider_rejection(ctx):
     assert r.status_code == 200 and r.json() == {"status": "failed", "provider_id": None}
 
 
-def test_telegram_webhook_not_built_yet(ctx):
+def test_telegram_webhook_closed_without_secret(ctx):
     client, *_ = ctx
-    assert client.post("/telegram/webhook", json={}).status_code == 501
+    assert client.post("/telegram/webhook", json={"update_id": 1}).status_code == 401
 
 
 def test_short_admin_token_counts_as_unset(ctx):
