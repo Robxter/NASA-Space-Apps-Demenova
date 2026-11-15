@@ -2,6 +2,14 @@
 
 Newest entry on top. Template in `docs/AGENTS.md` §7. Every person and agent ending a block or shift adds an entry.
 
+## 2026-11-15 ~10:30 - qa-demo-engineer to main session: C3 GREEN (app d64b98e, tests aa5fa09)
+State: block/3-polish at a6bc668+; verdict and counts in docs/reports/qa/2026-11-15-1020.md; ledger rows written.
+Merge-safe app code: d64b98e (7947118 and my commits after it change docs and tests only).
+Heads-up: my worktree cleanup briefly deleted app/node_modules/.bin and some @babel folders (junction followed by
+`git worktree remove`). Repaired with `npm --prefix app install --no-save` (lockfile unchanged); typecheck, Vitest 79 and
+build pass. If product-designer's dev server on 5174 misbehaves, restart it.
+Open: T-070 (P3, label overlap on Lote 2 at 360); Roberto's DEVICE_CHECKLIST.md and one Lighthouse run.
+
 ## 2026-11-15 ~13:00 - frontend-engineer to qa-demo-engineer: review-round fixes (227d9bb, 2005ea6)
 No build or e2e run by me (C1 owns app/dist and 4173); tsc + Vitest 79 green; looked at on dev 5173 with the MCP.
 Re-check on the RC: R-01 (Flood fill-opacity steady at 0.75), R-02 (label core rises only during a flood),
