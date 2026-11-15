@@ -1,6 +1,6 @@
 // Home (SPEC 18): header with freshness and gear, alert banner (Warning or Severe only), status card, lots by W,
 // replay control. Everything shown is engine output from the replay day; nothing is computed here.
-import { AlertBanner, Card, DemoChip, EmptyState, List, ListRow } from '../../components/ui';
+import { AlertBanner, Button, Card, DemoChip, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, ScreenHeader, StatusNotices } from '../../components/shell';
 import { LevelCheck } from '../../components/LevelCheck';
@@ -27,7 +27,7 @@ function GearLink() {
 }
 
 export default function Home() {
-  const { status, demo, day, unitName, lotUnits } = useData();
+  const { status, demo, day, unitName, lotUnits, index, setIndex } = useData();
   const { prefs, t } = usePrefs();
   const farm = demo?.farm?.farm;
   const units = lotUnits;
@@ -42,6 +42,14 @@ export default function Home() {
     return f ? t('home.topFactor', { factor: t(`factor.${f.name}`) }) : t('home.noFactors');
   };
   const isAgronomist = prefs.mode === 'agronomist';
+  // onboard: a missing day offers the one next action, the nearest later day that has a file (else the nearest earlier).
+  const nextDayWithData = (() => {
+    if (!demo) return null;
+    const has = (i: number) => demo.replay[demo.days[i] ?? ''] != null;
+    for (let i = index + 1; i < demo.days.length; i++) if (has(i)) return i;
+    for (let i = index - 1; i >= 0; i--) if (has(i)) return i;
+    return null;
+  })();
   /** Row subtitle (R-08): the factor alone so it fits at 360 px; the label stays for screen readers. */
   const factorOnly = (u: ReplayUnit) => {
     const f = topFactor(u.alert.factors);
@@ -68,9 +76,12 @@ export default function Home() {
       {status !== 'ready' ? (
         <LoadGate />
       ) : (
-        <div className="flex flex-col gap-5 px-4">
+        // adapt: one column on phones and tablets; from 1024 px the status sits beside the lot list (CSS grid, same
+        // DOM order). distill (farmer mode): the alert, its check, the lots; no second status when the banner has it.
+        <div className="flex flex-col gap-5 px-4 lg:grid lg:grid-flow-dense lg:grid-cols-2 lg:items-start lg:gap-x-6">
           {banner ? (
             <AlertBanner
+              className="lg:col-span-2"
               key={banner.unit_id}
               level={banner.alert.level}
               label={t(levelKey(banner.alert.level))}
@@ -83,8 +94,14 @@ export default function Home() {
               onOpen={() => navigate({ name: 'lot', id: banner.unit_id })}
             />
           ) : null}
+          {banner && !isAgronomist ? (
+            <div className="lg:col-start-1">
+              <LevelCheck level={banner.alert.level} />
+            </div>
+          ) : null}
 
-          <Card title={t('home.statusCard')} footer={source ? t('common.source', { source }) : undefined}>
+          {isAgronomist || !banner ? (
+          <Card className="lg:col-start-1" title={t('home.statusCard')} footer={source ? t('common.source', { source }) : undefined}>
             {units.length === 0 ? (
               <EmptyState tone="missing" title={t('common.noData')} />
             ) : isAgronomist ? (
@@ -120,16 +137,28 @@ export default function Home() {
               </div>
             )}
           </Card>
-
-          {banner === null && units.length > 0 && units.every((u) => u.alert.level === 'normal') ? (
-            <EmptyState tone="calm" title={t('home.allNormal')} body={t('home.allNormalBody')} />
           ) : null}
 
-          <Card title={t('home.lots')} padded={false}>
+          {banner === null && units.length > 0 && units.every((u) => u.alert.level === 'normal') ? (
+            <EmptyState className="lg:col-start-1" tone="calm" title={t('home.allNormal')} body={t('home.allNormalBody')} />
+          ) : null}
+
+          <Card className="lg:col-start-2 lg:row-span-4" title={t('home.lots')} padded={false}>
             {units.length === 0 ? (
               // A missing replay file is not an empty farm (break-ui, harden): say which it is and how to move on.
               day === null && (demo?.farm?.lots.length ?? 0) > 0 ? (
-                <EmptyState tone="missing" title={t('home.dayMissing')} body={t('home.dayMissingBody')} />
+                <EmptyState
+                  tone="missing"
+                  title={t('home.dayMissing')}
+                  body={t('home.dayMissingBody')}
+                  action={
+                    nextDayWithData !== null ? (
+                      <Button variant="secondary" onClick={() => setIndex(nextDayWithData)}>
+                        {t('home.dayMissingAction')}
+                      </Button>
+                    ) : undefined
+                  }
+                />
               ) : (
                 <EmptyState tone="missing" title={t('home.noUnits')} body={t('home.noUnitsBody')} />
               )
@@ -164,9 +193,13 @@ export default function Home() {
           </Card>
 
           {/* CL-03: the check follows the lots on Home (SPEC 18 order); it exists only with the banner. */}
-          {banner ? <LevelCheck level={banner.alert.level} /> : null}
+          {banner && isAgronomist ? (
+            <div className="lg:col-start-1">
+              <LevelCheck level={banner.alert.level} />
+            </div>
+          ) : null}
 
-          <section aria-label={t('home.replay')}>
+          <section className="lg:col-span-2" aria-label={t('home.replay')}>
             <ReplayDock />
           </section>
         </div>

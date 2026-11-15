@@ -86,6 +86,15 @@ function SetupMap({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // onboard: the first run opens on the demo region as soon as its location loads, not on the whole continent.
+  useEffect(() => {
+    const m = map.current;
+    if (m && center && !rec && !fitted.current) {
+      m.setView(center, 13);
+      fitted.current = true;
+    }
+  }, [center, rec]);
+
   useEffect(() => {
     const m = map.current;
     const g = layer.current;
@@ -125,7 +134,7 @@ function SetupMap({
       ref={box}
       role="application"
       aria-label={t('setup.mapLabel')}
-      className={`relative z-0 h-72 overflow-hidden overscroll-none rounded-group text-ink ${mode === 'idle' ? '' : 'cursor-crosshair'}`}
+      className={`relative z-0 h-72 overflow-hidden md:h-[26rem] overscroll-none rounded-group text-ink ${mode === 'idle' ? '' : 'cursor-crosshair'}`}
     />
   );
 }
@@ -356,6 +365,7 @@ export default function Setup() {
         {drawBar}
 
         <Step n={1} title={t('setup.step.pin')} done={!!rec}>
+          {!rec ? <p className="m-0 text-callout text-ink-2">{t('setup.pinWhy')}</p> : null}
           {!rec ? (
             <label className="flex flex-col gap-1 text-footnote font-semibold text-ink-2">
               {t('setup.farmName')}

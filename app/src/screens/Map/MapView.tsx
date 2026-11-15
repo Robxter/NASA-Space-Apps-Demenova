@@ -37,6 +37,9 @@ export const GIBS_LAYERS: Record<Base, { id: string; url: (date: string | null) 
   },
 };
 
+type Box = Pick<DOMRect, 'left' | 'right' | 'top' | 'bottom'>;
+const overlaps = (a: Box, b: Box) => a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
+
 const toLatLngs = (lot: Lot): L.LatLngExpression[][] =>
   lot.geometry.coordinates.map((ring) => ring.map((p) => [p[1] ?? 0, p[0] ?? 0] as [number, number]));
 
@@ -138,7 +141,13 @@ export default function MapView() {
     // place; the word swaps at the midpoint of a flood. Placed worst level first; a label that would overlap a placed
     // one shows on tap instead, and the legend keeps every colour paired with its word (break-ui: 40 lots).
     const midpoint = tokenMs('--dn-dur-flood', 700) / 2;
-    const placed: DOMRect[] = [];
+    const placed: Box[] = [];
+    const lotBoxes = new Map<string, Box>();
+    for (const l of lots) {
+      const b = (shapes.current.get(l.id)?.getElement() as SVGPathElement | undefined)?.getBoundingClientRect();
+      if (b) lotBoxes.set(l.id, b);
+    }
+    const coversLot = (box: Box, ownId: string) => [...lotBoxes].some(([id, q]) => id !== ownId && overlaps(box, q));
     labelled.sort((x, y) => y.rank - x.rank);
     for (const { lot, poly, text, level, flooding } of labelled) {
       let label = labels.current.get(lot.id);
@@ -158,16 +167,30 @@ export default function MapView() {
           if (alive()) word.textContent = text;
         }, midpoint);
       } else word.textContent = text;
-      const bind = (permanent: boolean) => {
+      const bind = (permanent: boolean, direction: 'top' | 'bottom') => {
         poly.unbindTooltip();
-        poly.bindTooltip(root, { permanent, direction: 'top', offset: [0, -6], opacity: 1, className: 'dn-map-label' });
+        poly.bindTooltip(root, { permanent, direction, offset: [0, direction === 'top' ? -6 : 6], opacity: 1, className: 'dn-map-label' });
       };
       const tip = poly.getTooltip();
-      if (!tip || !tip.options.permanent) bind(true);
+      const dir = (tip?.options.direction === 'bottom' ? 'bottom' : 'top') as 'top' | 'bottom';
+      if (!tip || !tip.options.permanent) bind(true, dir);
+      // T-070 / R-11: a label should not cover a neighbouring lot. Prefer above; go below when above covers a
+      // neighbour and below does not. Lot overlap only picks the side; only label-on-label overlap hides a label.
+      const own = (poly.getElement() as SVGPathElement | undefined)?.getBoundingClientRect();
+      let r: Box | undefined = poly.getTooltip()?.getElement()?.getBoundingClientRect();
+      if (r && own) {
+        const h = r.bottom - r.top;
+        const above: Box = dir === 'top' ? r : { left: r.left, right: r.right, bottom: own.top - 6, top: own.top - 6 - h };
+        const below: Box = dir === 'bottom' ? r : { left: r.left, right: r.right, top: own.bottom + 6, bottom: own.bottom + 6 + h };
+        const want = coversLot(above, lot.id) && !coversLot(below, lot.id) ? 'bottom' : 'top';
+        if (want !== dir) {
+          bind(true, want);
+          r = poly.getTooltip()?.getElement()?.getBoundingClientRect();
+        }
+      }
       setTooltipLevel(poly.getTooltip()?.getElement(), level);
-      const r = poly.getTooltip()?.getElement()?.getBoundingClientRect();
-      if (r && placed.some((q) => r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom)) {
-        bind(false);
+      if (r && placed.some((q) => overlaps(r!, q))) {
+        bind(false, (poly.getTooltip()?.options.direction as 'top' | 'bottom' | undefined) ?? 'top');
         hidden = true;
       } else if (r) placed.push(r);
     }
@@ -184,7 +207,7 @@ export default function MapView() {
 
   return (
     <div className="relative flex h-[calc(100dvh-64px-env(safe-area-inset-bottom,0px))] flex-col overscroll-none">
-      <div className="z-[1001] flex flex-col gap-2 bg-bg px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
+      <div className="z-[1001] mx-auto flex w-full max-w-3xl flex-col gap-2 bg-bg px-4 pt-[max(env(safe-area-inset-top),12px)] pb-2">
         <h1 className="m-0 text-title text-ink">{t('map.title')}</h1>
         <Segmented
           label={t('map.layer')}
@@ -227,7 +250,7 @@ export default function MapView() {
         </div>
       </div>
 
-      <div className="absolute inset-x-0 bottom-3 z-[1001] flex flex-col items-start gap-1.5 px-3">
+      <div className="absolute inset-x-0 bottom-3 z-[1001] mx-auto flex max-w-3xl flex-col items-start gap-1.5 px-3">
         <p className="m-0 max-w-full rounded-control bg-surface/90 px-2 py-0.5 text-caption text-ink-2">
           {t('map.attribution', { layer: spec.id })}
         </p>

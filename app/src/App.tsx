@@ -63,7 +63,7 @@ function Screens() {
       <main
         id="main"
         tabIndex={-1}
-        className="mx-auto min-h-dvh max-w-3xl pb-[calc(64px+env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
+        className={`mx-auto min-h-dvh ${route.name === 'map' ? 'max-w-none' : route.name === 'home' ? 'max-w-3xl lg:max-w-5xl' : 'max-w-3xl'} pb-[calc(64px+env(safe-area-inset-bottom,0px))] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]`}
       >
         <Suspense fallback={<EmptyState title={t('common.loading')} />}>{screen}</Suspense>
       </main>

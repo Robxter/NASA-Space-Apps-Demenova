@@ -13,7 +13,7 @@ import { ConnectDevice } from '../components/ConnectDevice';
 import type { AlertEvent } from '../types/contracts';
 
 export function Alerts() {
-  const { status, demo, date, unitName, lotById } = useData();
+  const { status, demo, date, unitName, lotById, playing, togglePlay } = useData();
   const { prefs, t } = usePrefs();
   const hasLots = (demo?.farm?.lots.length ?? 0) > 0;
   const events: AlertEvent[] = [];
@@ -34,7 +34,17 @@ export function Alerts() {
         <div className="flex flex-col gap-5 px-4">
           <Card title={t('alerts.log')} padded={false}>
             {events.length === 0 ? (
-              <EmptyState title={t('alerts.empty')} body={t('alerts.emptyBody')} />
+              <EmptyState
+                title={t('alerts.empty')}
+                body={t('alerts.emptyBody')}
+                action={
+                  !playing ? (
+                    <Button variant="secondary" onClick={togglePlay}>
+                      {t('alerts.emptyAction')}
+                    </Button>
+                  ) : undefined
+                }
+              />
             ) : (
               <List>
                 {events.map((e) => (

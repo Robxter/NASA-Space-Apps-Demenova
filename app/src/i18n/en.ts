@@ -306,6 +306,10 @@ export const en = {
   'lot.noHistoryBody': 'Charts need this lot’s history file. Today’s values and the factors above still apply.',
   'setup.syncRetry': 'Try sync again',
 
+  'home.dayMissingAction': 'Show the next day with data',
+  'alerts.emptyAction': 'Play the replay',
+  'setup.pinWhy': 'A pin is enough to start: it places your farm on the map. Outline and lots are optional and add detail.',
+
   'settings.title': 'Settings',
   'settings.language': 'Language',
   'settings.units': 'Units',

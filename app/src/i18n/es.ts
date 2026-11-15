@@ -308,6 +308,10 @@ export const es: Record<MessageKey, string> = {
   'lot.noHistoryBody': 'Los gráficos necesitan el archivo de historial de este lote. Los valores de hoy y los factores de arriba siguen siendo válidos.',
   'setup.syncRetry': 'Reintentar sincronización',
 
+  'home.dayMissingAction': 'Ver el siguiente día con datos',
+  'alerts.emptyAction': 'Reproducir',
+  'setup.pinWhy': 'Un pin basta para empezar: ubica tu finca en el mapa. El contorno y los lotes son opcionales y agregan detalle.',
+
   'settings.title': 'Ajustes',
   'settings.language': 'Idioma',
   'settings.units': 'Unidades',
