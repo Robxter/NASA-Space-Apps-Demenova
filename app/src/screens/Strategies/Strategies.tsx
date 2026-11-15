@@ -4,6 +4,7 @@
 import { Card, EmptyState, MissingData } from '../../components/ui';
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { useScreenEntrance } from '../../motion';
 import { NotReviewedBadge } from '../../components/LevelCheck';
 import { isReviewed } from '../../data/actions';
 import { loadStrategies, resolveProvenance } from '../../data/snapshots';
@@ -121,6 +122,7 @@ export default function Strategies({ id }: { id: string }) {
   const { t } = usePrefs();
   const { unitName, demo } = useData();
   const file = useSnapshot(() => loadStrategies());
+  const entrance = useScreenEntrance('strategies', file.status === 'ready');
   const list = file.status === 'ready' ? strategiesForUnit(file.value.data.strategies, id) : [];
   const note =
     file.status === 'ready' ? (resolveProvenance(file.value.data.provenance, demo?.manifest ?? null).find((r) => r.notes)?.notes ?? null) : null;
@@ -130,7 +132,7 @@ export default function Strategies({ id }: { id: string }) {
       <ScreenHeader title={t('strategies.title')} back={{ name: 'lot', id }}>
         <p className="m-0 mt-1 text-footnote text-ink-3">{unitName(id)}</p>
       </ScreenHeader>
-      <div className="flex flex-col gap-4 px-4">
+      <div ref={entrance} className="flex flex-col gap-4 px-4">
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
         {file.status === 'missing' || (file.status === 'ready' && list.length === 0) ? (
           <EmptyState tone="missing" title={t('strategies.none')} body={t('common.missingFileBody')} />

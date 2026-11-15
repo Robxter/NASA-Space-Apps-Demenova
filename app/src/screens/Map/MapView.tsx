@@ -12,9 +12,10 @@ import { fromSpec, resolveOrigin } from '../../data/origin';
 import { LEVEL_RANK } from '../../data/select';
 import { flood, makeLabel, setLabelLevel, setTooltipLevel, tokenMs } from './flood';
 import { addBase, creditKey, gibsLayerName, type BaseId } from './baseLayers';
+import { prefersReducedMotion, staggerDelays, tokenEase } from '../../motion';
 import { BaseSelect } from '../../components/BaseSelect';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
-import { navigate } from '../../state/nav';
+import { markSharedLotTitle, navigate } from '../../state/nav';
 import { useData } from '../../state/data';
 import { usePrefs } from '../../state/prefs';
 import { displayQuantity } from '../../units';
@@ -60,6 +61,16 @@ export default function MapView() {
       poly.addTo(m);
       shapes.current.set(lot.id, poly);
       group.push(poly);
+    }
+    // D-038: lots fade in on the map's first load (opacity only, short non-uniform stagger, ≤ 300 ms in total).
+    if (!prefersReducedMotion()) {
+      group.forEach((poly, i) =>
+        poly.getElement()?.animate([{ opacity: 0 }, { opacity: 1 }], {
+          duration: 260,
+          delay: staggerDelays(group.length)[i],
+          easing: tokenEase('--dn-ease-out', 'cubic-bezier(0.23, 1, 0.32, 1)'),
+        }),
+      );
     }
     // Bottom padding keeps lots clear of the replay dock and the lot sheet.
     if (group.length) m.fitBounds(L.featureGroup(group).getBounds(), { paddingTopLeft: [24, 24], paddingBottomRight: [24, 170] });
@@ -258,7 +269,15 @@ export default function MapView() {
                 label={t('w.label')}
                 size="title"
               />
-              <Button onClick={() => selected && navigate({ name: 'lot', id: selected })}>{t('map.openLot')}</Button>
+              <Button
+                onClick={(e) => {
+                  if (!selected) return;
+                  markSharedLotTitle(e.currentTarget.closest('.shadow-sheet')?.querySelector('h2'));
+                  navigate({ name: 'lot', id: selected });
+                }}
+              >
+                {t('map.openLot')}
+              </Button>
             </div>
           </div>
         ) : (

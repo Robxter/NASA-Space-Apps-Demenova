@@ -4,7 +4,9 @@ import { Button, Card, EmptyState, List, ListRow } from '../components/ui';
 import { DataValue } from '../components/DataValue';
 import { LoadGate, ReplayDock, ScreenHeader, Segmented, StatusNotices } from '../components/shell';
 import { fromSpec } from '../data/origin';
-import { navigate } from '../state/nav';
+import { markSharedLotTitle, navigate } from '../state/nav';
+import { useScreenEntrance } from '../motion';
+import { rowTitle } from '../components/rowTitle';
 import { useData } from '../state/data';
 import { usePrefs } from '../state/prefs';
 import { formatInstant } from '../time';
@@ -16,6 +18,7 @@ import type { AlertEvent } from '../types/contracts';
 
 export function Alerts() {
   const { status, demo, date, unitName, lotById, playing, togglePlay } = useData();
+  const entrance = useScreenEntrance('alerts', status === 'ready');
   const { prefs, t } = usePrefs();
   const hasLots = (demo?.farm?.lots.length ?? 0) > 0;
   const events: AlertEvent[] = [];
@@ -33,7 +36,7 @@ export function Alerts() {
       {status !== 'ready' ? (
         <LoadGate />
       ) : (
-        <div className="flex flex-col gap-5 px-4">
+        <div ref={entrance} className="flex flex-col gap-5 px-4">
           <Card title={t('alerts.log')} padded={false}>
             {events.length === 0 ? (
               <EmptyState
@@ -48,6 +51,7 @@ export function Alerts() {
                 }
               />
             ) : (
+              <div onClickCapture={(ev) => markSharedLotTitle(rowTitle(ev.target))}>
               <List>
                 {events.map((e) => (
                   <ListRow
@@ -75,6 +79,7 @@ export function Alerts() {
                   />
                 ))}
               </List>
+              </div>
             )}
           </Card>
           <EmailAlertCard />
@@ -87,6 +92,7 @@ export function Alerts() {
 }
 
 export function Settings() {
+  const entrance = useScreenEntrance('settings', true);
   const { prefs, set, t } = usePrefs();
   const { identity, demo, unitName, lotById } = useData();
   const exportCsv = () => {
@@ -109,7 +115,7 @@ export function Settings() {
   return (
     <div className="pb-4">
       <ScreenHeader title={t('settings.title')} back={{ name: 'home' }} />
-      <div className="flex flex-col gap-5 px-4">
+      <div ref={entrance} className="flex flex-col gap-5 px-4">
         <WelcomeRow />
         <Card title={t('settings.farmSetup')}>
           <p className="m-0 mb-3 text-callout text-ink-2">{t('settings.farmSetupBody')}</p>

@@ -6,6 +6,7 @@ import { Button, Card } from './ui';
 import { hcaptchaSiteKey, loadHCaptcha, type HCaptchaApi } from '../data/hcaptcha';
 import { looksLikeEmail, sendTestEmail, type TestEmailOutcome } from '../data/testEmail';
 import { usePrefs } from '../state/prefs';
+import { useEnterOnChange } from '../motion';
 import type { MessageKey } from '../i18n';
 
 type Phase = 'idle' | 'captcha' | 'sending' | 'waking';
@@ -34,6 +35,7 @@ export function EmailAlertCard() {
   const [phase, setPhase] = useState<Phase>('idle');
   const [message, setMessage] = useState<MessageKey | null>(null);
   const box = useRef<HTMLDivElement>(null);
+  const statusRef = useEnterOnChange(message ?? phase) as React.RefObject<HTMLParagraphElement>;
   const api = useRef<HCaptchaApi | null>(null);
   const widget = useRef<string | undefined>(undefined);
   const token = useRef<string | null>(null);
@@ -144,7 +146,7 @@ export function EmailAlertCard() {
         <Button type="submit" disabled={busy}>
           {t('alerts.email.send')}
         </Button>
-        <p role="status" aria-live="polite" className="m-0 text-callout text-ink">
+        <p ref={statusRef} role="status" aria-live="polite" className="m-0 text-callout text-ink">
           {phase === 'waking' ? t('alerts.email.waking') : phase === 'sending' ? t('alerts.email.sending') : message ? t(message) : ''}
         </p>
       </form>

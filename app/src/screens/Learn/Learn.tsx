@@ -3,6 +3,7 @@
 import { Card, EmptyState } from '../../components/ui';
 import { OriginBadge } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { useScreenEntrance } from '../../motion';
 import { loadGlossary } from '../../data/snapshots';
 import { localized } from '../../data/strategies';
 import { useData } from '../../state/data';
@@ -13,13 +14,14 @@ export default function Learn() {
   const { prefs, t } = usePrefs();
   const { demo } = useData();
   const file = useSnapshot(() => loadGlossary());
+  const entrance = useScreenEntrance('learn', file.status === 'ready');
   const terms = file.status === 'ready' ? file.value.data.terms : [];
   const datasets = [...new Map((demo?.manifest.provenance ?? []).filter((p) => p.dataset).map((p) => [p.dataset, p])).values()];
 
   return (
     <div className="pb-4">
       <ScreenHeader title={t('learn.title')} />
-      <div className="flex flex-col gap-4 px-4">
+      <div ref={entrance} className="flex flex-col gap-4 px-4">
         <p className="m-0 rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink-2">{t('learn.general')}</p>
         {file.status === 'loading' ? <EmptyState title={t('common.loading')} /> : null}
         {file.status === 'missing' ? <EmptyState tone="missing" title={t('learn.missing')} body={t('common.missingFileBody')} /> : null}

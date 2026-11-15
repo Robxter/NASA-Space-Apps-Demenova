@@ -98,11 +98,14 @@ export function ScreenHeader({
   back,
   trailing,
   children,
+  titleClassName = '',
 }: {
   title: string;
   back?: Route;
   trailing?: ReactNode;
   children?: ReactNode;
+  /** Extra classes on the h1 (e.g. a view-transition-name for the lot header). */
+  titleClassName?: string;
 }) {
   const { t } = usePrefs();
   return (
@@ -120,7 +123,7 @@ export function ScreenHeader({
         )}
         {trailing}
       </div>
-      <h1 className="m-0 text-title text-ink">{title}</h1>
+      <h1 className={`m-0 text-title text-ink ${titleClassName}`}>{title}</h1>
       {children}
     </header>
   );

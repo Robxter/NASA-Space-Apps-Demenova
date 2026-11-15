@@ -5,6 +5,7 @@ import { Button, Card, EmptyState, List, ListRow, MissingData } from '../../comp
 import { DataValue, OriginBadge } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ScreenHeader, Segmented, StatusNotices } from '../../components/shell';
 import { LevelCheck } from '../../components/LevelCheck';
+import { useBarReveal, useScreenEntrance } from '../../motion';
 import { SourceLines } from '../../components/SourceLines';
 import { loadDevFixtureHistory, loadHistory } from '../../data/demo';
 import { fromSpec, resolveOrigin } from '../../data/origin';
@@ -139,6 +140,8 @@ export default function Lot({ id }: { id: string }) {
   const isAgronomist = prefs.mode === 'agronomist';
   const when = (iso: string | null | undefined) => formatInstant(iso, prefs.units, prefs.language);
   const [reliabilityOpen, setReliabilityOpen] = useState(false);
+  const entrance = useScreenEntrance('lot', status === 'ready');
+  const bar = useBarReveal(status === 'ready' && unit?.alert.w != null);
   const reliabilityButton = useRef<HTMLDivElement>(null);
 
   if (status !== 'ready') {
@@ -163,7 +166,7 @@ export default function Lot({ id }: { id: string }) {
 
   return (
     <div className="pb-6">
-      <ScreenHeader title={unitName(id)} back={{ name: 'home' }}>
+      <ScreenHeader title={unitName(id)} back={{ name: 'home' }} titleClassName="[view-transition-name:dn-lot-title]">
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {/* CL-25: no ripple on opening an already-Severe lot. */}
           {alert ? <LevelBadge level={alert.level} /> : <MissingData lang={prefs.language} />}
@@ -172,13 +175,14 @@ export default function Lot({ id }: { id: string }) {
       </ScreenHeader>
       <StatusNotices />
 
-      <div className="flex flex-col gap-5 px-4">
+      <div ref={entrance} className="flex flex-col gap-5 px-4">
         {/* CL-15: one source line. Agronomist mode shows it under W (showMeta); farmer mode keeps the card footer. */}
         <Card footer={!isAgronomist && daySource ? t('common.source', { source: daySource }) : undefined}>
           <DataValue kind="index" si={alert?.w ?? null} origin={wOrigin} source={daySource} at={alert?.updated_at} label={t('w.label')} size="display" showMeta={isAgronomist} />
           {alert && alert.w !== null ? (
             <div data-level={alert.level} aria-hidden="true" className="mt-3 h-2 overflow-hidden rounded-full bg-surface-2">
-              <div className="h-full rounded-full bg-lvl-fill" style={{ width: `${Math.min(Math.max(alert.w, 0), 1) * 100}%` }} />
+              {/* The bar reveals its real length once (scaleX); W itself is shown at once, never counted up. */}
+              <div ref={bar} className="h-full origin-left rounded-full bg-lvl-fill" style={{ width: `${Math.min(Math.max(alert.w, 0), 1) * 100}%` }} />
             </div>
           ) : null}
           {alert ? (

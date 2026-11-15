@@ -8,7 +8,9 @@ import { bannerUnit, countByLevel, highestLevel, highestW, newestUpdate, sortByW
 import { fromSpec } from '../../data/origin';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { levelKey } from '../../i18n';
-import { href, navigate } from '../../state/nav';
+import { href, markSharedLotTitle, navigate } from '../../state/nav';
+import { useFlipList, useScreenEntrance } from '../../motion';
+import { rowTitle } from '../../components/rowTitle';
 import { useData } from '../../state/data';
 import { usePrefs } from '../../state/prefs';
 import { formatInstant } from '../../time';
@@ -43,6 +45,10 @@ export default function Home() {
     return f ? t('home.topFactor', { factor: t(`factor.${f.name}`) }) : t('home.noFactors');
   };
   const isAgronomist = prefs.mode === 'agronomist';
+  const { playing } = useData();
+  const sorted = sortByW(units);
+  const entrance = useScreenEntrance('home', status === 'ready');
+  const flip = useFlipList(sorted.map((u) => u.unit_id), playing);
   // onboard: a missing day offers the one next action, the nearest later day that has a file (else the nearest earlier).
   const nextDayWithData = (() => {
     if (!demo) return null;
@@ -79,7 +85,7 @@ export default function Home() {
       ) : (
         // adapt: one column on phones and tablets; from 1024 px the status sits beside the lot list (CSS grid, same
         // DOM order). distill (farmer mode): the alert, its check, the lots; no second status when the banner has it.
-        <div className="flex flex-col gap-5 px-4 lg:grid lg:grid-flow-dense lg:grid-cols-2 lg:items-start lg:gap-x-6">
+        <div ref={entrance} className="flex flex-col gap-5 px-4 lg:grid lg:grid-flow-dense lg:grid-cols-2 lg:items-start lg:gap-x-6">
           {banner ? (
             <AlertBanner
               className="lg:col-span-2"
@@ -164,8 +170,11 @@ export default function Home() {
                 <EmptyState tone="missing" title={t('home.noUnits')} body={t('home.noUnitsBody')} />
               )
             ) : (
+              // FLIP: rows glide to their new rank on each played day (not while scrubbing); a tapped row lends its
+              // title to the Lot header for the route transition.
+              <div ref={flip} onClickCapture={(e) => markSharedLotTitle(rowTitle(e.target))}>
               <List>
-                {sortByW(units).map((u) => (
+                {sorted.map((u) => (
                   <ListRow
                     key={u.unit_id}
                     // CL-01: core in the leading slot, level word opening the subtitle; the name shows in full.
@@ -190,6 +199,7 @@ export default function Home() {
                   />
                 ))}
               </List>
+              </div>
             )}
           </Card>
 

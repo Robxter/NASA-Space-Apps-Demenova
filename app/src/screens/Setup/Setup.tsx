@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import { Button, Card, EmptyState, List, ListRow } from '../../components/ui';
 import { DataValue } from '../../components/DataValue';
 import { ScreenHeader } from '../../components/shell';
+import { useEnterOnChange } from '../../motion';
 import { BaseSelect } from '../../components/BaseSelect';
 import { addBase, creditKey, gibsLayerName, type BaseId } from '../Map/baseLayers';
 import { ConnectDevice } from '../../components/ConnectDevice';
@@ -183,6 +184,7 @@ export default function Setup() {
   const [lotAge, setLotAge] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [csvRejected, setCsvRejected] = useState<string[]>([]);
+  const statusRef = useEnterOnChange(message) as React.RefObject<HTMLDivElement>;
   const [syncing, setSyncing] = useState(false);
   const zonesFile = useSnapshot(() => loadZones());
   const zones = zonesFile.status === 'ready' ? zonesFile.value.data : null;
@@ -393,7 +395,7 @@ export default function Setup() {
       <div className="flex flex-col gap-5 px-4">
         <p className="m-0 text-callout text-ink-2">{t('setup.intro')}</p>
         {message ? (
-          <div role="status" className="rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink">
+          <div ref={statusRef} role="status" className="rounded-control border border-dashed border-line-strong px-3 py-2 text-callout text-ink">
             <p className="m-0">{message}</p>
             {csvRejected.length ? (
               <ul className="m-0 mt-1 list-disc pl-5 text-footnote text-ink-2">
