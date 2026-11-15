@@ -36,10 +36,17 @@ From `README.md`, `docs/spec/03-pitch-angle-nasa-data-global-by-design.md`.
 
 - Screens: Home, Map, Lot detail, Strategies, Alerts, Learn, Farm setup; bottom tab bar (Home, Map, Alerts, Learn).
   From `docs/spec/18-screen-specifications.md`.
+- Since block 4 the site root opens a Welcome page (the project's reception) before the app: Home (introduction,
+  intro video slot, the challenge, the name, who built it), Instructions (every screen, with a downloadable
+  Instructions.pdf) and Q&A + technical details, in en and es, with "Enter the app" on every tab and a way back from
+  the app (Home header, Settings). An installed app opens the app directly. From D-036, `app/src/screens/Welcome/`.
 - The demo replays 20 Jan to 5 Mar 2026 around the 22-23 Feb Buenavista river flood (Pasaje, El Oro) on a synthetic
   demo farm of 8 lots, from committed snapshots, with no live download. From `README.md`.
 - Cached data loads first; offline shows "offline, showing data from ...". From `docs/spec/17-*.md`.
-- A Severe alert arrives by banner and email; tapping it opens the lot. From `docs/spec/17-*.md`.
+- A Severe alert arrives by banner; tapping it opens the lot. From `docs/spec/17-*.md`. Since block 4 the Alerts
+  screen also offers a Telegram bot (@DemenovaBot: /start for the demo farm's Severe alerts, /stop) and an email test
+  ("Send me a test Severe alert"); during the demo the email goes only to the project owner's address, delivery to any
+  address is a future update. From D-036, `app/src/i18n/en.ts` (alerts.email.*, alerts.telegram.*).
 
 ## Capabilities and Constraints
 

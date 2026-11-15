@@ -1,6 +1,8 @@
 # Demenova design brief (T-016)
 
 Owner: product-designer. Status: v1, 2026-11-14. Implemented in `app/src/styles/` and `app/src/components/ui/`.
+Kept as the original brief. The current system is `DESIGN.md` at the repo root: the Severe motion is now the "Flood"
+(not the ripple described below, block 3), and more motion is allowed since block 5 (D-038).
 
 ## Subject, audience, job
 

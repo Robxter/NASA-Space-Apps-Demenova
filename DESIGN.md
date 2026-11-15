@@ -239,7 +239,7 @@ is a rounded rectangle whose water line is the only fill.
 `SeverityGlyph`: water at 25/50/75/100% for Normal/Watch/Warning/Severe (a `scaleY` from the bottom); dashed empty
 core for "Out of date". A level change is the water rising or falling in place.
 
-**The Flood (the one orchestrated moment).** When a lot turns Severe in the replay, water rises inside the lot on the
+**The Flood (the app's signature moment).** When a lot turns Severe in the replay, water rises inside the lot on the
 map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and one ring spills out of the lot
 (starts at 560ms, 900ms, scale 1 to 1.5, fading). Then still. Timeline and trigger rules: `design/upgrade/CHANGE_LIST.md`
 "Severe moment"; prototype `design/prototypes/severe-moment.html`.
@@ -247,14 +247,17 @@ map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and o
 ### Motion vocabulary (Emil Kowalski's terms; tokens in `design/components/Motion.md`)
 - **Press / Tap feedback**: scale 0.97 (0.985 on wide surfaces) over 120ms; **state changes** 200ms; **Slide in** for
   sheets 320ms on the drawer curve; strong **Ease-out** `cubic-bezier(.23,1,.32,1)` for everything that answers a touch.
-- **Orchestration**: the Flood is the only motion that does not answer a touch; a **Sequence** with a 140ms overlap.
+- **Orchestration**: the Flood is the app's strongest motion that does not answer a touch, a **Sequence** with a 140ms
+  overlap. Since block 5 (D-038) entrances, reveals and the Welcome illustration also move on their own; see "Motion, block 5".
 - **Reduced motion**: no movement, no scale, no flood or ring; colour and opacity fades stay. The level never
   depends on motion.
-- Not used: **Scroll reveal**, **Stagger** on page load, **Idle animation**, **Pulse** loops, **Ripple** on taps.
+- Not used: **Idle animation** or **Pulse** loops on data, **Ripple** on taps, count-ups. **Scroll reveal** and **Stagger**
+  are used only as "Motion, block 5" lists them.
 
-**The One Moment Rule.** A second orchestrated motion needs Roberto's approval and a line here first.
+**The One Moment Rule (superseded on 15 Nov 2026 by D-038; kept for history).** A second orchestrated motion needed
+Roberto's approval and a line here first. He gave it in block 5: see "Motion, block 5".
 
-- **Only one orchestrated motion exists: the Flood (`dn-core-flood`, `dn-lot-spill`). Every other motion answers a
+- **(Superseded by D-038.) Only one orchestrated motion exists: the Flood (`dn-core-flood`, `dn-lot-spill`). Every other motion answers a
   touch and lasts at most 320 ms, sheets included. Never add `@keyframes` or an `animate-*` class without Roberto's
   approval.** Check: `app/src/styles/motion.test.ts`.
   Why: "Spend boldness there; keep everything else quiet." (Roberto, role brief)
@@ -263,7 +266,7 @@ map (700ms, `cubic-bezier(.77,0,.175,1)`), the label's core fills with it, and o
 ## Motion, block 5
 
 Roberto, 15 Nov 2026: "Improve the frontend graphics and animations, doesnt matter if it makes it a little bit
-heavier" (D-038). This relaxes the One Moment Rule below (D-035 rule 2): the Flood stays the app's strongest motion,
+heavier" (D-038). This relaxes the One Moment Rule above (D-035 rule 2): the Flood stays the app's strongest motion,
 and more motion is now allowed when each piece has a purpose (Emil Kowalski's test: feedback, orientation,
 continuity, or a rare moment), a `prefers-reduced-motion` path, and animates transform and opacity only.
 
@@ -294,7 +297,7 @@ Check: `app/src/styles/motion.test.ts` pins the approved keyframes.
 - **Don't** use green for any status, or Leaf for severity.
 - **Don't** add shadows to list groups or cards.
 - **Don't** use all-caps eyebrows, middle-dot meta strings, monospace data labels or arrows on buttons.
-- **Don't** add motion that answers no user action, except the one Severe onset.
+- **Don't** add motion that answers no user action, except the Severe onset and what "Motion, block 5" allows.
 - **Don't** load external fonts or inline styles in HTML (CSP `'self'`).
 
 ### Approved by Roberto (learn-taste, 2026-11-15):
@@ -302,6 +305,9 @@ Check: `app/src/styles/motion.test.ts` pins the approved keyframes.
 - **New icons, illustrations and empty-state art are drawn from the soil core (rounded rectangle, water line, dashed
   when out of reach). Never a second motif: no leaf, globe, satellite or sparkle.**
   Why: the logo and the severity glyph are one idea, so one object carries brand and state.
+  Open question for Roberto (PENDING, 15 Nov): the block 5 Welcome hero and its "how it works" icon show satellites,
+  the Earth's limb and a rain cloud around the core. The logo itself has space and the Earth's limb; satellites and
+  the cloud go beyond this rule's letter. Keep them as the "orbit" half of "from orbit to the root zone", or remove them.
   <!-- 2026-11-15: Roberto approved learn-taste rule 1; source: D-015, logo option 1 "Core" chosen over "Torn leaf" and "Nova D", reason "Logo and severity glyph are one idea". -->
 - **The theme follows the phone's light or dark setting (`prefers-color-scheme`) unless the user picks one in
   Settings. A screen never forces a theme.**

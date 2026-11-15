@@ -24,3 +24,12 @@ lotes"; Alerts: "Activar correo").
 - Copy (proposed, already in the dictionary): "All lots are Normal" / "No lot needs attention on this day. Move the
   replay to see other days." (es: "Todos los lotes están en Normal" / "Ningún lote necesita atención este día. Mueve
   la repetición para ver otros días.").
+
+## Update 2026-11-15 (block 5, D-038)
+
+- The drawing is the soil core standing in the ground (a soft ground band under a hairline horizon; half the core
+  above, half in the root zone), 72 x 64. Tones: `calm` (Normal water and a small tick), `empty` (empty core),
+  `missing` (dashed core and dashed horizon), `offline` (dashed core and a crossed signal mark), `error` (Warning ink
+  and an exclamation). Props are unchanged.
+- Arrival: the drawing scales in from 0.96 on the spring, the words follow 80 ms later, the action 140 ms later
+  (`.dn-scale-in`, `.dn-enter`). Under reduced motion it is simply there.
