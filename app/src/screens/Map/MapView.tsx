@@ -164,20 +164,10 @@ export default function MapView() {
             { value: 'rain', label: t('map.layer.rain') },
           ]}
         />
-        <Segmented
-          label={t('map.base')}
-          value={baseName}
-          onChange={setBaseName}
-          options={[
-            { value: 'relief', label: t('map.base.relief') },
-            { value: 'truecolor', label: t('map.base.truecolor') },
-          ]}
-        />
-        <p className="m-0 line-clamp-2 text-footnote text-ink-3" title={source ?? undefined}>
-          {date ? t('common.dataFrom', { time: formatDate(date, prefs.units) }) : null}
-          {source ? ` · ${t('common.source', { source })}` : ''}
+        <p className="m-0 text-footnote text-ink-3" title={source ?? undefined}>
+          {date ? <span className="block">{t('common.dataFrom', { time: formatDate(date, prefs.units) })}</span> : null}
+          {source ? <span className="block truncate">{t('common.source', { source })}</span> : null}
         </p>
-        <p className="m-0 text-caption text-ink-3">{t('map.attribution', { layer: spec.id })}</p>
         {hiddenLabels && layer === 'level' ? (
           <div className="flex flex-wrap items-center gap-1.5" aria-label={t('map.legend')}>
             <span className="text-caption text-ink-3">{t('map.legendHint')}</span>
@@ -189,11 +179,29 @@ export default function MapView() {
       </div>
       <StatusNotices />
       {lots.length === 0 ? <EmptyState tone="missing" title={t('home.noUnits')} /> : null}
-      <div ref={box} className="relative z-0 min-h-0 flex-1 text-ink" aria-label={t('map.title')} role="region" />
+      {/* CL-04: only the layer switch sits above the map; imagery choice and credit move onto it. */}
+      <div className="relative min-h-0 flex-1">
+        <div ref={box} className="absolute inset-0 z-0 text-ink" aria-label={t('map.title')} role="region" />
+        <div className="absolute top-2.5 right-2.5 z-[1000] w-56 max-w-[calc(100%-4.5rem)]">
+          <Segmented
+            label={t('map.base')}
+            value={baseName}
+            onChange={setBaseName}
+            options={[
+              { value: 'relief', label: t('map.base.relief') },
+              { value: 'truecolor', label: t('map.base.truecolor') },
+            ]}
+          />
+        </div>
+      </div>
 
-      <div className="absolute inset-x-0 bottom-3 z-[1001] px-3">
+      <div className="absolute inset-x-0 bottom-3 z-[1001] flex flex-col items-start gap-1.5 px-3">
+        <p className="m-0 max-w-full rounded-control bg-surface/90 px-2 py-0.5 text-caption text-ink-2">
+          {t('map.attribution', { layer: spec.id })}
+        </p>
         {sel || selected ? (
-          <div className="rounded-sheet bg-surface p-4 shadow-sheet">
+          // CL-27 (1): the sheet enters from the bottom edge (spatial continuity); reduced motion keeps only the fade.
+          <div className="w-full rounded-sheet bg-surface p-4 shadow-sheet transition-[translate,opacity] duration-[var(--dn-dur-sheet)] ease-standard starting:translate-y-full starting:opacity-0 motion-reduce:transition-opacity motion-reduce:starting:translate-y-0">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
                 <h2 className="m-0 truncate text-headline text-ink">{unitName(selected ?? '')}</h2>
@@ -224,7 +232,7 @@ export default function MapView() {
             </div>
           </div>
         ) : (
-          <ReplayDock />
+          <ReplayDock className="w-full" />
         )}
       </div>
     </div>
