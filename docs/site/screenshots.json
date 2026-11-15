@@ -1,0 +1,15 @@
+{
+ "Home on a phone": "docs/site/screenshots/home-on-a-phone.png",
+ "Home with a Severe banner": "docs/site/screenshots/home-with-a-severe-banner.png",
+ "Replay control": "docs/site/screenshots/replay-control.png",
+ "Map, Alert level layer": "docs/site/screenshots/map-alert-level-layer.png",
+ "Lot detail, Why section": "docs/site/screenshots/lot-detail-why-section.png",
+ "Lot detail, History chart": "docs/site/screenshots/lot-detail-history-chart.png",
+ "How reliable is this? sheet": "docs/site/screenshots/how-reliable-is-this-sheet.png",
+ "Strategies cards": "docs/site/screenshots/strategies-cards.png",
+ "Alerts, Level changes": "docs/site/screenshots/alerts-level-changes.png",
+ "Learn": "docs/site/screenshots/learn.png",
+ "Farm setup, level badge and pin": "docs/site/screenshots/farm-setup-level-badge-and-pin.png",
+ "Farm setup, lots": "docs/site/screenshots/farm-setup-lots.png",
+ "Settings": "docs/site/screenshots/settings.png"
+}

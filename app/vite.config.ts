@@ -20,7 +20,7 @@ export default defineConfig({
         // The About page (app/public/about/, static) is never precached and never answered with the app shell.
         globIgnores: ['data/**', 'about/**'],
         navigateFallback: 'index.html',
-        navigateFallbackDenylist: [/^\/about\//, /^\/templates\//],
+        navigateFallbackDenylist: [/^\/about\//, /^\/templates\//, /^\/Instructions\.pdf$/, /^\/site\.json$/],
         runtimeCaching: [
           {
             // Demo snapshots: fresh copy when online, cached copy when offline.
