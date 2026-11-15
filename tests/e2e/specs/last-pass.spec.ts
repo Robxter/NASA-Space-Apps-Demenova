@@ -1,4 +1,4 @@
-﻿// Coverage for the last bounded pass of block 3 (D-033, 2231e63 and ee721cf): Home two columns from 1024 px with the
+// Coverage for the last bounded pass of block 3 (D-033, 2231e63 and ee721cf): Home two columns from 1024 px with the
 // same content and order, farmer-mode Home (distill), the two new empty-state actions (onboard), map labels not covering
 // a neighbouring lot (T-070 / R-11), and the service worker leaving /about/ to the network.
 import {
