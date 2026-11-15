@@ -4,7 +4,7 @@ import { AlertBanner, Card, DemoChip, EmptyState, List, ListRow } from '../../co
 import { DataValue } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, ScreenHeader, StatusNotices } from '../../components/shell';
 import { LevelCheck } from '../../components/LevelCheck';
-import { bannerUnit, countByLevel, highestW, newestUpdate, sortByW, topFactor } from '../../data/select';
+import { bannerUnit, countByLevel, highestLevel, highestW, newestUpdate, sortByW, topFactor } from '../../data/select';
 import { fromSpec } from '../../data/origin';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { levelKey } from '../../i18n';
@@ -27,7 +27,7 @@ function GearLink() {
 }
 
 export default function Home() {
-  const { status, demo, day, unitName, date, lotUnits } = useData();
+  const { status, demo, day, unitName, lotUnits } = useData();
   const { prefs, t } = usePrefs();
   const farm = demo?.farm?.farm;
   const units = lotUnits;
@@ -36,6 +36,7 @@ export default function Home() {
   const banner = bannerUnit(units);
   const counts = countByLevel(units);
   const top = highestW(units);
+  const topLevel = highestLevel({ units });
   const reasonOf = (u: ReplayUnit) => {
     const f = topFactor(u.alert.factors);
     return f ? t('home.topFactor', { factor: t(`factor.${f.name}`) }) : t('home.noFactors');
@@ -58,24 +59,23 @@ export default function Home() {
         <div className="flex flex-col gap-5 px-4">
           {banner ? (
             <AlertBanner
-              key={`${banner.unit_id}-${date}`}
+              key={banner.unit_id}
               level={banner.alert.level}
               label={t(levelKey(banner.alert.level))}
               title={unitName(banner.unit_id)}
               reason={reasonOf(banner)}
               meta={formatInstant(banner.alert.updated_at, prefs.units, prefs.language) ?? undefined}
               lang={prefs.language}
-              onset={banner.alert.level === 'severe'}
+              // The banner is read, not watched: no ripple (Severe moment, CL-25). The map carries the onset.
+              onset={false}
               onOpen={() => navigate({ name: 'lot', id: banner.unit_id })}
             />
           ) : null}
-          {/* The banner only exists for Warning and Severe (SPEC 18); its check follows it. */}
-          {banner ? <LevelCheck level={banner.alert.level} /> : null}
 
           <Card title={t('home.statusCard')} footer={source ? t('common.source', { source }) : undefined}>
             {units.length === 0 ? (
               <EmptyState tone="missing" title={t('common.noData')} />
-            ) : (
+            ) : isAgronomist ? (
               <div className="flex flex-col gap-4">
                 <DataValue
                   kind="index"
@@ -88,16 +88,23 @@ export default function Home() {
                 />
                 <div>
                   <p className="m-0 mb-2 text-footnote text-ink-2">{t('home.lotsPerLevel')}</p>
-                  <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                  {/* CL-13: equal columns, count above its level. DOM keeps badge then count (QA's tally rule);
+                      flex-col-reverse puts the count on top. A count is a tally of units, not a measured value. */}
+                  <ul className="m-0 flex list-none flex-wrap justify-between gap-x-2 gap-y-3 p-0">
                     {SEVERITY_VALUES.filter((s) => s !== 'stale' || counts.stale > 0).map((s) => (
-                      <li key={s} className="flex items-center gap-1.5">
-                        <LevelBadge level={s} size="sm" />
-                        {/* A count of units in the snapshot: a tally, not a measured value. */}
-                        <span className="dn-num text-callout font-semibold text-ink">{counts[s]}</span>
+                      <li key={s} className="flex min-w-0 flex-col-reverse items-start gap-1">
+                        <LevelBadge level={s} size="sm" variant="plain" />
+                        <span className="dn-num text-headline text-ink">{counts[s]}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
+              </div>
+            ) : (
+              // Farmer mode (SPEC 04): one status. The highest level word; W and counts stay in agronomist mode.
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="text-callout text-ink-2">{t('home.highestLevel')}</span>
+                {topLevel ? <LevelBadge level={topLevel} /> : null}
               </div>
             )}
           </Card>
@@ -139,6 +146,9 @@ export default function Home() {
               </List>
             )}
           </Card>
+
+          {/* CL-03: the check follows the lots on Home (SPEC 18 order); it exists only with the banner. */}
+          {banner ? <LevelCheck level={banner.alert.level} /> : null}
 
           <section aria-label={t('home.replay')}>
             <ReplayDock />

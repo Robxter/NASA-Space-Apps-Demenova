@@ -17,6 +17,9 @@ export interface DataValueProps {
   /** UTC timestamp the value refers to or was produced at. */
   at?: string | null;
   label?: string;
+  /** Accessible name when the visible label sits outside, e.g. in a list row title: it leads the tooltip and the
+   *  screen-reader text, so the value still announces what it measures. */
+  name?: string;
   size?: 'display' | 'title' | 'body';
   decimals?: number;
   /** Shows source and time as a visible line under the value (agronomist detail). */
@@ -45,6 +48,7 @@ export function DataValue({
   source,
   at,
   label,
+  name,
   size = 'body',
   decimals,
   showMeta = false,
@@ -59,7 +63,8 @@ export function DataValue({
   const metaParts = [source ? t('common.source', { source }) : null, when ? t('common.updated', { time: when }) : null].filter(
     (x): x is string => Boolean(x),
   );
-  const tooltip = [origin ? t(`origin.${origin}`) : t('origin.unknown'), ...metaParts].join(' · ');
+  // Full stops in tooltips and meta (copy-proposals "Separators"); QA's origin check reads the words, not the dots.
+  const tooltip = [name, origin ? t(`origin.${origin}`) : t('origin.unknown'), ...metaParts].filter(Boolean).join('. ');
   return (
     <span className={`inline-flex items-end gap-1.5 ${className}`} title={tooltip}>
       <Value
@@ -68,7 +73,7 @@ export function DataValue({
         label={label}
         size={size}
         lang={prefs.language}
-        meta={showMeta && metaParts.length ? metaParts.join(' · ') : undefined}
+        meta={showMeta && metaParts.length ? metaParts.join('. ') : undefined}
         missingReason={unknownOrigin ? t('origin.unknown') : missingReason}
       />
       {q.text !== null && !hideBadge ? <OriginBadge origin={origin} /> : null}

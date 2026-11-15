@@ -6,7 +6,7 @@ import { SEVERITY_VALUES, type Factor, type ReplayDay, type ReplayUnit, type Sev
 export const LEVEL_RANK: Record<Severity, number> = { stale: -1, normal: 0, watch: 1, warning: 2, severe: 3 };
 
 /** Highest level on a day for the replay strip; null when the day has no file or no units. */
-export function highestLevel(day: ReplayDay | null | undefined): Severity | null {
+export function highestLevel(day: Pick<ReplayDay, 'units'> | null | undefined): Severity | null {
   if (!day || day.units.length === 0) return null;
   return day.units.reduce<Severity>(
     (best, u) => (LEVEL_RANK[u.alert.level] > LEVEL_RANK[best] ? u.alert.level : best),

@@ -68,7 +68,7 @@ export function TabBar({ current }: { current: Tab }) {
       aria-label={t('tab.nav')}
       className="fixed inset-x-0 bottom-0 z-[1000] border-t border-line bg-surface pb-[env(safe-area-inset-bottom,0px)] pl-[env(safe-area-inset-left,0px)] pr-[env(safe-area-inset-right,0px)]"
     >
-      <ul className="m-0 mx-auto flex max-w-3xl list-none p-0">
+      <ul className="m-0 mx-auto flex max-w-3xl list-none px-4 py-0">
         {tabs.map((tab) => {
           const on = tab === current;
           return (
