@@ -11,6 +11,7 @@ from backend.tests import fakes as f
 def ctx():
     db, resend = f.FakePostgrest(), f.FakeResend()
     state = {"settings": f.settings()}
+    main.email_test_throttle.reset()
     main.app.dependency_overrides[main.get_settings] = lambda: state["settings"]
     main.app.dependency_overrides[main.get_db] = lambda: db.client() if state["settings"].supabase_configured else None
     main.app.dependency_overrides[main.get_mailer] = (
@@ -18,6 +19,7 @@ def ctx():
     )
     yield TestClient(main.app), db, resend, state
     main.app.dependency_overrides.clear()
+    main.email_test_throttle.reset()
 
 
 ADMIN = {"X-Admin-Token": f.ADMIN}
@@ -122,3 +124,33 @@ def test_email_test_provider_rejection(ctx):
 def test_telegram_webhook_not_built_yet(ctx):
     client, *_ = ctx
     assert client.post("/telegram/webhook", json={}).status_code == 501
+
+
+def test_short_admin_token_counts_as_unset(ctx):
+    """Security review L1: a configured token under 32 characters keeps the admin endpoints closed."""
+    from backend.app.settings import load_settings
+
+    client, _, _, state = ctx
+    short = "x" * 31
+    assert load_settings({"ADMIN_TOKEN": short}).admin_token is None
+    assert load_settings({"ADMIN_TOKEN": "y" * 32}).admin_token == "y" * 32
+    state["settings"] = load_settings({"ADMIN_TOKEN": short, "SUPABASE_URL": f.SUPABASE_URL,
+                                       "SUPABASE_SERVICE_ROLE_KEY": f.SERVICE_KEY})
+    assert client.post("/run", json={"farm_id": None}, headers={"X-Admin-Token": short}).status_code == 401
+
+
+def test_email_test_is_throttled(ctx):
+    """Security review L2: a second test email within the interval gets 429 and reaches no provider."""
+    client, _, resend, _ = ctx
+    assert client.post("/email/test", headers=ADMIN).status_code == 200
+    r = client.post("/email/test", headers=ADMIN)
+    assert r.status_code == 429 and len(resend.requests) == 1
+    main.email_test_throttle.reset()
+    assert client.post("/email/test", headers=ADMIN).status_code == 200
+
+
+def test_httpx_request_logs_are_quiet():
+    """Security review L3: httpx INFO lines (request URLs) are not emitted."""
+    import logging
+
+    assert logging.getLogger("httpx").getEffectiveLevel() >= logging.WARNING

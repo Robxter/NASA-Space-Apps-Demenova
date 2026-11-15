@@ -19,7 +19,7 @@ SYN = "synthetic"
 SUPABASE_URL = "https://fake-project.supabase.test"
 SERVICE_KEY = "service-role-key-test-only"
 RESEND_KEY = "re_test_only_key"
-ADMIN = "admin-token-test-only"
+ADMIN = "admin-token-test-only-0123456789abcdef"  # >= 32 characters (L1)
 INBOX = "owner@example.test"
 
 
@@ -60,6 +60,8 @@ class FakePostgrest:
         }
         self.headers_seen: list[httpx.Headers] = []
         self.fail_tables: set[str] = set()
+        # (method, table) -> number of next calls that fail with HTTP 500
+        self.fail_next: dict[tuple[str, str], int] = {}
 
     def _rows(self, table: str, params: list[tuple[str, str]]) -> list[dict[str, Any]]:
         rows = self.tables[table]
@@ -73,6 +75,10 @@ class FakePostgrest:
         self.headers_seen.append(request.headers)
         table = request.url.path.rsplit("/", 1)[-1]
         if table in self.fail_tables:
+            return httpx.Response(500, json={"message": "boom"})
+        key = (request.method, table)
+        if self.fail_next.get(key, 0) > 0:
+            self.fail_next[key] -= 1
             return httpx.Response(500, json={"message": "boom"})
         params = parse_qsl(request.url.query.decode(), keep_blank_values=True)
         if request.method == "GET":
@@ -126,6 +132,7 @@ class FakeResend:
 
 FARM = "farm_test-demo"
 LOT = "lot_test-demo_1"
+LOT2 = "lot_test-demo_2"
 T0 = "2026-02-22T15:00:00Z"
 T1 = "2026-02-22T18:00:00Z"
 FACTORS = [{"name": "upstream", "share": 0.5}, {"name": "saturation", "share": 0.3}, {"name": "local", "share": 0.2}]
@@ -134,20 +141,21 @@ FACTORS = [{"name": "upstream", "share": 0.5}, {"name": "saturation", "share": 0
 def seed(db: FakePostgrest, *, is_demo: bool = True, alert_email: str | None = None) -> None:
     db.tables["farms"].append({"id": FARM, "name": "Finca Prueba <b>", "is_demo": is_demo, "alert_email": alert_email})
     db.tables["lots"].append({"id": LOT, "farm_id": FARM, "name": "Lote 1"})
+    db.tables["lots"].append({"id": LOT2, "farm_id": FARM, "name": "Lote 2"})
 
 
 def add_event(db: FakePostgrest, *, event_id: str = "01JTEST0000000000000000001", at: str = T0,
-              from_level: str = "warning", to_level: str = "severe", w: float | None = 0.9) -> None:
+              from_level: str = "warning", to_level: str = "severe", w: float | None = 0.9, unit: str = LOT) -> None:
     db.tables["alert_events"].append({
-        "id": event_id, "unit_id": LOT, "farm_id": FARM, "from_level": from_level, "to_level": to_level,
+        "id": event_id, "unit_id": unit, "farm_id": FARM, "from_level": from_level, "to_level": to_level,
         "w": w, "factors": FACTORS, "at": at, "email_sent": False, "telegram_sent": False, "origin": SYN,
     })
 
 
 def add_state(db: FakePostgrest, *, level: str = "severe", since: str = T0, updated_at: str = T1,
-              newest_rain: str | None = T1) -> None:
+              newest_rain: str | None = T1, unit: str = LOT) -> None:
     db.tables["alert_states"].append({
-        "unit_id": LOT, "farm_id": FARM, "level": level, "w": 0.9, "factors": FACTORS, "since": since,
+        "unit_id": unit, "farm_id": FARM, "level": level, "w": 0.9, "factors": FACTORS, "since": since,
         "updated_at": updated_at, "newest_rain_data_at": newest_rain, "confirmations": 2, "confidence": 1,
         "side": {"sigatoka": None, "cold": None}, "origin": SYN,
     })

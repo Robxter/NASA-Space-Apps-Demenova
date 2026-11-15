@@ -13,6 +13,9 @@ from dataclasses import dataclass
 # is accepted for the demo (docs/spec/13). Using the owned domain needs the product owner's approval (class A).
 RESEND_TEST_FROM_ADDRESS = "onboarding@resend.dev"
 DEFAULT_FROM_NAME = "Demenova Alerts"
+# A shorter ADMIN_TOKEN counts as unset, so the admin endpoints stay closed (security review L1).
+# Generate one with: python -c "import secrets;print(secrets.token_hex(32))"
+MIN_ADMIN_TOKEN_LENGTH = 32
 
 
 def _get(env: Mapping[str, str], name: str) -> str | None:
@@ -54,8 +57,9 @@ class Settings:
 def load_settings(env: Mapping[str, str] | None = None) -> Settings:
     env = os.environ if env is None else env
     base = _get(env, "APP_BASE_URL")
+    token = _get(env, "ADMIN_TOKEN")
     return Settings(
-        admin_token=_get(env, "ADMIN_TOKEN"),
+        admin_token=token if token and len(token) >= MIN_ADMIN_TOKEN_LENGTH else None,
         resend_api_key=_get(env, "RESEND_API_KEY"),
         alert_email_to=_get(env, "ALERT_EMAIL_TO"),
         alert_email_from_name=_clean_display_name(_get(env, "ALERT_EMAIL_FROM_NAME")),

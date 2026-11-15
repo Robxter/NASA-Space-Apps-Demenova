@@ -60,3 +60,15 @@ def test_settings_from_env_only_and_sanitised():
     assert s.admin_token is None and s.alert_email_from_name == "Evil xy"
     assert s.app_base_url is None  # only https links go into emails
     assert load_settings({}).from_header == "Demenova Alerts <onboarding@resend.dev>"
+
+
+def test_names_are_capped_and_control_characters_stripped_in_both_parts():
+    """Security review L4."""
+    from backend.app.email import clean_name
+
+    nasty = "Lote" + chr(0x1B) + "[31m rojo" + chr(0x202E) + chr(0) + "a" * 200
+    subject, html_body, text = render(SevereEmail(**{**MAIL.__dict__, "unit_name": nasty, "farm_name": nasty}))
+    for part in (subject, html_body, text):
+        assert chr(0x1B) not in part and chr(0x202E) not in part and chr(0) not in part
+    assert "a" * 80 not in text and chr(0x2026) in text
+    assert len(clean_name(nasty)) == 80 and clean_name("Lote 1") == "Lote 1"

@@ -162,3 +162,79 @@ def test_logs_hold_no_secret_and_no_address(caplog):
     run(db, resend)
     for secret in (f.INBOX, f.RESEND_KEY, f.SERVICE_KEY, f.ADMIN):
         assert secret not in caplog.text
+
+
+# ----------------------------------------------------------------------- security review M1 / M2 regressions
+
+
+def test_lookup_failure_before_claim_leaves_no_claim_and_next_run_sends():
+    db, resend = setup()
+    db.fail_next[("GET", "lots")] = 1  # unit name lookup fails
+    assert [o.result for o in run(db, resend)] == ["skipped:supabase_error"]
+    assert db.tables["email_log"] == [] and resend.requests == []
+    assert [o.result for o in run(db, resend)] == ["sent"]
+
+
+def test_log_update_failure_after_send_releases_claim_and_retry_reuses_idempotency_key():
+    db, resend = setup()
+    db.fail_next[("PATCH", "email_log")] = 1  # status update after a successful send fails once
+    assert [o.result for o in run(db, resend)] == ["failed"]
+    assert [r["status"] for r in db.tables["email_log"]] == ["failed"]  # released, not stuck in queued
+    assert [o.result for o in run(db, resend)] == ["sent"]
+    keys = {r.headers["Idempotency-Key"] for r in resend.requests}
+    assert len(resend.requests) == 2 and len(keys) == 1  # Resend dedupes the retry within 24 h
+
+
+def test_claim_deleted_when_it_cannot_be_marked_failed():
+    db, resend = setup()
+    db.fail_next[("PATCH", "email_log")] = 2  # status update and the release update both fail
+    assert [o.result for o in run(db, resend)] == ["failed"]
+    assert db.tables["email_log"] == []
+
+
+def test_flag_update_failure_after_send_keeps_dedupe():
+    db, resend = setup()
+    db.fail_next[("PATCH", "alert_events")] = 1
+    assert [o.result for o in run(db, resend)] == ["sent"]
+    assert [r["status"] for r in db.tables["email_log"]] == ["sent"]
+    assert [o.result for o in run(db, resend)] == ["skipped:duplicate"]
+    assert len(resend.requests) == 1
+
+
+def test_unexpected_error_in_one_row_does_not_abort_the_batch():
+    db, resend = setup()
+    f.add_event(db, event_id="01JTEST0000000000000000003", unit=f.LOT2)
+    f.add_state(db, unit=f.LOT2)
+
+    class Exploding:
+        def __init__(self, inner):
+            self.inner, self.calls = inner, 0
+
+        def send(self, *a, **kw):
+            self.calls += 1
+            if self.calls == 1:
+                raise RuntimeError("provider exploded")
+            return self.inner.send(*a, **kw)
+
+    s = f.settings()
+    outcomes = publish_severe_alerts(db.client(), Exploding(resend.mailer(s)), s, stale_after_hours=STALE_H)
+    assert [o.result for o in outcomes] == ["failed", "sent"]
+    assert sorted(r["status"] for r in db.tables["email_log"]) == ["failed", "sent"]
+
+
+def test_non_supabase_error_before_claim_is_contained(monkeypatch):
+    from backend.app import alerts
+
+    db, resend = setup()
+    f.add_event(db, event_id="01JTEST0000000000000000003", unit=f.LOT2)
+    f.add_state(db, unit=f.LOT2)
+    real = alerts.build_email
+
+    def flaky(db_, settings_, event, *a, **kw):
+        if event.unit_id == f.LOT:
+            raise KeyError("name")
+        return real(db_, settings_, event, *a, **kw)
+
+    monkeypatch.setattr(alerts, "build_email", flaky)
+    assert [o.result for o in run(db, resend)] == ["skipped:error", "sent"]
+    assert [r["unit_id"] for r in db.tables["email_log"]] == [f.LOT2]

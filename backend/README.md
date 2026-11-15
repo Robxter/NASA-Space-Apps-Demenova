@@ -18,6 +18,9 @@ judge opens may depend on it, because free Render services sleep (CLAUDE.md §2)
 ## Environment (Render)
 `ADMIN_TOKEN`, `RESEND_API_KEY`, `ALERT_EMAIL_TO`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`; optional
 `ALERT_EMAIL_FROM_NAME` (default "Demenova Alerts") and `APP_BASE_URL` (https; lot link in the email). Never log them.
+`ADMIN_TOKEN` must be at least 32 characters, otherwise it counts as unset and the admin endpoints stay closed.
+Generate one with `python -c "import secrets;print(secrets.token_hex(32))"`. `/email/test` answers 429 if called again
+within 60 s.
 Sender: Resend's test sender `onboarding@resend.dev`, which reaches only the Resend account owner's inbox (accepted for
 the demo). Using an owned domain needs the product owner's approval (class A).
 

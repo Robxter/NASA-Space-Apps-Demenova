@@ -48,6 +48,12 @@ class Outcome:
     provider_id: str | None = None
 
 
+def quiet_http_logs() -> None:
+    """httpx logs every request URL at INFO (security review L3); keep only warnings."""
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("httpcore").setLevel(logging.WARNING)
+
+
 def load_stale_after_hours(path: Path = ALERTS_CONFIG) -> float | None:
     """stale_after_hours from config/alerts.yaml, or None when missing or invalid (callers fail closed)."""
     try:
@@ -94,7 +100,7 @@ def _model(cls: type, row: dict[str, Any]) -> Any:
 def unit_display_name(db: SupabaseRest, unit_id: str, farm_name: str) -> str:
     if unit_id.startswith("lot_"):
         rows = db.select("lots", {"select": "name", "id": f"eq.{unit_id}", "limit": "1"})
-        return str(rows[0]["name"]) if rows else unit_id
+        return str(rows[0].get("name") or unit_id) if rows else unit_id
     if unit_id.startswith("zone_"):
         tercile = unit_id.rsplit("_", 1)[-1]
         names = {"low": "Zona baja / Low zone", "mid": "Zona media / Middle zone", "high": "Zona alta / High zone"}
@@ -162,27 +168,49 @@ def publish_one(db: SupabaseRest, mailer: ResendMailer, settings: Settings, even
     if to is None:
         return Outcome(event.id, event.unit_id, "skipped:no_recipient")
 
+    # Everything that can fail on a lookup happens before the claim exists (security review M1).
+    mail = build_email(db, settings, event, state, farm)
     episode = iso(event.at)
     if _claims(db, event.unit_id, episode):
         return Outcome(event.id, event.unit_id, "skipped:duplicate")
-    claim_id = new_ulid()
-    db.insert("email_log", {
-        "id": claim_id, "unit_id": event.unit_id, "episode_start": episode, "to_hash": hash_recipient(to),
-        "provider_id": None, "status": EmailStatus.queued.value,
-    })
-    claims = _claims(db, event.unit_id, episode)
-    if not claims or claims[0]["id"] != claim_id:
-        db.delete("email_log", {"id": f"eq.{claim_id}"})
-        return Outcome(event.id, event.unit_id, "skipped:duplicate")
-
-    mail = build_email(db, settings, event, state, farm)
-    result = mailer.send(to, mail, idempotency_key=f"demenova-severe-{event.unit_id}-{episode}")
-    db.update("email_log", {"id": f"eq.{claim_id}"},
-              {"status": result.status.value, "provider_id": result.provider_id})
-    if result.status == EmailStatus.sent:
+    claim_id = new_ulid()  # created right after the check: the narrowest race window without a schema change (M2)
+    try:
+        db.insert("email_log", {
+            "id": claim_id, "unit_id": event.unit_id, "episode_start": episode, "to_hash": hash_recipient(to),
+            "provider_id": None, "status": EmailStatus.queued.value,
+        })
+        claims = _claims(db, event.unit_id, episode)
+        if not claims or claims[0].get("id") != claim_id:
+            db.delete("email_log", {"id": f"eq.{claim_id}"})
+            return Outcome(event.id, event.unit_id, "skipped:duplicate")
+        # Stable key per episode: if a crash below leads to a retry within 24 h, Resend does not deliver twice.
+        result = mailer.send(to, mail, idempotency_key=f"demenova-severe-{event.unit_id}-{episode}")
+        db.update("email_log", {"id": f"eq.{claim_id}"},
+                  {"status": result.status.value, "provider_id": result.provider_id})
+    except Exception as exc:  # noqa: BLE001 - never leave a `queued` claim behind, it would block the episode
+        log.warning("claim released: unit=%s error=%s", event.unit_id, type(exc).__name__)
+        _release_claim(db, claim_id)
+        return Outcome(event.id, event.unit_id, "failed")
+    if result.status != EmailStatus.sent:
+        return Outcome(event.id, event.unit_id, "failed")
+    try:
         db.update("alert_events", {"id": f"eq.{event.id}"}, {"email_sent": True})
-        return Outcome(event.id, event.unit_id, "sent", result.provider_id)
-    return Outcome(event.id, event.unit_id, "failed")
+    except Exception as exc:  # noqa: BLE001 - email_log already records the send, so dedupe still holds
+        log.warning("email_sent flag not set: unit=%s error=%s", event.unit_id, type(exc).__name__)
+    return Outcome(event.id, event.unit_id, "sent", result.provider_id)
+
+
+def _release_claim(db: SupabaseRest, claim_id: str) -> None:
+    """Mark a claim `failed` (so the next run retries); delete it if that fails too; never raise."""
+    try:
+        db.update("email_log", {"id": f"eq.{claim_id}"}, {"status": EmailStatus.failed.value})
+        return
+    except Exception:  # noqa: BLE001
+        pass
+    try:
+        db.delete("email_log", {"id": f"eq.{claim_id}"})
+    except Exception:  # noqa: BLE001
+        log.error("claim %s could not be released; that episode stays blocked until it is cleared", claim_id)
 
 
 def publish_severe_alerts(db: SupabaseRest, mailer: ResendMailer, settings: Settings,
@@ -217,6 +245,9 @@ def publish_severe_alerts(db: SupabaseRest, mailer: ResendMailer, settings: Sett
         except SupabaseError as exc:
             log.warning("publish failed: unit=%s error=%s", event.unit_id, exc)
             outcomes.append(Outcome(event.id, event.unit_id, "skipped:supabase_error"))
+        except Exception as exc:  # noqa: BLE001 - one bad row never aborts the batch; log the class only
+            log.warning("publish failed: unit=%s error=%s", event.unit_id, type(exc).__name__)
+            outcomes.append(Outcome(event.id, event.unit_id, "skipped:error"))
     for o in outcomes:
         log.info("severe email: event=%s unit=%s result=%s", o.event_id, o.unit_id, o.result)
     return outcomes
@@ -247,6 +278,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--farm", type=str, default=None)
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
+    quiet_http_logs()
     settings = load_settings()
     if not (settings.supabase_configured and settings.resend_api_key):
         log.error("Supabase or Resend is not configured; nothing sent")

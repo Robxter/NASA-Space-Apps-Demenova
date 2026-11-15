@@ -13,6 +13,7 @@ import datetime as dt
 import hashlib
 import html
 import logging
+import unicodedata
 from dataclasses import dataclass, field
 
 import httpx
@@ -76,8 +77,18 @@ def hash_recipient(address: str) -> str:
     return "sha256:" + hashlib.sha256(f"demenova-email-v1:{address.strip().lower()}".encode()).hexdigest()
 
 
+MAX_NAME_CHARS = 80
+
+
 def _one_line(text: str) -> str:
     return " ".join(text.split())
+
+
+def clean_name(text: str, limit: int = MAX_NAME_CHARS) -> str:
+    """User-typed names: no control or format characters, one line, at most `limit` characters (review L4)."""
+    kept = "".join(ch if unicodedata.category(ch) not in {"Cc", "Cf"} else " " for ch in text)
+    kept = _one_line(kept)
+    return kept if len(kept) <= limit else kept[: limit - 1].rstrip() + "…"
 
 
 def format_time(value: dt.datetime | None) -> tuple[str, str]:
@@ -111,8 +122,10 @@ def unit_kind(unit_id: str) -> tuple[str, str]:
 
 def render(mail: SevereEmail) -> tuple[str, str, str]:
     """Return (subject, html, text)."""
+    unit_name, farm_name = clean_name(mail.unit_name), clean_name(mail.farm_name)
+    unit_id = clean_name(mail.unit_id)
     prefix = ("[PRUEBA/TEST] " if mail.test else "") + ("[DEMO] " if mail.is_demo else "")
-    subject = _one_line(f"{prefix}Riesgo SEVERO / SEVERE risk: {mail.unit_name} ({mail.farm_name})")[:200]
+    subject = _one_line(f"{prefix}Riesgo SEVERO / SEVERE risk: {unit_name} ({farm_name})")[:200]
 
     w_txt = f"{mail.w:.2f}" if mail.w is not None else None
     w_es, w_en = (w_txt, w_txt) if w_txt else MISSING
@@ -124,7 +137,7 @@ def render(mail: SevereEmail) -> tuple[str, str, str]:
     kind_es, kind_en = unit_kind(mail.unit_id)
     lines_es = [
         "NIVEL: ROJO — SEVERO",
-        f"{kind_es}: {mail.unit_name} ({mail.unit_id}) · Finca: {mail.farm_name}",
+        f"{kind_es}: {unit_name} ({unit_id}) · Finca: {farm_name}",
         f"Índice de alerta W: {w_es}",
         f"Factores principales (parte de W): {f_es}",
         f"Severo desde: {ep_es}",
@@ -133,7 +146,7 @@ def render(mail: SevereEmail) -> tuple[str, str, str]:
     ]
     lines_en = [
         "LEVEL: RED — SEVERE",
-        f"{kind_en}: {mail.unit_name} ({mail.unit_id}) · Farm: {mail.farm_name}",
+        f"{kind_en}: {unit_name} ({unit_id}) · Farm: {farm_name}",
         f"Alert index W: {w_en}",
         f"Main factors (share of W): {f_en}",
         f"Severe since: {ep_en}",

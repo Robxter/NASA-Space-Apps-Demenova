@@ -6,6 +6,8 @@ Run from the repository root: `uv run uvicorn backend.app.main:app`.
 import datetime as dt
 import hmac
 import logging
+import threading
+import time
 from typing import Annotated, Any
 
 from fastapi import BackgroundTasks, Depends, FastAPI, Header, Request
@@ -13,7 +15,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ConfigDict
 
-from backend.app.alerts import build_email, latest_demo_severe, publish_severe_alerts
+from backend.app.alerts import build_email, latest_demo_severe, publish_severe_alerts, quiet_http_logs
 from backend.app.email import ResendMailer, SevereEmail
 from backend.app.ids import new_ulid
 from backend.app.settings import Settings, load_settings
@@ -21,6 +23,33 @@ from backend.app.supabase import SupabaseError, SupabaseRest
 from pipeline.common.models import EmailStatus, FarmId
 
 log = logging.getLogger("demenova.api")
+quiet_http_logs()
+
+# /email/test sends at most once per interval per process (security review L2): a leaked token cannot burn the
+# Resend quota quickly. Attempts count, whether or not Resend accepts them.
+EMAIL_TEST_MIN_INTERVAL_S = 60.0
+
+
+class _Throttle:
+    def __init__(self, interval_s: float) -> None:
+        self.interval_s = interval_s
+        self._last: float | None = None
+        self._lock = threading.Lock()
+
+    def allow(self) -> bool:
+        with self._lock:
+            now = time.monotonic()
+            if self._last is not None and now - self._last < self.interval_s:
+                return False
+            self._last = now
+            return True
+
+    def reset(self) -> None:
+        with self._lock:
+            self._last = None
+
+
+email_test_throttle = _Throttle(EMAIL_TEST_MIN_INTERVAL_S)
 
 app = FastAPI(title="Demenova backend", version="0.1.0", docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -160,6 +189,8 @@ def email_test(
     """
     if mailer is None or settings.alert_email_to is None:
         raise ApiError(503, "Email is not configured.")
+    if not email_test_throttle.allow():
+        raise ApiError(429, "Too many test emails; wait a minute.")
     mail = SevereEmail(unit_id="-", unit_name="sin dato / missing", farm_name="sin dato / missing",
                        is_demo=False, w=None, test=True)
     if db is not None:
