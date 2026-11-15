@@ -134,7 +134,7 @@ review queue, the flood candidates and the logo options.
   `python scripts/check_provenance.py` and `uv run pytest` on every push (files committed and passing locally;
   open: Roberto pushes, adds GitHub secrets, creates the Render Blueprint per docs/DEPLOY.md; live hourly
   ingest/score entry point not built yet, step skipped in pipeline.yml)
-- [ ] T-030 technical-writer: block 2 report, SI-use log (English only, D-026)
+- [x] T-030 technical-writer: block 2 report, SI-use log (English only, D-026) (16088a2)
 
 ## Block 3: scope completion (day 2)
 - [x] T-040 agronomist: apply FIX2 §5 mandate (sourced or labelled, checks not prescriptions, reviewed_by /
@@ -151,7 +151,13 @@ review queue, the flood candidates and the logo options.
   (scrubbed at copy time by app/scripts/build_domain_snapshots.py; fix at source in T-040), farmer toggle, level 3)
 - [ ] T-043 api-engineer: Telegram bot (nice-to-have)
 - [ ] T-044 qa-demo-engineer: e2e suite, replay acceptance, DEVICE_CHECKLIST.md (iPhone 14 Pro, iPad Air M2,
-  Chrome DevTools Android emulation 360×780, CPU 4×, Slow 4G)
+  Chrome DevTools Android emulation 360×780, CPU 4×, Slow 4G) (suite built: tests/e2e, Playwright 1.65.1 (P-018),
+  Edge, 4 viewports; 147 passed, 4 failed = T-066 on every viewport; replay acceptance green; perf Fast 4G + CPU 4×
+  2.5 s, Slow 4G 4.4 s; report docs/reports/qa/2026-11-15-0607.md; open: T-066, Roberto fills DEVICE_CHECKLIST.md
+  and the Lighthouse row on the Render URL)
+- [ ] T-066 frontend-engineer: Strategies soil/water scores show an origin badge but no timestamp (acceptance: no
+  number without origin and timestamp); pass strategies.json `generated_at` as `at` in Score (Strategies.tsx).
+  Failing test: tests/e2e/specs/screens.spec.ts "every number on Strategies carries an origin badge and a timestamp"
 - [x] T-045 instructor: farmer (Spanish first) and agronomist guides, judge quick start, Learn cards; agronomic
   guidance stated as general and not reviewed by a local agronomist (5 guides done 2026-11-15; learn-cards.md
   skipped, optional; <app URL> placeholder for Roberto; report docs/reports/instructor/2026-11-15-1400.md)
@@ -160,7 +166,8 @@ review queue, the flood candidates and the logo options.
 ## Freeze and submission (day 2, 15:00 → 20:00)
 - [ ] T-050 qa + scientist-reviewer + security-reviewer final pass; provenance and size gates
 - [ ] T-051 technical-writer: README, CITATIONS, CHANGELOG, SI-use description, project page (en); no naming of the
-  former team agronomist (FIX2 §7, D-027)
+  former team agronomist (FIX2 §7, D-027). Done: CITATIONS e93d5d4, README f7f8fe1, project page draft 73226ac;
+  open: app/video/repo URLs (Roberto), AI video tools line, final SI-use description at freeze
 - [ ] T-052 Roberto: 30-second video with English captions, public link
 - [ ] T-053 Roberto: submit by 20:00 Spain; confirm only active members are listed (ask the Local Lead, D-027)
 
