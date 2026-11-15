@@ -10,6 +10,7 @@ import { DataValue } from '../../components/DataValue';
 import { LevelBadge, LoadGate, ReplayDock, Segmented, StatusNotices } from '../../components/shell';
 import { fromSpec, resolveOrigin } from '../../data/origin';
 import { LEVEL_RANK } from '../../data/select';
+import { flood, makeLabel, setLabelLevel, setTooltipLevel, tokenMs } from './flood';
 import { resolveProvenance, sourceLabel } from '../../data/snapshots';
 import { navigate } from '../../state/nav';
 import { useData } from '../../state/data';
@@ -40,13 +41,15 @@ const toLatLngs = (lot: Lot): L.LatLngExpression[][] =>
   lot.geometry.coordinates.map((ring) => ring.map((p) => [p[1] ?? 0, p[0] ?? 0] as [number, number]));
 
 export default function MapView() {
-  const { status, demo, day, date, unitById, unitName } = useData();
+  const { status, demo, day, date, index, playing, unitById, unitName } = useData();
   const { prefs, t } = usePrefs();
   const box = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
   const base = useRef<L.TileLayer | null>(null);
   const shapes = useRef(new Map<string, L.Polygon>());
-  const prevLevels = useRef(new Map<string, Severity>());
+  const prevIndex = useRef<number | null>(null);
+  const floodEpoch = useRef(0);
+  const labels = useRef(new Map<string, { root: HTMLSpanElement; word: HTMLSpanElement }>());
   const [layer, setLayer] = useState<Layer>('level');
   const [baseName, setBaseName] = useState<Base>('relief');
   const [selected, setSelected] = useState<string | null>(null);
@@ -92,56 +95,80 @@ export default function MapView() {
     base.current.bringToBack();
   }, [baseName, date, status, lots]);
 
-  // Level, label and onset per lot for the current day and layer.
+  // Level, label and the Severe moment per lot for the current day and layer.
   useEffect(() => {
     const rainOf = (u: string) => {
       const f = unitById(u)?.features;
       return f ? displayQuantity('mm', f.rain_local_mm, prefs.units, prefs.language) : null;
     };
+    // CL-29: the Flood plays only on a forward one-day step of the replay (play), never on drag-scrub, first load,
+    // a Lot open or a backward step. A newer day cancels a running sweep (epoch).
+    const forwardStep = playing && prevIndex.current !== null && index === prevIndex.current + 1;
+    prevIndex.current = index;
+    const epoch = ++floodEpoch.current;
+    const alive = () => floodEpoch.current === epoch;
+    const prevDay = forwardStep && demo ? (demo.replay[demo.days[index - 1] ?? ''] ?? null) : null;
+    const prevLevel = (id: string) => prevDay?.units.find((u) => u.unit_id === id)?.alert.level ?? null;
+
     let hidden = false;
-    const labelled: { poly: L.Polygon; label: string; rank: number }[] = [];
+    const labelled: { lot: Lot; poly: L.Polygon; text: string; level: Severity | null; flooding: boolean; rank: number }[] = [];
     for (const lot of lots) {
       const poly = shapes.current.get(lot.id);
-      const el = poly?.getElement();
+      const el = poly?.getElement() as SVGPathElement | undefined;
       if (!poly || !el) continue;
       const unit = unitById(lot.id);
       const level = unit?.alert.level ?? null;
       if (layer === 'level' && level) el.setAttribute('data-level', level);
       else el.removeAttribute('data-level');
-      const before = prevLevels.current.get(lot.id);
-      if (level === 'severe' && before && before !== 'severe') {
-        el.classList.add('is-onset');
-        setTimeout(() => el.classList.remove('is-onset'), 2400);
-      }
-      if (level) prevLevels.current.set(lot.id, level);
-      poly.unbindTooltip();
-      let label: string | null = null;
-      // Short labels keep small lots visible; the lot name is in the sheet and the tooltip's accessible text.
-      if (layer === 'terrain') label = lot.twi_tercile ? t(`tercile.${lot.twi_tercile}`) : t('common.noData');
-      if (layer === 'rain') {
+      const flooding = layer === 'level' && level === 'severe' && forwardStep && prevLevel(lot.id) !== null && prevLevel(lot.id) !== 'severe';
+      if (flooding) flood(el, alive);
+      let text: string;
+      // Short labels keep small lots visible; the lot name is in the sheet and the shape's accessible name.
+      if (layer === 'terrain') text = lot.twi_tercile ? t(`tercile.${lot.twi_tercile}`) : t('common.noData');
+      else if (layer === 'rain') {
         const q = rainOf(lot.id);
         const origin = resolveOrigin(unit?.features, 'rain_local_mm');
-        label = q?.text && origin ? `${q.text} ${q.unit} · ${t(`origin.${origin}`)}` : t('common.noData');
-      }
-      if (layer === 'level') label = level ? t(`level.${level}`) : t('common.noData');
-      // Permanent labels on every layer: on the level layer the word travels with the colour (CLAUDE.md §2).
-      if (label) labelled.push({ poly, label, rank: level ? LEVEL_RANK[level] : -2 });
-      el.setAttribute('aria-label', `${lot.name}: ${label ?? ''}`);
+        text = q?.text && origin ? `${q.text} ${q.unit} · ${t(`origin.${origin}`)}` : t('common.noData');
+      } else text = level ? t(`level.${level}`) : t('common.noData');
+      el.setAttribute('aria-label', `${lot.name}: ${text}`);
+      labelled.push({ lot, poly, text, level: layer === 'level' ? level : null, flooding, rank: level ? LEVEL_RANK[level] : -2 });
     }
-    // Labels are placed worst level first; one that would overlap a placed label shows on tap instead, and the
-    // legend keeps every colour paired with its word (break-ui: 40 permanent labels pile into an unreadable block).
+
+    // CL-05 labels: one element per lot (core + word) above the lot, kept across days so the core water rises in
+    // place; the word swaps at the midpoint of a flood. Placed worst level first; a label that would overlap a placed
+    // one shows on tap instead, and the legend keeps every colour paired with its word (break-ui: 40 lots).
+    const midpoint = tokenMs('--dn-dur-flood', 700) / 2;
     const placed: DOMRect[] = [];
     labelled.sort((x, y) => y.rank - x.rank);
-    for (const { poly, label } of labelled) {
-      poly.bindTooltip(label, { permanent: true, direction: 'center', opacity: 0.85 });
+    for (const { lot, poly, text, level, flooding } of labelled) {
+      let label = labels.current.get(lot.id);
+      if (!label) {
+        label = makeLabel();
+        labels.current.set(lot.id, label);
+      }
+      const { root, word } = label;
+      setLabelLevel(root, level);
+      if (flooding) {
+        window.setTimeout(() => {
+          if (alive()) word.textContent = text;
+        }, midpoint);
+      } else word.textContent = text;
+      const bind = (permanent: boolean) => {
+        poly.unbindTooltip();
+        poly.bindTooltip(root, { permanent, direction: 'top', offset: [0, -6], opacity: 1, className: 'dn-map-label' });
+      };
+      const tip = poly.getTooltip();
+      if (!tip || !tip.options.permanent) bind(true);
+      setTooltipLevel(poly.getTooltip()?.getElement(), level);
       const r = poly.getTooltip()?.getElement()?.getBoundingClientRect();
       if (r && placed.some((q) => r.left < q.right && q.left < r.right && r.top < q.bottom && q.top < r.bottom)) {
-        poly.unbindTooltip();
-        poly.bindTooltip(label, { permanent: false, direction: 'center', opacity: 0.85 });
+        bind(false);
         hidden = true;
       } else if (r) placed.push(r);
     }
     setHiddenLabels(hidden);
+    // `playing`, `index` and `demo` decide only whether this change is a forward step; `day` drives the update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lots, day, layer, prefs.units, prefs.language, t, unitById, zoom]);
 
   const sel = selected ? unitById(selected) : null;
